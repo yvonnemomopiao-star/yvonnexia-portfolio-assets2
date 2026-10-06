@@ -22,7 +22,7 @@
  *   data-ripple-color="#ffffff"   静止文字颜色
  *   data-ripple-crest="#ffffff"   波峰颜色
  *   data-ripple-trough="#6733ea"  波谷颜色
- *   data-ripple-size="22"         字号(px)，按 2560 宽调校，窄屏等比缩小
+ *   data-ripple-size="28"         字号(px)，按 2560 宽调校，窄屏等比缩小
  *   data-ripple-strength="2"      鼠标划动的力度倍数
  *   data-ripple-speed="0.8"       波传播速度 0~1
  *   data-ripple-damping="0.035"   衰减，越大波纹消失越快
@@ -62,7 +62,7 @@
     strength: num(ds.rippleStrength, 2),
     speed: clamp(num(ds.rippleSpeed, 0.8), 0, 1),
     damping: clamp(num(ds.rippleDamping, 0.035), 0, 0.5),
-    size: num(ds.rippleSize, 22)
+    size: num(ds.rippleSize, 28)
   };
   var BASE = ds.rippleColor || '#ffffff';
   var CREST = ds.rippleCrest || '#ffffff';
@@ -121,7 +121,7 @@
     if (!W || !H) return false;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    // 字号是按 2560 宽的大屏调的；屏幕更窄时等比缩小（最小到 0.68 倍，1440 宽时约 15px），手机端不超过 12px
+    // 字号是按 2560 宽的大屏调的；屏幕更窄时等比缩小（最小到 0.68 倍，1440 宽时约 19px），手机端不超过 12px
     var fs = W < MIN_WIDTH ? Math.min(cfg.size, 12) : Math.round(cfg.size * clamp(W / 2560, 0.68, 1));
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = '400 ' + fs + 'px ' + FONT;
