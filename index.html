@@ -38,7 +38,6 @@
     <!-- 🌟 核心提速 2：预加载最大内容绘制资产 (LCP Preload) -->
     <link rel="preload" as="image" href="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1790580554/title_etqh9l.png">
     
-    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 🌟 核心提速 3：提前建立与服务器的握手连接 -->
     <link rel="preconnect" href="https://prod.spline.design" crossorigin>
@@ -47,38 +46,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Microsoft YaHei', 'sans-serif'],
-                    },
-                    colors: {
-                        purple: {
-                            50: '#f0f0fd', 100: '#e4e2fb', 200: '#cfc9f7', 300: '#b1a4f1',
-                            400: '#8f77e9', 500: '#724ee0', 600: '#6733ea', 700: '#5824cd',
-                            800: '#481fa7', 900: '#3d1a88', 950: '#250e5e',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-15px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     
     <!-- 引入 Spline 3D 引擎 -->
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.61/build/spline-viewer.js"></script>
     <!-- 🌟 引入顶级 Lottie 动画播放引擎 (延迟加载防阻塞) -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.12/dist/lottie-player.js"></script>
     
     <style>
         @font-face {
@@ -854,6 +826,8 @@
             .chapter-directory__detail { transform: none; }
         }
     </style>
+    <!-- Tailwind 预编译样式（改了 class 之后运行 scripts/build-css.sh 重新生成）。放在 head 最后，保持和原先 CDN 注入时相同的层叠顺序 -->
+    <link rel="stylesheet" href="tailwind.css">
 </head>
 <body class="w-full relative bg-[#FAFAFD] text-gray-900 overflow-x-hidden">
 
@@ -1644,25 +1618,20 @@
                 <!-- Project 01 -->
                 <div id="proj-01" class="max-w-[1440px] mx-auto px-6 md:px-12 mb-40 relative">
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">01</div>
-                    <div class="mb-12 md:mb-16 relative z-10 grid grid-cols-1 md:grid-cols-12 items-end gap-y-5 md:gap-x-8 lg:gap-x-10">
-                        <div class="md:col-span-8 lg:col-span-9 max-w-[56rem]">
-                            <h3 class="text-2xl md:text-[30px] lg:text-[34px] font-bold tracking-wide leading-tight [text-wrap:balance]">项目名称：《If the police arrive》MV场景概念设计</h3>
-                            <p class="text-sm md:text-base text-gray-400 mt-3 md:mt-4 tracking-wide leading-relaxed max-w-[46rem]">Project Name: Concept Design for the Music Video "If the police Arrive"</p>
+                    <div class="mb-10 md:mb-12 relative z-10">
+                        <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">《If the police arrive》MV场景概念设计</h3>
+                        <p class="text-sm text-gray-400 mt-3 tracking-wide">Concept Design for the Music Video "If the police Arrive"</p>
+                        <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
+                            <span>Volumetric Moonlight</span> <span>/</span> <span>Cyber-Noir</span> <span>/</span> <span>Human-in-the-loop</span>
                         </div>
-                        <div class="project-meta-preview md:col-span-4 lg:col-span-3 flex flex-wrap gap-x-3 gap-y-2 md:justify-end md:text-right text-xs tracking-widest uppercase font-medium">
-                            <span class="whitespace-nowrap">Volumetric Moonlight <span class="project-meta-separator" aria-hidden="true">/</span></span>
-                            <span class="whitespace-nowrap">Cyber-Noir <span class="project-meta-separator" aria-hidden="true">/</span></span>
-                            <span class="whitespace-nowrap">Human-in-the-loop</span>
-                        </div>
+                        <dl class="mt-8 grid grid-cols-3 gap-4 md:gap-8 max-w-[44rem] border-t border-white/10 pt-6">
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">前期视觉过稿</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">2<span class="text-sm md:text-base font-bold ml-1">周</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">传统周期 1.5–2 个月</dd></div>
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">高保真方案</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">10+<span class="text-sm md:text-base font-bold ml-1">版</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">AIGC 管线推演</dd></div>
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">最终落地</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">1<span class="text-sm md:text-base font-bold ml-1">版</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">领导看中两版</dd></div>
+                        </dl>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 relative z-10">
-                        <div class="md:col-span-4 lg:col-span-3 flex flex-col gap-4 lg:gap-6">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/topview_k3kduk.jpg" loading="lazy" fetchpriority="high" alt="MV Concept" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planA_v9fhoe.jpg" loading="lazy" fetchpriority="high" alt="Plan A" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/planB_idwrep.jpg" loading="lazy" fetchpriority="high" alt="Plan B" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planC_q1shh5.jpg" loading="lazy" fetchpriority="high" alt="Plan C" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                        </div>
-                        <div class="md:col-span-8 lg:col-span-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-6 lg:gap-x-10 lg:gap-y-8 relative z-10">
+                        <div class="lg:col-span-7 lg:row-span-2">
                             <div class="project-compare-frame relative w-full md:h-[450px] lg:h-full md:min-h-[400px] lg:min-h-[800px] rounded-md border border-white/10 overflow-hidden group select-none">
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto/v1775982370/building_tto7yk.jpg" loading="lazy" fetchpriority="high" alt="修改后的主视觉" class="relative md:absolute md:inset-0 w-full h-auto md:h-full object-cover pointer-events-none">
                                 <img id="project01CompareImage" src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto/v1775982365/buildingbase_cvy9lz.jpg" loading="lazy" fetchpriority="high" alt="修改前的主视觉" class="absolute inset-0 w-full h-full object-cover pointer-events-none bg-[#111]" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
@@ -1679,26 +1648,37 @@
                                 <input type="range" min="0" max="100" value="50" id="project01CompareSlider" aria-label="调整修改前与修改后主视觉的对比范围" aria-valuetext="修改后画面显示 50%" class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20 m-0 p-0 appearance-none">
                             </div>
                         </div>
-                        <div class="md:col-span-12 lg:col-span-3 flex flex-col justify-start pt-6 md:pt-10 lg:pt-0 lg:pl-1">
-                            <div class="space-y-6 lg:space-y-8">
+                        <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible lg:order-3 lg:col-span-5 lg:grid-cols-2 lg:gap-4 lg:self-end" aria-label="顶视图与三个候选方案">
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/topview_k3kduk.jpg" loading="lazy" alt="顶视图功能分区" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">TOP VIEW</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planA_v9fhoe.jpg" loading="lazy" alt="候选方案 A" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN A</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/planB_idwrep.jpg" loading="lazy" alt="候选方案 B" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN B</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planC_q1shh5.jpg" loading="lazy" alt="候选方案 C" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN C</figcaption>
+                            </figure>
+                        </div>
+                        <div class="lg:order-2 lg:col-span-5 pt-4 lg:pt-0">
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-8 md:gap-6 lg:gap-8">
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>设计逻辑与光影 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Design Logic & Lighting</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>设计逻辑与光影<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Design Logic &amp; Lighting</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
                                 </div>
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>深度人工干预 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Human-In-The-Loop</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">
-                                        <strong class="text-gray-300">技术难点突破：</strong><br>
-                                        项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>
-                                        为此，我引入了深度干预管线：首先使用<strong class="text-gray-400">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。
-                                    </p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>深度人工干预<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Human-In-The-Loop</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">技术难点突破：</strong>项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>为此，我引入了深度干预管线：首先使用<strong class="text-gray-200">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。</p>
                                 </div>
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>业务成果验证 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Project Outcome</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">
-                                        独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-400">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br>
-                                        <strong class="text-gray-400">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-400">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。
-                                    </p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>业务成果验证<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Project Outcome</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-200">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br><strong class="text-gray-200">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-200">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。</p>
                                 </div>
                             </div>
                         </div>
@@ -1710,8 +1690,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">02</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：黑暗天使 - 电影时尚研究</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Dark Angel - Cinematic Fashion Study</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">黑暗天使 - 电影时尚研究</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Dark Angel - Cinematic Fashion Study</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>High-Fashion K-Pop Aesthetic</span> <span>/</span> <span>Dark Moonlight</span> <span>/</span> <span>Ethereal Realism</span>
                             </div>
@@ -1810,8 +1790,8 @@
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">03</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：冷静系列——AIGC 叙事中的情感韧性</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: [The Stoic Series] — Emotional Resilience in AIGC Storytelling</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">冷静系列——AIGC 叙事中的情感韧性</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">[The Stoic Series] — Emotional Resilience in AIGC Storytelling</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Vertical Ad</span> <span>/</span> <span>AIGC Storytelling</span> <span>/</span> <span>Emotional Resilience</span>
                             </div>
@@ -1939,8 +1919,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">04</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：K-Pop 舞台视觉与仿生人概念设计</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Cyber-Ethereal Stage Visual & Android Concept</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">K-Pop 舞台视觉与仿生人概念设计</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Cyber-Ethereal Stage Visual & Android Concept</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Liquid-Chrome Fluidity</span> <span>/</span> <span>Iridescent Porcelain</span> <span>/</span> <span>Anisotropic Metal</span>
                             </div>
@@ -2013,8 +1993,8 @@
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">05</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：ADAM 音乐节海报设计</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: ADAM Music Festival Poster Design</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">ADAM 音乐节海报设计</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">ADAM Music Festival Poster Design</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Humanoid</span> <span>/</span> <span>Inorganic Texture</span> <span>/</span> <span>Futuristic Digital Life</span>
                             </div>
@@ -2074,8 +2054,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">06</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：K-Pop Q版手办——BOSS系列</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: K-Pop Q-version Figurines - BOSS Series</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">K-Pop Q版手办——BOSS系列</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">K-Pop Q-version Figurines - BOSS Series</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>IP Design</span> <span>/</span> <span>Character Consistency</span> <span>/</span> <span>Commercial Standard</span>
                             </div>
@@ -2116,8 +2096,8 @@
                         <div class="mb-12">
                             <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                                 <div>
-                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：专属 LORA 模型炼制与风格克隆</h3>
-                                    <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Custom LoRA Model Training &amp; Style Replication</p>
+                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">专属 LORA 模型炼制与风格克隆</h3>
+                                    <p class="text-sm text-gray-400 mt-3 tracking-wide">Custom LoRA Model Training &amp; Style Replication</p>
                                     <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                         <span>LORA Training</span> <span>/</span> <span>Model Generalization</span> <span>/</span> <span>Style Consistency</span>
                                     </div>
@@ -2188,8 +2168,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">08</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：互动视觉实验 - 基于 Google AI Studio</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Interactive Visual Experiment — Powered by Google AI Studio</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">互动视觉实验 - 基于 Google AI Studio</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Interactive Visual Experiment — Powered by Google AI Studio</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Creative Coding</span> <span>/</span> <span>Google AI Studio</span> <span>/</span> <span>Generative UI</span>
                             </div>
@@ -2241,7 +2221,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">欧美卡通风格游戏《才不是童话》日韩台上线</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: The dark fairy tale-style mobile game "It's Not a Fairy Tale"</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">The dark fairy tale-style mobile game "It's Not a Fairy Tale"</p>
                             <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Dark Fairy Tale</span> <span>/</span> <span>Mobile Game</span> <span>/</span> <span>Scene Design</span>
                             </div>
@@ -2269,7 +2249,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">女性向恋爱&换装游戏《依依恋物语》与《七日恋人》</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Otome Romance & Dress-up Games</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Otome Romance & Dress-up Games</p>
                             <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Otome Game</span> <span>/</span> <span>Romantic Fantasy</span> <span>/</span> <span>2D Illustration</span>
                             </div>
@@ -2301,7 +2281,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">日本动画《物语系列——化物语，伪物语》</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Japanese Anime Series "Bakemonogatari & Nisemonogatari"</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Japanese Anime Series "Bakemonogatari & Nisemonogatari"</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Japanese Anime</span> <span>/</span> <span>Background Art</span> <span>/</span> <span>2D Layout</span>
                             </div>
