@@ -17,6 +17,7 @@
  * 可选属性（写在 <section id="home"> 上）：
  *   data-ripple-text="..."        要铺的文字（英文 / 数字；中文是双倍宽度，会破坏等宽网格）
  *   data-ripple-opacity="0.42"    静止文字的不透明度
+ *   data-ripple-vignette="0.6"    四边渐隐的宽度 0~1（1 = 渐隐带宽到屏幕短边的一半）
  *   data-ripple-hole="0.3"        机器人周围的圆形留空半径 = 首屏高度 × 该值（0 = 不留空）
  *   data-ripple-color="#ffffff"   静止文字颜色
  *   data-ripple-crest="#ffffff"   波峰颜色
@@ -27,7 +28,7 @@
  *   data-ripple-damping="0.04"    衰减，越大波纹消失越快
  *   data-ripple-z="32"            层级
  *
- * 接口：window.textRipple.set({opacity, hole, strength, speed, damping, size}) / drop(x, y) / refresh()
+ * 接口：window.textRipple.set({opacity, vignette, hole, strength, speed, damping, size}) / drop(x, y) / refresh()
  */
 (function () {
   'use strict';
@@ -57,6 +58,7 @@
   var cfg = {
     opacity: num(ds.rippleOpacity, 0.42),
     hole: num(ds.rippleHole, 0.3),
+    vignette: num(ds.rippleVignette, 0.6),
     strength: num(ds.rippleStrength, 1),
     speed: clamp(num(ds.rippleSpeed, 0.55), 0, 1),
     damping: clamp(num(ds.rippleDamping, 0.04), 0, 0.5),
@@ -77,8 +79,14 @@
   canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:' + Z + ';';
   // 四边渐隐 + 机器人周围的圆形留空（画布在机器人上方，不留空的话文字会盖在它脸上）
   function applyMask() {
-    var m = 'linear-gradient(to bottom, transparent 0, #000 12%, #000 86%, transparent 100%), ' +
-            'linear-gradient(to right, transparent 0, #000 7%, #000 93%, transparent 100%)';
+    // 渐隐带的宽度按像素算（和屏幕短边成比例），大屏上才不会显得太窄；中间加两个过渡点，像镜头暗角一样缓出
+    var band = clamp(cfg.vignette, 0, 1) * Math.min(W, H) / 2, bx = Math.round(band), by = Math.round(band * 0.62);
+    function edge(dir, size, b) {
+      var a = 'rgba(0,0,0,', px = function (v) { return Math.round(v) + 'px'; }, far = function (v) { return px(size - v); };
+      return 'linear-gradient(' + dir + ', transparent 0, ' + a + '.12) ' + px(b * 0.3) + ', ' + a + '.55) ' + px(b * 0.7) + ', #000 ' + px(b) +
+             ', #000 ' + far(b) + ', ' + a + '.55) ' + far(b * 0.7) + ', ' + a + '.12) ' + far(b * 0.3) + ', transparent 100%)';
+    }
+    var m = edge('to bottom', H, by) + ', ' + edge('to right', W, bx);
     if (cfg.hole > 0) m += ', radial-gradient(circle ' + Math.round(H * cfg.hole) + 'px at 50% 49%, transparent 0, transparent 62%, #000 100%)';
     canvas.style.webkitMaskImage = m; canvas.style.maskImage = m;
     canvas.style.webkitMaskComposite = 'source-in'; canvas.style.maskComposite = 'intersect';
@@ -275,7 +283,7 @@
     drop: function (x, y, strength) { if (!interactive()) return; press(x, y, 26, (strength || 1.2) * cfg.strength); wake(); },
     set: function (o) {
       var rebuild = false;
-      for (var k in o) if (k in cfg && cfg[k] !== o[k]) { cfg[k] = o[k]; if (k === 'size') rebuild = true; if (k === 'hole' && ready) applyMask(); }
+      for (var k in o) if (k in cfg && cfg[k] !== o[k]) { cfg[k] = o[k]; if (k === 'size') rebuild = true; if ((k === 'hole' || k === 'vignette') && ready) applyMask(); }
       if (rebuild) refresh(); else { buildRamps(); if (ready && !running) draw(performance.now()); }
     }
   };
