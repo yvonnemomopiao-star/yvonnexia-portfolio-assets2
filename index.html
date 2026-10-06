@@ -279,9 +279,13 @@
             color: #5824cd;
             background-color: rgba(103, 51, 234, .08);
         }
+        /* Current page: a solid pill. Its fill is set inline by syncNavigationTheme. */
         #nav-light nav > a[aria-current],
-        #nav-light .portfolio-nav-trigger[aria-current] {
-            color: #5824cd;
+        #nav-light nav > a[aria-current]:hover,
+        #nav-light .portfolio-nav-trigger[aria-current],
+        #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
+            color: #fff;
+            background-color: #8f77e9;
         }
         .site-nav::before {
             content: "";
@@ -2502,7 +2506,7 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : 'rgba(103,51,234,.1)') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : '#8f77e9') : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
@@ -3063,7 +3067,7 @@
             });
         })();
     </script>
-    <!-- 首屏机器人身后的字符雨点缀 -->
-    <script src="code-rain.js" defer></script>
+    <!-- 首屏文字水面：鼠标划过会荡出波纹 -->
+    <script src="text-ripple.js" defer></script>
 </body>
 </html>
