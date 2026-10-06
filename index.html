@@ -279,10 +279,10 @@
         /* Keep the header glass on a sibling layer so dropdowns can blur the page. */
         #nav-light,
         #backToTop {
-            --nav-glass-bg: rgba(250, 250, 253, .7);
-            --nav-glass-border: rgba(229, 231, 235, .5);
-            --nav-glass-shadow: 0 4px 30px rgba(0, 0, 0, .03);
-            --nav-icon-color: #4b5563;
+            --nav-glass-bg: rgba(236, 234, 253, .6);
+            --nav-glass-border: rgba(178, 184, 248, .5);
+            --nav-glass-shadow: 0 4px 30px rgba(103, 51, 234, .06);
+            --nav-icon-color: #5a5478;
             --nav-icon-hover: #5824cd;
         }
         #nav-dark,
@@ -292,6 +292,24 @@
             --nav-glass-shadow: 0 4px 30px rgba(0, 0, 0, .5);
             --nav-icon-color: #9ca3af;
             --nav-icon-hover: #8f77e9;
+        }
+        /* Lavender-tinted light navigation: ink and accent come from the brand purple, not neutral grey. */
+        #nav-light {
+            border-bottom-color: var(--nav-glass-border);
+            box-shadow: var(--nav-glass-shadow);
+        }
+        #nav-light nav > a,
+        #nav-light .portfolio-nav-trigger {
+            color: #5a5478;
+        }
+        #nav-light nav > a:hover,
+        #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger {
+            color: #5824cd;
+            background-color: rgba(103, 51, 234, .08);
+        }
+        #nav-light nav > a[aria-current],
+        #nav-light .portfolio-nav-trigger[aria-current] {
+            color: #5824cd;
         }
         .site-nav::before {
             content: "";
@@ -2504,7 +2522,7 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : 'rgba(229,231,235,.5)') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : 'rgba(103,51,234,.1)') : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
