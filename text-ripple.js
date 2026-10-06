@@ -17,15 +17,15 @@
  * 可选属性（写在 <section id="home"> 上）：
  *   data-ripple-text="..."        要铺的文字（英文 / 数字；中文是双倍宽度，会破坏等宽网格）
  *   data-ripple-opacity="0.42"    静止文字的不透明度
- *   data-ripple-vignette="0.6"    四边渐隐的宽度 0~1（1 = 渐隐带宽到屏幕短边的一半）
+ *   data-ripple-vignette="0.5"    四边渐隐的宽度 0~1（1 = 渐隐带宽到屏幕短边的一半）
  *   data-ripple-hole="0.3"        机器人周围的圆形留空半径 = 首屏高度 × 该值（0 = 不留空）
  *   data-ripple-color="#ffffff"   静止文字颜色
  *   data-ripple-crest="#ffffff"   波峰颜色
  *   data-ripple-trough="#6733ea"  波谷颜色
- *   data-ripple-size="15"         字号(px)
- *   data-ripple-strength="1"      鼠标划动的力度倍数
- *   data-ripple-speed="0.55"      波传播速度 0~1
- *   data-ripple-damping="0.04"    衰减，越大波纹消失越快
+ *   data-ripple-size="22"         字号(px)，按 2560 宽调校，窄屏等比缩小
+ *   data-ripple-strength="2"      鼠标划动的力度倍数
+ *   data-ripple-speed="0.8"       波传播速度 0~1
+ *   data-ripple-damping="0.035"   衰减，越大波纹消失越快
  *   data-ripple-z="32"            层级
  *
  * 接口：window.textRipple.set({opacity, vignette, hole, strength, speed, damping, size}) / drop(x, y) / refresh()
@@ -58,11 +58,11 @@
   var cfg = {
     opacity: num(ds.rippleOpacity, 0.42),
     hole: num(ds.rippleHole, 0.3),
-    vignette: num(ds.rippleVignette, 0.6),
-    strength: num(ds.rippleStrength, 1),
-    speed: clamp(num(ds.rippleSpeed, 0.55), 0, 1),
-    damping: clamp(num(ds.rippleDamping, 0.04), 0, 0.5),
-    size: num(ds.rippleSize, 15)
+    vignette: num(ds.rippleVignette, 0.5),
+    strength: num(ds.rippleStrength, 2),
+    speed: clamp(num(ds.rippleSpeed, 0.8), 0, 1),
+    damping: clamp(num(ds.rippleDamping, 0.035), 0, 0.5),
+    size: num(ds.rippleSize, 22)
   };
   var BASE = ds.rippleColor || '#ffffff';
   var CREST = ds.rippleCrest || '#ffffff';
@@ -121,7 +121,8 @@
     if (!W || !H) return false;
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
-    var fs = W < MIN_WIDTH ? Math.min(cfg.size, 12) : cfg.size;
+    // 字号是按 2560 宽的大屏调的；屏幕更窄时等比缩小（最小到 0.68 倍，1440 宽时约 15px），手机端不超过 12px
+    var fs = W < MIN_WIDTH ? Math.min(cfg.size, 12) : Math.round(cfg.size * clamp(W / 2560, 0.68, 1));
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.font = '400 ' + fs + 'px ' + FONT;
     cw = ctx.measureText('M').width || fs * 0.6;
