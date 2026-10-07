@@ -169,7 +169,7 @@
     // 把列分成宽窄不一的柱子：多数很细（1~2 格），少数很粗（到 7 格）
     bandOf = new Int32Array(cols); bandX = []; bandW = [];
     for (var c = 0, band = 0; c < cols; band++) {
-      var u = h2(band, 91), bw = u < 0.14 ? 1 : u < 0.36 ? 2 : u < 0.62 ? 3 : 4 + ((h2(band, 17) * 6) | 0);
+      var u = h2(band, 91), bw = u < 0.45 ? 1 : u < 0.72 ? 2 : u < 0.88 ? 3 : 4 + ((h2(band, 17) * 4) | 0);
       bandX.push(c); bandW.push(bw);
       for (var k = 0; k < bw && c < cols; k++, c++) bandOf[c] = band;
     }
@@ -217,10 +217,8 @@
     if (cfg.shape === 'columns') {                         // 像素柱：柱子的高度沿着一条尖峰天际线排，再各自参差、升降
       var band = bandOf[c], bw = bandW[band], xm = (bandX[band] + bw / 2) / rows;
       var env = ridged(xm * 0.95 + t * 0.03, t * 0.1) * 0.5 + vnoise(xm * 0.5 + 9, t * 0.05) * 0.16;   // 山形包络
-      // 大部分柱子贴着山形走，连成一片；少数窄柱是蹿出去的尖刺，少数整根矮下去形成豁口，高度差拉开
-      var k = h2(band, 7), own = (h2(band, 23) - 0.5) * 0.1 + vnoise(band * 0.41 + 3, t * 0.6) * 0.1;
-      if (bw <= 2 && k < 0.3) own += 0.14 + h2(band, 31) * 0.46 + vnoise(band * 1.7, t * 1.3) * 0.1;
-      else if (k > 0.86) own -= 0.1 + h2(band, 37) * 0.2;
+      var own = h2(band, 7) * 0.3 * (bw <= 2 ? 1.35 : 0.8)
+              + vnoise(band * 0.41 + 3, t * 0.6) * 0.2 + vnoise(band * 1.7, t * 1.3) * 0.06;
       var top = Math.round((-1.0 + p * 2.1 + env + own) * rows) / rows;                               // 柱顶对齐格子，边缘是平的
       return (top - yb) * 1.25 + 0.16;
     }
