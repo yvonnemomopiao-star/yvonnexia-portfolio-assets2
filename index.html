@@ -165,6 +165,8 @@
             width: 100%;
             max-width: 100%;
         }
+        /* clip (not hidden) keeps <body> from becoming a scroll container, which would break position: sticky. */
+        body { overflow-x: clip; }
 
         spline-viewer { width: 100%; height: 100%; }
         #spline-watermark { display: none !important; }
@@ -833,7 +835,7 @@
     <!-- Tailwind 预编译样式（改了 class 之后运行 scripts/build-css.sh 重新生成）。放在 head 最后，保持和原先 CDN 注入时相同的层叠顺序 -->
     <link rel="stylesheet" href="tailwind.css">
 </head>
-<body class="w-full relative bg-[#FAFAFD] text-gray-900 overflow-x-hidden">
+<body class="w-full relative bg-[#FAFAFD] text-gray-900 overflow-x-clip">
 
     <div class="site-preloader paper-grain" id="sitePreloader" role="status" aria-live="polite" aria-label="网站资源加载中">
         <div class="site-preloader__loader">
@@ -2494,7 +2496,7 @@
                     return rect.top <= sampleY && rect.bottom > sampleY;
                 });
                 if (!section) return;
-                const isDark = darkSections.has(section.id);
+                const isDark = darkSections.has(section.id) || (section.id === 'home' && !!window.pixelRise?.covering?.());
                 const next = isDark ? dark : light;
                 const previous = isDark ? light : dark;
                 const focused = previous.contains(document.activeElement) ? document.activeElement.closest('a[data-page]') : null;
@@ -3069,7 +3071,9 @@
     </script>
     <!-- 首屏文字水面：鼠标划过会荡出波纹 -->
     <script src="text-ripple.js" defer></script>
-    <!-- 首页 ⇄ 作品集 的像素入侵转场 -->
-    <script src="pixel-transition.js" defer></script>
+    <!-- 首屏 → 作品章节目录 的像素入侵滚动衔接 -->
+    <script src="pixel-rise.js" defer></script>
+    <!-- 首页 ⇄ 作品集 跳转时的像素转场：已停用，想启用时取消下一行的注释 -->
+    <!-- <script src="pixel-transition.js" defer></script> -->
 </body>
 </html>
