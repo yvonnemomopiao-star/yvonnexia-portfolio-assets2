@@ -12,11 +12,11 @@
  *       黑色层在首屏内容（机器人、标题、文字水面）之上，固定导航(z-100)之下。
  *
  * 可选属性（写在目标板块 #work-chapters 上）：
- *   data-pixel-pin="0.8"      首屏钉住多久 = 多少个视口高度的滚动距离
+ *   data-pixel-pin="0.6"      首屏钉住多久 = 多少个视口高度的滚动距离
  *   data-pixel-size="16"      格子边长(px)，按 1920 宽调校，随屏幕宽度缩放
  *   data-pixel-shape="columns" 造型：columns 沿山形排列、宽窄高矮不一的像素柱（默认）/ peaks 尖峰 / ridge 连绵山脊
- *   data-pixel-reveal="0.5"   文字逐行出现占多少个视口高度的滚动距离，0 = 变黑后一次全部出现
- *   data-pixel-glitch="1"     抖动带、镂空和飞点的强度，0 = 只有干净的山形
+ *   data-pixel-reveal="0.35"  文字逐行出现占多少个视口高度的滚动距离，0 = 变黑后一次全部出现
+ *   data-pixel-glitch="2.5"   抖动带、镂空和飞点的强度，0 = 只有干净的山形
  *   data-pixel-flow="1"       山峰自己流动的速度倍数，0 = 只随滚动变化
  *   data-pixel-color="..."    方块颜色，默认读取目标板块的背景色
  *   data-pixel-z="60"         黑色层在首屏内部的层级（要高于首屏里最高的标题 z-50）
@@ -47,7 +47,7 @@
 
   function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1), shape: ds.pixelShape || 'columns', reveal: num(ds.pixelReveal, 0.5) };
+  var cfg = { pin: num(ds.pixelPin, 0.6), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 2.5), flow: num(ds.pixelFlow, 1), shape: ds.pixelShape || 'columns', reveal: num(ds.pixelReveal, 0.35) };
   var FPS = 14;      // 像素场每秒步进多少次
   var FULL = 0.9;    // 钉住行程走到这个比例时已经全黑，剩下的当缓冲
   var COVER = 0.86;  // 进度超过它，顶部（导航所在）基本被盖住
@@ -169,7 +169,7 @@
     // 把列分成宽窄不一的柱子：多数很细（1~2 格），少数很粗（到 7 格）
     bandOf = new Int32Array(cols); bandX = []; bandW = [];
     for (var c = 0, band = 0; c < cols; band++) {
-      var u = h2(band, 91), bw = u < 0.45 ? 1 : u < 0.72 ? 2 : u < 0.88 ? 3 : 4 + ((h2(band, 17) * 4) | 0);
+      var u = h2(band, 91), bw = u < 0.14 ? 1 : u < 0.36 ? 2 : u < 0.62 ? 3 : 4 + ((h2(band, 17) * 6) | 0);
       bandX.push(c); bandW.push(bw);
       for (var k = 0; k < bw && c < cols; k++, c++) bandOf[c] = band;
     }
@@ -217,8 +217,10 @@
     if (cfg.shape === 'columns') {                         // 像素柱：柱子的高度沿着一条尖峰天际线排，再各自参差、升降
       var band = bandOf[c], bw = bandW[band], xm = (bandX[band] + bw / 2) / rows;
       var env = ridged(xm * 0.95 + t * 0.03, t * 0.1) * 0.5 + vnoise(xm * 0.5 + 9, t * 0.05) * 0.16;   // 山形包络
-      var own = h2(band, 7) * 0.3 * (bw <= 2 ? 1.35 : 0.8)                                            // 每根柱子自己的高矮，细柱更容易蹿高
-              + vnoise(band * 0.41 + 3, t * 0.6) * 0.2 + vnoise(band * 1.7, t * 1.3) * 0.06;          // 各自升降
+      // 大部分柱子贴着山形走，连成一片；少数窄柱是蹿出去的尖刺，少数整根矮下去形成豁口，高度差拉开
+      var k = h2(band, 7), own = (h2(band, 23) - 0.5) * 0.1 + vnoise(band * 0.41 + 3, t * 0.6) * 0.1;
+      if (bw <= 2 && k < 0.3) own += 0.14 + h2(band, 31) * 0.46 + vnoise(band * 1.7, t * 1.3) * 0.1;
+      else if (k > 0.86) own -= 0.1 + h2(band, 37) * 0.2;
       var top = Math.round((-1.0 + p * 2.1 + env + own) * rows) / rows;                               // 柱顶对齐格子，边缘是平的
       return (top - yb) * 1.25 + 0.16;
     }
