@@ -4,15 +4,17 @@
  * 用法：在 </body> 前加一行  <script src="pixel-rise.js" defer></script>
  *       默认把 #work-chapters 当作目标板块，把它前面的那个板块（#home）当作首屏。
  *
- * 效果：往下滚时首屏被钉在原地（机器人不动），一层黑色像素块从屏幕底部往上入侵：
- *       方块大小不一，有的列蹿得快，前沿在闪烁，夹着少量紫色坏点和横向撕裂条。
+ * 效果：往下滚时首屏被钉在原地（机器人不动），一片黑色像素场从屏幕底部往上入侵：
+ *       轮廓是山峰一样起伏的山脊，会自己横向流动、涌动；外沿是一条忽明忽暗的抖动带，
+ *       夹着紫色和淡紫的碎点，山前有零星火花。停在半路时它也一直在动。
  *       盖满之后首屏放行，下面的章节目录接上来，颜色完全一致。往回滚会原样退回去。
  *       黑色层在首屏内容（机器人、标题、文字水面）之上，固定导航(z-100)之下。
  *
  * 可选属性（写在目标板块 #work-chapters 上）：
  *   data-pixel-pin="0.8"      首屏钉住多久 = 多少个视口高度的滚动距离
- *   data-pixel-size="56"      基础方块边长(px)，实际会细分成 1/2、1/4
- *   data-pixel-glitch="1"     闪烁 / 坏点 / 撕裂条的强度，0 = 只有干净的方块
+ *   data-pixel-size="16"      格子边长(px)，按 1920 宽调校，随屏幕宽度缩放
+ *   data-pixel-glitch="1"     抖动带和碎点、火花的强度，0 = 只有干净的山形
+ *   data-pixel-flow="1"       山峰自己流动的速度倍数，0 = 只随滚动变化
  *   data-pixel-color="..."    方块颜色，默认读取目标板块的背景色
  *   data-pixel-z="60"         黑色层在首屏内部的层级（要高于首屏里最高的标题 z-50）
  *
@@ -21,7 +23,7 @@
  *
  * 接口：window.pixelRise.progress()  0~1
  *       window.pixelRise.covering()  true = 黑色已经盖到导航所在的顶部（导航应切成深色）
- *       window.pixelRise.set({pin, size, glitch}) / refresh()
+ *       window.pixelRise.set({pin, size, glitch, flow}) / refresh()
  *       状态变化时会调用 window.syncNavigationTheme()（如果存在）
  *
  * 系统开了「减少动态效果」时不启用，首屏和章节目录保持直线衔接。
@@ -42,10 +44,11 @@
 
   function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 56), glitch: num(ds.pixelGlitch, 1) };
+  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1) };
+  var FPS = 14;      // 像素场每秒步进多少次
   var PURPLE = '#6733ea', LAVENDER = '#b2b8f8';
   var FULL = 0.9;    // 钉住行程走到这个比例时已经全黑，剩下的当缓冲
-  var COVER = 0.82;  // 进度超过它，顶部（导航所在）基本被盖住
+  var COVER = 0.86;  // 进度超过它，顶部（导航所在）基本被盖住
 
   // ---------- DOM：钉住容器 + 首屏内部的画布 ----------
   var heroCss = hero.style.cssText;
@@ -108,11 +111,12 @@
     img.src = m[2];
   }
 
-  // ---------- 方块 ----------
-  // 每个方块有一个 0~1 的"到达时刻" t：主要由纵向位置决定（底部先到），
-  // 再加上每一列的快慢偏移和一点随机，所以前沿是参差的，有的列明显蹿在前面。
-  var W = 0, H = 0, dpr = 1, B = 56, pinLen = 0, color = '#000';
-  var N = 0, RX, RY, RS, RT, NB = 0, BX, BY, BW, BH, BT;
+  // ---------- 像素场 ----------
+  // 不再是"固定方块按位置依次点亮"。每一格的明暗由一张会流动的噪声场决定：
+  //   场值 = 分形噪声（先被另一层噪声扭曲，所以轮廓像山脊而不是云团） + 越靠下越大的纵向偏置
+  //   场值高于"水位"的格子变黑；滚动只负责把水位往下压，山峰自己会随时间横向流动、起伏
+  // 轮廓外沿有一条抖动带：格子按概率忽明忽暗，夹着紫色和淡紫的碎点，前方还有零星的火花。
+  var W = 0, H = 0, dpr = 1, cell = 16, cols = 0, rows = 0, pinLen = 0, color = '#000';
 
   function build() {
     W = hero.clientWidth; H = hero.clientHeight;
@@ -121,77 +125,84 @@
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     pinLen = Math.round(H * cfg.pin * (W < 768 ? 0.75 : 1));
     wrap.style.height = (H + pinLen) + 'px';
-    B = clamp(cfg.size * clamp(W / 1920, 0.6, 1.3), 24, 96);
-    var cols = Math.ceil(W / B), rowsN = Math.ceil(H / B), rand = rng(20261007);
-    var shift = new Float32Array(cols);
-    for (var c = 0; c < cols; c++) shift[c] = rand() < 0.16 ? -(0.05 + 0.2 * rand()) : 0.1 * rand();
-    var x = [], y = [], s = [], t = [];
-    for (var r = 0; r < rowsN; r++) for (var cc = 0; cc < cols; cc++) {
-      var u = rand(), L = u < 0.42 ? 0 : (u < 0.8 ? 1 : 2), n = 1 << L, sz = B / n;   // 整块 / 四分 / 十六分
-      for (var j = 0; j < n; j++) for (var i = 0; i < n; i++) {
-        var px = cc * B + i * sz, py = r * B + j * sz;
-        if (px >= W || py >= H) continue;
-        var d = 1 - (py + sz / 2) / H;                     // 0 = 底部，1 = 顶部
-        x.push(px); y.push(py); s.push(sz);
-        t.push(clamp(d * 0.7 + shift[cc] + (rand() - 0.5) * 0.14 + 0.1, 0.02, 0.98));
-      }
-    }
-    N = x.length;
-    RX = Float32Array.from(x); RY = Float32Array.from(y); RS = Float32Array.from(s); RT = Float32Array.from(t);
-    NB = 14;
-    BX = new Float32Array(NB); BY = new Float32Array(NB); BW = new Float32Array(NB); BH = new Float32Array(NB); BT = new Float32Array(NB);
-    for (var k = 0; k < NB; k++) {
-      var yn = 0.05 + rand() * 0.9;
-      BH[k] = Math.round(3 + rand() * 12); BY[k] = Math.round(yn * H);
-      BW[k] = W * (0.15 + rand() * 0.5); BX[k] = rand() * (W - BW[k]);
-      BT[k] = (1 - yn) * 0.7 + 0.1;
-    }
+    cell = Math.max(6, Math.round(cfg.size * clamp(W / 1920, 0.55, 1.4)));
+    cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
     var c2 = ds.pixelColor || getComputedStyle(target).backgroundColor;
     color = (!c2 || c2 === 'transparent' || /,\s*0\)$/.test(c2)) ? '#000' : c2;
     if (grain) grain.pattern = null;
     return true;
   }
 
-  function draw(a, tick) {
-    var Wp = canvas.width, Hp = canvas.height, g = cfg.glitch;
+  // 整数格点哈希 → 0~1
+  function h2(x, y) {
+    var n = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263);
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+  }
+  function vnoise(x, y) {                                  // 平滑的值噪声
+    var xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi;
+    fx = fx * fx * (3 - 2 * fx); fy = fy * fy * (3 - 2 * fy);
+    var a = h2(xi, yi), b = h2(xi + 1, yi), c = h2(xi, yi + 1), d = h2(xi + 1, yi + 1);
+    return a + (b - a) * fx + (c - a) * fy + (a - b - c + d) * fx * fy;
+  }
+  function fbm(x, y, oct) {                                // 分形叠加：大山形 + 小碎石
+    var amp = 0.5, sum = 0;
+    for (var i = 0; i < oct; i++) { sum += amp * vnoise(x, y); x = x * 2.03 + 17.1; y = y * 2.03 + 9.2; amp *= 0.5; }
+    return sum;
+  }
+
+  function draw(p, t, stepN) {
+    var Wp = canvas.width, Hp = canvas.height, g = cfg.glitch, cp = cell * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, Wp, Hp);
-    if (a <= 0) return;
+    if (p <= 0) return;
     ctx.fillStyle = color;
-    if (a >= 1) {                                          // 全黑：一整块，避免方块间出现细缝
+    if (p >= 1) {                                          // 盖满：一整块，和下面的板块无缝衔接
       ctx.fillRect(0, 0, Wp, Hp);
     } else {
-      var gp = [], gl = [];
-      for (var i = 0; i < N; i++) {
-        var t = RT[i], on = t <= a, ghost = 0;
-        if (g > 0) {
-          var f = t - a;
-          if (!on) {
-            if (f < 0.05 * g && hash(i, tick, 7) > 0.55) on = true;                       // 前沿：提前闪现
-          } else if (RS[i] <= B * 0.5) {
-            var q = hash(i, tick, 17);
-            if (f > -0.03) ghost = q < 0.14 * g ? 1 : q < 0.2 * g ? 2 : 0;                // 刚接通的小块：紫色坏点
-            else if (f > -0.1 && q < 0.04 * g) on = false;                                // 前沿后面偶尔掉一格
+      // 水位：p=0 时高过所有山峰（全空），p=1 时低过所有谷底（全黑）
+      var level = 1.62 - p * 2.3, edge = 0.1 + 0.05 * g, sc = 1.25 / rows;
+      var pu = [], la = [], wh = [];
+      for (var r = 0; r < rows; r++) {
+        var yb = 1 - (r + 0.5) / rows;                     // 0 = 屏幕底部，1 = 顶部
+        var qy = (rows - r) * sc, bias = (0.5 - yb) * 1.15;
+        var y0 = Math.round(r * cp), hh = Math.round((r + 1) * cp) - y0, run = -1;
+        for (var c = 0; c <= cols; c++) {
+          var solid = false;
+          if (c < cols) {
+            var qx = c * sc + t * 0.07;
+            var wx = fbm(qx, qy + t * 0.05, 3), wy = fbm(qx + 5.2, qy - t * 0.04, 3);          // 扭曲场
+            var d = fbm(qx + wx * 1.7, qy + wy * 1.7, 4) * 1.35 + bias - level;
+            if (d >= edge) {
+              solid = true;
+              if (g > 0 && d < edge + 0.12 && h2(c * 3 + stepN, r * 7) > 1 - 0.02 * g) { solid = false; pu.push(c, r); }   // 山体边缘的紫色坏点
+            } else if (d >= 0) {                           // 抖动带：越靠外越稀
+              var k = d / edge, rr = h2(c + stepN * 131, r - stepN * 71), r2 = h2(c * 5 + 11, r * 3 + 7);
+              if (rr < 0.22 * g * (1.2 - k)) (r2 > 0.55 ? la : pu).push(c, r);
+              else if (rr < 0.35 + 0.5 * k) solid = true;
+            } else if (g > 0 && d > -0.24) {               // 山前的火花
+              var near = 1 + d / 0.24, r3 = h2(c - stepN * 53, r + stepN * 97);
+              if (r3 < near * near * 0.085 * g) (h2(c * 9, r * 13) > 0.6 ? wh : h2(c, r * 2) > 0.5 ? la : pu).push(c, r);
+              else if (r3 > 1 - near * near * 0.05) solid = true;
+            }
+          }
+          if (solid) { if (run < 0) run = c; }
+          else if (run >= 0) {                             // 把一行里连续的黑格合并成一个矩形画
+            var x0 = Math.round(run * cp); ctx.fillRect(x0, y0, Math.round(c * cp) - x0, hh); run = -1;
           }
         }
-        if (!on) continue;
-        var x0 = Math.round(RX[i] * dpr), x1 = Math.round((RX[i] + RS[i]) * dpr);
-        var y0 = Math.round(RY[i] * dpr), y1 = Math.round((RY[i] + RS[i]) * dpr);
-        if (ghost) { (ghost === 1 ? gp : gl).push(x0, y0, x1 - x0, y1 - y0); continue; }
-        ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
       }
-      if (gp.length) { ctx.fillStyle = PURPLE; for (var m = 0; m < gp.length; m += 4) ctx.fillRect(gp[m], gp[m + 1], gp[m + 2], gp[m + 3]); }
-      if (gl.length) { ctx.fillStyle = LAVENDER; for (var n = 0; n < gl.length; n += 4) ctx.fillRect(gl[n], gl[n + 1], gl[n + 2], gl[n + 3]); }
-      if (g > 0) {                                         // 横向撕裂条：出现在前沿上方一点
-        for (var k = 0; k < NB; k++) {
-          var fb = BT[k] - a;
-          if (fb < 0 || fb > 0.12 * g || hash(k, tick, 3) < 0.3) continue;
-          ctx.fillStyle = hash(k, tick, 5) < 0.12 ? PURPLE : color;
-          ctx.fillRect(Math.round(BX[k] * dpr), Math.round(BY[k] * dpr), Math.round(BW[k] * dpr), Math.round(BH[k] * dpr));
+      var sets = [[pu, PURPLE], [la, LAVENDER], [wh, '#ffffff']];
+      for (var s = 0; s < 3; s++) {
+        var arr = sets[s][0]; if (!arr.length) continue;
+        ctx.fillStyle = sets[s][1];
+        for (var i = 0; i < arr.length; i += 2) {
+          var ax = Math.round(arr[i] * cp), ay = Math.round(arr[i + 1] * cp);
+          ctx.fillRect(ax, ay, Math.round((arr[i] + 1) * cp) - ax, Math.round((arr[i + 1] + 1) * cp) - ay);
         }
       }
     }
-    if (grain) {                                           // 颗粒只叠在已经画了方块的像素上
+    if (grain) {                                           // 颗粒只叠在已经画了的像素上
       if (!grain.pattern) {
         grain.pattern = ctx.createPattern(grain.img, 'repeat');
         try { grain.pattern.setTransform(new DOMMatrix().scale(dpr)); } catch (e) {}
@@ -226,12 +237,13 @@
     var isCov = p >= COVER;
     if (isCov !== covering) { covering = isCov; if (window.syncNavigationTheme) window.syncNavigationTheme(); }
 
-    var a = p * 1.06;                                      // 略微过冲，保证最后一格也到达
-    var animating = cfg.glitch > 0 && p > 0 && p < 1;
-    var tick = animating ? Math.floor(performance.now() / 70) : 0;
-    var key = p.toFixed(3) + ':' + tick;
-    if (dirty || key !== lastKey) { lastKey = key; dirty = false; draw(a, tick); }
-    if (animating) request();                              // 停在半路时前沿继续闪烁
+    // 场按固定帧率步进（像逐帧动画），滚动本身也会推着它往前流
+    var animating = p > 0 && p < 1 && cfg.flow > 0;
+    var stepN = animating ? Math.floor(performance.now() / 1000 * FPS) : 0;
+    var t = stepN / FPS * cfg.flow + p * 2.4;
+    var key = p.toFixed(3) + ':' + stepN;
+    if (dirty || key !== lastKey) { lastKey = key; dirty = false; draw(p, t, stepN); }
+    if (animating) request();                              // 停在半路时山峰继续涌动
   }
   function request() { if (!queued && !dead) { queued = true; requestAnimationFrame(frame); } }
   function refresh() { ready = false; dirty = true; request(); }
