@@ -5,15 +5,16 @@
  *       默认把 #work-chapters 当作目标板块，把它前面的那个板块（#home）当作首屏。
  *
  * 效果：往下滚时首屏被钉在原地（机器人不动），一片黑色像素场从屏幕底部往上入侵：
- *       轮廓是山峰一样起伏的山脊，会自己横向流动、涌动；外沿是一条忽明忽暗的抖动带，
- *       夹着紫色和淡紫的碎点，山前有零星火花。停在半路时它也一直在动。
+ *       轮廓是山峰一样的天际线，会自己流动、涌动；外沿是一条忽明忽暗的抖动带，山前有零星飞起的黑点。
+ *       只有一种颜色：所有碎点都是镂空，直接露出下面的首屏。停在半路时它也一直在动。
  *       盖满之后首屏放行，下面的章节目录接上来，颜色完全一致。往回滚会原样退回去。
  *       黑色层在首屏内容（机器人、标题、文字水面）之上，固定导航(z-100)之下。
  *
  * 可选属性（写在目标板块 #work-chapters 上）：
  *   data-pixel-pin="0.8"      首屏钉住多久 = 多少个视口高度的滚动距离
  *   data-pixel-size="16"      格子边长(px)，按 1920 宽调校，随屏幕宽度缩放
- *   data-pixel-glitch="1"     抖动带和碎点、火花的强度，0 = 只有干净的山形
+ *   data-pixel-shape="peaks"  造型：peaks 尖峰（默认）/ ridge 连绵山脊 / columns 像素柱
+ *   data-pixel-glitch="1"     抖动带、镂空和飞点的强度，0 = 只有干净的山形
  *   data-pixel-flow="1"       山峰自己流动的速度倍数，0 = 只随滚动变化
  *   data-pixel-color="..."    方块颜色，默认读取目标板块的背景色
  *   data-pixel-z="60"         黑色层在首屏内部的层级（要高于首屏里最高的标题 z-50）
@@ -23,7 +24,7 @@
  *
  * 接口：window.pixelRise.progress()  0~1
  *       window.pixelRise.covering()  true = 黑色已经盖到导航所在的顶部（导航应切成深色）
- *       window.pixelRise.set({pin, size, glitch, flow}) / refresh()
+ *       window.pixelRise.set({pin, size, glitch, flow, shape}) / refresh()
  *       状态变化时会调用 window.syncNavigationTheme()（如果存在）
  *
  * 系统开了「减少动态效果」时不启用，首屏和章节目录保持直线衔接。
@@ -44,9 +45,8 @@
 
   function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1) };
+  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1), shape: ds.pixelShape || 'peaks' };
   var FPS = 14;      // 像素场每秒步进多少次
-  var PURPLE = '#6733ea', LAVENDER = '#b2b8f8';
   var FULL = 0.9;    // 钉住行程走到这个比例时已经全黑，剩下的当缓冲
   var COVER = 0.86;  // 进度超过它，顶部（导航所在）基本被盖住
 
@@ -113,9 +113,8 @@
 
   // ---------- 像素场 ----------
   // 不再是"固定方块按位置依次点亮"。每一格的明暗由一张会流动的噪声场决定：
-  //   场值 = 分形噪声（先被另一层噪声扭曲，所以轮廓像山脊而不是云团） + 越靠下越大的纵向偏置
-  //   场值高于"水位"的格子变黑；滚动只负责把水位往下压，山峰自己会随时间横向流动、起伏
-  // 轮廓外沿有一条抖动带：格子按概率忽明忽暗，夹着紫色和淡紫的碎点，前方还有零星的火花。
+  //   每一格算出它离山体表面的距离（见 field），表面以内变黑；滚动只负责把山整体往上抬，
+  //   山的形状自己会随时间流动、起伏。表面外沿有一条抖动带，山前还有零星飞起的黑点。
   var W = 0, H = 0, dpr = 1, cell = 16, cols = 0, rows = 0, pinLen = 0, color = '#000';
 
   function build() {
@@ -151,54 +150,69 @@
     return sum;
   }
 
+  // 尖峰用：把噪声折成"山脊"——值越接近中线越高，再平方，得到尖顶和陡坡
+  function ridged(x, y) {
+    var amp = 0.55, sum = 0, w = 1;
+    for (var i = 0; i < 4; i++) {
+      var n = 1 - Math.abs(2 * vnoise(x, y) - 1); n = n * n * w;
+      sum += n * amp; w = clamp(n * 1.6, 0, 1);            // 高处才长细节，山谷保持干净
+      x = x * 2.1 + 31.7; y = y * 1.3 + 4.1; amp *= 0.5;
+    }
+    return sum;                                            // 约 0 ~ 1
+  }
+
+  // 每一格离"山体表面"有多远：>0 在山体里，<0 在山外。三种造型只是这个函数不同。
+  function field(c, r, yb, p, t) {
+    if (cfg.shape === 'peaks') {                           // 尖峰：一条有主峰、有山谷的天际线
+      var x = c / rows;
+      var hgt = ridged(x * 0.95 + t * 0.035, t * 0.11) * 0.62 + vnoise(x * 0.5 + 9, t * 0.05) * 0.2;
+      return (-0.86 + p * 1.92 + hgt - yb) * 1.25;
+    }
+    if (cfg.shape === 'columns') {                         // 像素柱：宽窄不一的柱子各自升降
+      var band = 0, x0 = 0, cc = c;
+      while (true) { var bw = 2 + ((h2(band, 91) * 4) | 0); if (cc < x0 + bw) break; x0 += bw; band++; }
+      var hh = h2(band, 7) * 0.38 + vnoise(band * 0.41 + 3, t * 0.55) * 0.34 + vnoise(band * 0.13, t * 0.2) * 0.2;
+      var top = -0.98 + p * 2.04 + hh;
+      top = Math.round(top * rows) / rows;                 // 柱顶对齐格子，边缘是平的
+      return (top - yb) * 1.25 + 0.16;
+    }
+    // 山脊：被扭曲过的分形噪声，轮廓柔和、连绵
+    var sc = 1.25 / rows, qx = c * sc + t * 0.07, qy = (rows - r) * sc;
+    var wx = fbm(qx, qy + t * 0.05, 3), wy = fbm(qx + 5.2, qy - t * 0.04, 3);
+    return fbm(qx + wx * 1.7, qy + wy * 1.7, 4) * 1.35 + (0.5 - yb) * 1.15 - (1.62 - p * 2.3);
+  }
+
   function draw(p, t, stepN) {
     var Wp = canvas.width, Hp = canvas.height, g = cfg.glitch, cp = cell * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, Wp, Hp);
     if (p <= 0) return;
-    ctx.fillStyle = color;
+    ctx.fillStyle = color;                                 // 只有一种颜色；所有"碎点"都是镂空，直接露出下面的首屏
     if (p >= 1) {                                          // 盖满：一整块，和下面的板块无缝衔接
       ctx.fillRect(0, 0, Wp, Hp);
     } else {
-      // 水位：p=0 时高过所有山峰（全空），p=1 时低过所有谷底（全黑）
-      var level = 1.62 - p * 2.3, edge = 0.1 + 0.05 * g, sc = 1.25 / rows;
-      var pu = [], la = [], wh = [];
+      var edge = cfg.shape === 'columns' ? 0.05 : 0.1 + 0.05 * g;
       for (var r = 0; r < rows; r++) {
         var yb = 1 - (r + 0.5) / rows;                     // 0 = 屏幕底部，1 = 顶部
-        var qy = (rows - r) * sc, bias = (0.5 - yb) * 1.15;
         var y0 = Math.round(r * cp), hh = Math.round((r + 1) * cp) - y0, run = -1;
         for (var c = 0; c <= cols; c++) {
           var solid = false;
           if (c < cols) {
-            var qx = c * sc + t * 0.07;
-            var wx = fbm(qx, qy + t * 0.05, 3), wy = fbm(qx + 5.2, qy - t * 0.04, 3);          // 扭曲场
-            var d = fbm(qx + wx * 1.7, qy + wy * 1.7, 4) * 1.35 + bias - level;
+            var d = field(c, r, yb, p, t);
             if (d >= edge) {
-              solid = true;
-              if (g > 0 && d < edge + 0.12 && h2(c * 3 + stepN, r * 7) > 1 - 0.02 * g) { solid = false; pu.push(c, r); }   // 山体边缘的紫色坏点
-            } else if (d >= 0) {                           // 抖动带：越靠外越稀
-              var k = d / edge, rr = h2(c + stepN * 131, r - stepN * 71), r2 = h2(c * 5 + 11, r * 3 + 7);
-              if (rr < 0.22 * g * (1.2 - k)) (r2 > 0.55 ? la : pu).push(c, r);
-              else if (rr < 0.35 + 0.5 * k) solid = true;
-            } else if (g > 0 && d > -0.24) {               // 山前的火花
-              var near = 1 + d / 0.24, r3 = h2(c - stepN * 53, r + stepN * 97);
-              if (r3 < near * near * 0.085 * g) (h2(c * 9, r * 13) > 0.6 ? wh : h2(c, r * 2) > 0.5 ? la : pu).push(c, r);
-              else if (r3 > 1 - near * near * 0.05) solid = true;
+              // 山体里靠近表面的地方偶尔镂空一格
+              solid = !(g > 0 && d < edge + 0.16 && h2(c * 3 + stepN, r * 7) > 1 - 0.035 * g);
+            } else if (d >= 0) {                           // 抖动带：越靠外越稀，每一步都在变
+              solid = h2(c + stepN * 131, r - stepN * 71) < 0.3 + 0.6 * (d / edge);
+            } else if (g > 0 && d > -0.26) {               // 山前零星飞起的黑点
+              var near = 1 + d / 0.26;
+              solid = h2(c - stepN * 53, r + stepN * 97) < near * near * 0.11 * g;
             }
           }
           if (solid) { if (run < 0) run = c; }
           else if (run >= 0) {                             // 把一行里连续的黑格合并成一个矩形画
             var x0 = Math.round(run * cp); ctx.fillRect(x0, y0, Math.round(c * cp) - x0, hh); run = -1;
           }
-        }
-      }
-      var sets = [[pu, PURPLE], [la, LAVENDER], [wh, '#ffffff']];
-      for (var s = 0; s < 3; s++) {
-        var arr = sets[s][0]; if (!arr.length) continue;
-        ctx.fillStyle = sets[s][1];
-        for (var i = 0; i < arr.length; i += 2) {
-          var ax = Math.round(arr[i] * cp), ay = Math.round(arr[i + 1] * cp);
-          ctx.fillRect(ax, ay, Math.round((arr[i] + 1) * cp) - ax, Math.round((arr[i + 1] + 1) * cp) - ay);
         }
       }
     }
