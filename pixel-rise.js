@@ -7,13 +7,15 @@
  * 效果：往下滚时首屏被钉在原地（机器人不动），一片黑色像素场从屏幕底部往上入侵：
  *       轮廓是山峰一样的天际线，会自己流动、涌动；外沿是一条忽明忽暗的抖动带，山前有零星飞起的黑点。
  *       只有一种颜色：所有碎点都是镂空，直接露出下面的首屏。停在半路时它也一直在动。
- *       盖满之后首屏放行，下面的章节目录接上来，颜色完全一致。往回滚会原样退回去。
+ *       整屏变黑后，章节目录的三行标题在画面正中逐行"解码"出现（乱码逐个定格成文字），
+ *       全部出现后才放行，页面继续正常滚动。往回滚会原样退回去。
  *       黑色层在首屏内容（机器人、标题、文字水面）之上，固定导航(z-100)之下。
  *
  * 可选属性（写在目标板块 #work-chapters 上）：
  *   data-pixel-pin="0.8"      首屏钉住多久 = 多少个视口高度的滚动距离
  *   data-pixel-size="16"      格子边长(px)，按 1920 宽调校，随屏幕宽度缩放
- *   data-pixel-shape="peaks"  造型：peaks 尖峰（默认）/ ridge 连绵山脊 / columns 像素柱
+ *   data-pixel-shape="columns" 造型：columns 沿山形排列、宽窄高矮不一的像素柱（默认）/ peaks 尖峰 / ridge 连绵山脊
+ *   data-pixel-reveal="0.5"   文字逐行出现占多少个视口高度的滚动距离，0 = 变黑后一次全部出现
  *   data-pixel-glitch="1"     抖动带、镂空和飞点的强度，0 = 只有干净的山形
  *   data-pixel-flow="1"       山峰自己流动的速度倍数，0 = 只随滚动变化
  *   data-pixel-color="..."    方块颜色，默认读取目标板块的背景色
@@ -24,7 +26,7 @@
  *
  * 接口：window.pixelRise.progress()  0~1
  *       window.pixelRise.covering()  true = 黑色已经盖到导航所在的顶部（导航应切成深色）
- *       window.pixelRise.set({pin, size, glitch, flow, shape}) / refresh()
+ *       window.pixelRise.set({pin, reveal, size, glitch, flow, shape}) / refresh()
  *       状态变化时会调用 window.syncNavigationTheme()（如果存在）
  *
  * 系统开了「减少动态效果」时不启用，首屏和章节目录保持直线衔接。
@@ -45,19 +47,33 @@
 
   function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1), shape: ds.pixelShape || 'peaks' };
+  var cfg = { pin: num(ds.pixelPin, 0.8), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 1), flow: num(ds.pixelFlow, 1), shape: ds.pixelShape || 'columns', reveal: num(ds.pixelReveal, 0.5) };
   var FPS = 14;      // 像素场每秒步进多少次
   var FULL = 0.9;    // 钉住行程走到这个比例时已经全黑，剩下的当缓冲
   var COVER = 0.86;  // 进度超过它，顶部（导航所在）基本被盖住
 
-  // ---------- DOM：钉住容器 + 首屏内部的画布 ----------
-  var heroCss = hero.style.cssText;
-  var wrap = document.createElement('div');
+  // ---------- DOM ----------
+  // 钉住的"舞台"里叠着两层：首屏（下）和章节目录（上，透明底）。
+  // 黑色画布在首屏里；目录的文字等整屏变黑后才在画面正中逐行出现。放行时整个舞台一起滚走。
+  var targetColor = ds.pixelColor || getComputedStyle(target).backgroundColor;
+  if (!targetColor || targetColor === 'transparent' || /,\s*0\)$/.test(targetColor)) targetColor = '#000';
+  var heroCss = hero.style.cssText, targetCss = target.style.cssText;
+  var wrap = document.createElement('div'), stage = document.createElement('div');
   wrap.setAttribute('data-pixel-pin-wrap', '');
+  stage.style.cssText = 'position:sticky;top:0;overflow:hidden;';
   hero.parentNode.insertBefore(wrap, hero);
-  wrap.appendChild(hero);
-  hero.style.position = 'sticky';
-  hero.style.top = '0';
+  wrap.appendChild(stage);
+  stage.appendChild(hero);
+
+  var css = document.createElement('style');
+  css.textContent =
+    '.pixel-rise-overlay{position:absolute!important;inset:0;z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+    'background:transparent!important;padding-top:0!important;padding-bottom:0!important;margin:0!important;visibility:hidden;pointer-events:none}' +
+    '.pixel-rise-overlay::before{display:none!important}' +
+    '.pixel-rise-overlay>*{width:100%}' +
+    '.pixel-rise-overlay.is-open{visibility:visible;pointer-events:auto}' +
+    '.pixel-rise-overlay [data-pixel-line-off]{visibility:hidden}';
+  document.head.appendChild(css);
 
   var canvas = document.createElement('canvas');
   canvas.className = 'pixel-rise';
@@ -66,17 +82,37 @@
   hero.appendChild(canvas);
   var ctx = canvas.getContext('2d');
 
+  // 逐行出现的文字：默认取目录里的大标题
+  var lines = [].slice.call(target.querySelectorAll('[data-pixel-line], .chapter-directory__title'));
+  var lineText = lines.map(function (el) { return el.textContent; });
+  var lineRow = lines.map(function (el) { return el.closest('a') || el; });   // 整行（含说明和按钮）一起显隐
+  lines.forEach(function (el, i) { if (!el.hasAttribute('aria-label')) { el.setAttribute('aria-label', lineText[i]); el.setAttribute('data-pixel-aria', ''); } });
+  var SCRAMBLE = 'ABCDEFGHKLMNPRSTUVWXYZ0123456789#%&/+=<>';
+
   // 一般跟随整页滚动；目标板块写了 data-pixel-scroller="选择器" 时改为跟随那个滚动容器（用于内嵌的演示）
   var scroller = ds.pixelScroller ? document.querySelector(ds.pixelScroller) : null;
   function base() { return scroller ? scroller.getBoundingClientRect().top : 0; }
 
-  var dead = false, covering = false;
+  var dead = false, covering = false, overlayOn = false;
+  function setOverlay(on) {            // 目录叠进舞台 / 还原成普通板块
+    if (on === overlayOn) return;
+    overlayOn = on;
+    if (on) { stage.appendChild(target); target.classList.add('pixel-rise-overlay'); }
+    else {
+      target.classList.remove('pixel-rise-overlay', 'is-open');
+      wrap.parentNode.insertBefore(target, wrap.nextSibling);
+      lines.forEach(function (el, i) { el.textContent = lineText[i]; lineRow[i].removeAttribute('data-pixel-line-off'); });
+    }
+  }
   function teardown(reason) {
     if (dead) return;
     dead = true;
+    setOverlay(false);
     if (wrap.parentNode) { wrap.parentNode.insertBefore(hero, wrap); wrap.parentNode.removeChild(wrap); }
     if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
-    hero.style.cssText = heroCss;
+    if (css.parentNode) css.parentNode.removeChild(css);
+    hero.style.cssText = heroCss; target.style.cssText = targetCss;
+    lines.forEach(function (el) { if (el.hasAttribute('data-pixel-aria')) { el.removeAttribute('aria-label'); el.removeAttribute('data-pixel-aria'); } });
     window.pixelRise = off;
     if (covering) { covering = false; if (window.syncNavigationTheme) window.syncNavigationTheme(); }
     if (window.console) console.warn('[pixel-rise] 已撤销：' + reason);
@@ -115,7 +151,8 @@
   // 不再是"固定方块按位置依次点亮"。每一格的明暗由一张会流动的噪声场决定：
   //   每一格算出它离山体表面的距离（见 field），表面以内变黑；滚动只负责把山整体往上抬，
   //   山的形状自己会随时间流动、起伏。表面外沿有一条抖动带，山前还有零星飞起的黑点。
-  var W = 0, H = 0, dpr = 1, cell = 16, cols = 0, rows = 0, pinLen = 0, color = '#000';
+  var W = 0, H = 0, dpr = 1, cell = 16, cols = 0, rows = 0, pinLen = 0, revealLen = 0, color = '#000';
+  var bandOf = null, bandX = null, bandW = null;   // 像素柱：每一列属于哪根柱子、柱子的起点和宽度
 
   function build() {
     W = hero.clientWidth; H = hero.clientHeight;
@@ -123,12 +160,21 @@
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
     pinLen = Math.round(H * cfg.pin * (W < 768 ? 0.75 : 1));
-    wrap.style.height = (H + pinLen) + 'px';
+    revealLen = lines.length ? Math.round(H * cfg.reveal * (W < 768 ? 0.75 : 1)) : 0;
+    stage.style.height = H + 'px';
+    wrap.style.height = (H + pinLen + revealLen) + 'px';
     cell = Math.max(6, Math.round(cfg.size * clamp(W / 1920, 0.55, 1.4)));
     cols = Math.ceil(W / cell); rows = Math.ceil(H / cell);
-    var c2 = ds.pixelColor || getComputedStyle(target).backgroundColor;
-    color = (!c2 || c2 === 'transparent' || /,\s*0\)$/.test(c2)) ? '#000' : c2;
+    color = targetColor;
+    // 把列分成宽窄不一的柱子：多数很细（1~2 格），少数很粗（到 7 格）
+    bandOf = new Int32Array(cols); bandX = []; bandW = [];
+    for (var c = 0, band = 0; c < cols; band++) {
+      var u = h2(band, 91), bw = u < 0.45 ? 1 : u < 0.72 ? 2 : u < 0.88 ? 3 : 4 + ((h2(band, 17) * 4) | 0);
+      bandX.push(c); bandW.push(bw);
+      for (var k = 0; k < bw && c < cols; k++, c++) bandOf[c] = band;
+    }
     if (grain) grain.pattern = null;
+    setOverlay(true);
     return true;
   }
 
@@ -168,12 +214,12 @@
       var hgt = ridged(x * 0.95 + t * 0.035, t * 0.11) * 0.62 + vnoise(x * 0.5 + 9, t * 0.05) * 0.2;
       return (-0.86 + p * 1.92 + hgt - yb) * 1.25;
     }
-    if (cfg.shape === 'columns') {                         // 像素柱：宽窄不一的柱子各自升降
-      var band = 0, x0 = 0, cc = c;
-      while (true) { var bw = 2 + ((h2(band, 91) * 4) | 0); if (cc < x0 + bw) break; x0 += bw; band++; }
-      var hh = h2(band, 7) * 0.38 + vnoise(band * 0.41 + 3, t * 0.55) * 0.34 + vnoise(band * 0.13, t * 0.2) * 0.2;
-      var top = -0.98 + p * 2.04 + hh;
-      top = Math.round(top * rows) / rows;                 // 柱顶对齐格子，边缘是平的
+    if (cfg.shape === 'columns') {                         // 像素柱：柱子的高度沿着一条尖峰天际线排，再各自参差、升降
+      var band = bandOf[c], bw = bandW[band], xm = (bandX[band] + bw / 2) / rows;
+      var env = ridged(xm * 0.95 + t * 0.03, t * 0.1) * 0.5 + vnoise(xm * 0.5 + 9, t * 0.05) * 0.16;   // 山形包络
+      var own = h2(band, 7) * 0.3 * (bw <= 2 ? 1.35 : 0.8)                                            // 每根柱子自己的高矮，细柱更容易蹿高
+              + vnoise(band * 0.41 + 3, t * 0.6) * 0.2 + vnoise(band * 1.7, t * 1.3) * 0.06;          // 各自升降
+      var top = Math.round((-1.0 + p * 2.1 + env + own) * rows) / rows;                               // 柱顶对齐格子，边缘是平的
       return (top - yb) * 1.25 + 0.16;
     }
     // 山脊：被扭曲过的分形噪声，轮廓柔和、连绵
@@ -231,7 +277,7 @@
   }
 
   // ---------- 进度：由滚动位置决定 ----------
-  var ready = false, queued = false, dirty = true, lastKey = '', lastP = 0, badSticky = 0;
+  var ready = false, queued = false, dirty = true, lastKey = '', lastText = '', lastP = 0, badSticky = 0;
 
   function frame() {
     queued = false;
@@ -239,11 +285,14 @@
     if (!ready) { ready = build(); if (!ready) return; }
     var scrolled = base() - wrap.getBoundingClientRect().top;
     var p = clamp(scrolled / (pinLen * FULL || 1), 0, 1);
+    var p2 = revealLen ? clamp((scrolled - pinLen) / (revealLen * 0.85), 0, 1) : 1;   // 文字逐行出现的进度
     lastP = p;
 
-    // sticky 自检：钉住区间内首屏顶边应当贴着视口顶部，否则说明被祖先的 overflow 破坏了
-    if (scrolled > 8 && scrolled < pinLen * 0.9) {
-      if (Math.abs(hero.getBoundingClientRect().top - base()) > 2) {
+    // sticky 自检：钉住时舞台在容器里的位移应当等于已经滚过的距离；一直贴在容器顶部说明 sticky 被祖先的 overflow 破坏了
+    // （比较的是舞台和容器的相对位置，所以页面切换动画里的整体位移不会造成误判）
+    if (scrolled > 40 && scrolled < (pinLen + revealLen) * 0.9) {
+      var offset = stage.getBoundingClientRect().top - wrap.getBoundingClientRect().top;
+      if (Math.abs(offset - scrolled) > 20) {
         if (++badSticky >= 3) { teardown('position: sticky 没有生效，请检查 body 的 overflow-x 是否为 clip'); return; }
       } else badSticky = 0;
     }
@@ -258,11 +307,42 @@
     var key = p.toFixed(3) + ':' + stepN;
     if (dirty || key !== lastKey) { lastKey = key; dirty = false; draw(p, t, stepN); }
     if (animating) request();                              // 停在半路时山峰继续涌动
+
+    // 整屏变黑之后：目录在画面正中逐行"解码"出现
+    var open = p >= 1 && lines.length > 0;
+    if (open !== target.classList.contains('is-open')) target.classList.toggle('is-open', open);
+    if (open) {
+      var decoding = p2 > 0 && p2 < 1, tick = decoding ? Math.floor(performance.now() / 55) : 0;
+      var tkey = p2.toFixed(3) + ':' + tick;
+      if (tkey !== lastText) {
+        lastText = tkey;
+        for (var i = 0; i < lines.length; i++) {
+          var li = clamp(p2 * (lines.length + 0.6) - i, 0, 1), txt = lineText[i], out = txt;
+          lineRow[i].toggleAttribute('data-pixel-line-off', li <= 0);
+          if (li > 0 && li < 1) {                          // 左边已经定格，右边还是乱码
+            var done = Math.floor(li * txt.length); out = txt.slice(0, done);
+            for (var j = done; j < txt.length; j++) out += txt[j] === ' ' ? ' ' : SCRAMBLE[(h2(j + i * 31, tick) * SCRAMBLE.length) | 0];
+          }
+          if (lines[i].textContent !== out) lines[i].textContent = out;
+        }
+      }
+      if (decoding) request();                             // 停在半路时乱码继续跳
+    }
   }
   function request() { if (!queued && !dead) { queued = true; requestAnimationFrame(frame); } }
   function refresh() { ready = false; dirty = true; request(); }
 
   (scroller || window).addEventListener('scroll', request, { passive: true });
+
+  // 指向目录的锚点链接（比如首屏的 SCROLL TO EXPLORE）：目录现在叠在舞台里，直接滚到"文字全部出现"的位置
+  if (target.id) document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href="#' + target.id + '"]');
+    if (!a || dead || !ready) return;
+    e.preventDefault();
+    var top = wrap.getBoundingClientRect().top - base() + pinLen + revealLen * 0.9;
+    if (scroller) scroller.scrollTo({ top: scroller.scrollTop + top, behavior: 'smooth' });
+    else window.scrollTo({ top: window.scrollY + top, behavior: 'smooth' });
+  });
   if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(hero);
   else window.addEventListener('resize', refresh, { passive: true });
 
