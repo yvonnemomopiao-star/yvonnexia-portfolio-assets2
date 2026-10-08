@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 const source = html.slice(html.indexOf('        // Observe the section behind'), html.indexOf('        function switchPage('));
 const classes = () => { const values = new Set(); return { remove(...items) { items.forEach(x => values.delete(x)); }, toggle(x, on) { on ? values.add(x) : values.delete(x); }, contains(x) { return values.has(x); } }; };
-const ids = ['home','work-chapters','about','skills','experience','portfolio','contact'];
+const ids = ['home','work-chapters','about','experience','portfolio','contact'];
 let active = 'home';
 const elements = Object.fromEntries(ids.map(id => [id, { id, getClientRects: () => id === 'portfolio' && active !== 'portfolio' ? [] : [{}], getBoundingClientRect: () => ({top: id === active ? 0 : 1000, bottom: id === active ? 900 : 1500}) }]));
 for (const id of ['nav-light','nav-dark']) elements[id] = {classList:classes(), offsetHeight:64, contains:() => false, querySelectorAll:() => []};
