@@ -16,7 +16,7 @@ vm.runInNewContext(source, context);
 assert.equal(options.rootMargin, '-32px 0px -867px 0px');
 for (const id of ids) {
  active=id;callback();
- const dark=['work-chapters','skills','portfolio','contact'].includes(id);
+ const dark=['work-chapters','portfolio','contact'].includes(id);
  assert.equal(elements['nav-light'].classList.contains('hidden'),dark,id);
  assert.equal(elements['nav-dark'].classList.contains('hidden'),!dark,id);
  assert.equal(elements.backToTop.dataset.theme,dark?'dark':'light',id);
