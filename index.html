@@ -253,7 +253,7 @@
         /* Keep the header glass on a sibling layer so dropdowns can blur the page. */
         #nav-light,
         #backToTop {
-            --nav-glass-bg: rgba(236, 234, 253, .6);
+            --nav-glass-bg: rgba(236, 234, 253, .35);
             --nav-glass-border: rgba(178, 184, 248, .5);
             --nav-glass-shadow: 0 4px 30px rgba(103, 51, 234, .06);
             --nav-icon-color: #5a5478;
@@ -287,7 +287,7 @@
         #nav-light .portfolio-nav-trigger[aria-current],
         #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
             color: #fff;
-            background-color: #8f77e9;
+            background-color: #4f46c8;   /* 与标题文字同一个紫，减少画面里的紫色色相数量 */
         }
         .site-nav::before {
             content: "";
@@ -698,6 +698,7 @@
         }
 
         /* ---------- 关于我（含核心技能）卡片 ---------- */
+        /* TODO 上线前：Chaslow 目前是试用版，记得换掉（换正式授权版或其他字体） */
         @font-face { font-family: 'Chaslow'; src: url('assets/fonts/chaslow.woff') format('woff'); font-display: swap; }
         :root { --about-ink: #4f46c8; --about-line: #b2b8f8; --font-display: 'Chaslow', 'Inter', sans-serif; --font-hello: 'Big Shoulders Display', 'Inter', sans-serif; /* 大标题字体：占位，换成稿子里的窄体时改这里 */ }
         .about-card { max-width: 1060px; margin: 0 auto; }
@@ -708,7 +709,7 @@
         .about-hello__avatar { width: clamp(220px, 24vw, 340px); aspect-ratio: 1; }
         .about-hello__avatar img { width: 100%; height: 100%; object-fit: contain; transition: transform .5s; }
         .about-hello__avatar:hover img { transform: scale(1.03); }
-        .about-card__panel { background: rgba(255,255,255,.82); border: 2px solid var(--about-line); border-radius: 22px; padding: clamp(28px, 5vw, 64px) clamp(20px, 6vw, 76px); box-shadow: 0 10px 40px rgba(103,51,234,.05); }
+        .about-card__panel { background: rgba(255,255,255,.82); border: 1px solid rgba(178, 184, 248, .45); border-radius: 22px; padding: clamp(28px, 5vw, 64px) clamp(20px, 6vw, 76px); box-shadow: 0 10px 40px rgba(103,51,234,.05); }
         .about-card__title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: clamp(22px, 2.3vw, 30px); letter-spacing: -.03em; color: #2a2840; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid #e4e3f3; margin-bottom: 18px; }
         .about-card__title--center { justify-content: center; border: 0; gap: 24px; margin-bottom: 28px; font-family: var(--font-display); font-weight: 400; letter-spacing: 0; font-size: clamp(30px, 3.4vw, 46px); color: #1f1d2e; }
         .about-card__mark { color: #8f77e9; font-size: .8em; line-height: 1; }
@@ -2406,7 +2407,7 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : '#8f77e9') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : '#4f46c8') : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
