@@ -18,7 +18,7 @@
  *   data-pixel-reveal="0.35"  文字逐行出现占多少个视口高度的滚动距离，0 = 变黑后一次全部出现
  *   data-pixel-glitch="2.5"   抖动带、镂空和飞点的强度，0 = 只有干净的山形
  *   data-pixel-flow="1"       山峰自己流动的速度倍数，0 = 只随滚动变化
- *   data-pixel-spike="1"      像素柱高出山形主体的幅度（尖刺高度），0 = 柱顶贴着山形，只影响 columns
+ *   data-pixel-spike="0.65"   像素柱高出山形主体的幅度（尖刺高度），0 = 柱顶贴着山形，只影响 columns
  *   data-pixel-color="..."    方块颜色，默认读取目标板块的背景色
  *   data-pixel-z="60"         黑色层在首屏内部的层级（要高于首屏里最高的标题 z-50）
  *
@@ -48,7 +48,7 @@
 
   function num(v, d) { v = parseFloat(v); return isNaN(v) ? d : v; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var cfg = { pin: num(ds.pixelPin, 0.6), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 2.5), flow: num(ds.pixelFlow, 1), spike: num(ds.pixelSpike, 1), shape: ds.pixelShape || 'columns', reveal: num(ds.pixelReveal, 0.35) };
+  var cfg = { pin: num(ds.pixelPin, 0.6), size: num(ds.pixelSize, 16), glitch: num(ds.pixelGlitch, 2.5), flow: num(ds.pixelFlow, 1), spike: num(ds.pixelSpike, 0.65), shape: ds.pixelShape || 'columns', reveal: num(ds.pixelReveal, 0.35) };
   var FPS = 14;      // 像素场每秒步进多少次
   var FULL = 0.9;    // 钉住行程走到这个比例时已经全黑，剩下的当缓冲
   var COVER = 0.86;  // 进度超过它，顶部（导航所在）基本被盖住
