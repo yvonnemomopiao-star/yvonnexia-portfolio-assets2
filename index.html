@@ -1279,6 +1279,13 @@
                     <div class="w-[133.33vw] h-[133.33vh] transform scale-[0.75] md:w-full md:h-full md:scale-100 transition-all duration-500 origin-center flex-shrink-0">
                         <spline-viewer id="heroSpline" url="https://prod.spline.design/H6Meq4gTrZiEzdr5/scene.splinecode" class="w-full h-full"></spline-viewer>
                     </div>
+                    <!-- 机器人会吞掉鼠标滚轮，导致鼠标停在首屏时页面滚不动：在滚轮到达机器人之前截住，让页面正常滚动 -->
+                    <script>
+                        (function () {
+                            var box = document.getElementById('heroSpline').parentElement;
+                            box.addEventListener('wheel', function (e) { e.stopPropagation(); }, { capture: true, passive: true });
+                        })();
+                    </script>
                 </div>
 
                 <div class="hero-title-lockup absolute top-1/2 left-1/2 z-50 w-[360px] md:w-[700px] -translate-x-1/2 -translate-y-1/2 -mt-[32vh] md:-mt-[30vh] lg:-mt-[32vh] pointer-events-none select-none">

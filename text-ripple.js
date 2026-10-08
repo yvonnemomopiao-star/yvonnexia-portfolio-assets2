@@ -224,14 +224,14 @@
       var dx = ptr.x - ptr.lx, dy = ptr.y - ptr.ly, d = Math.sqrt(dx * dx + dy * dy);
       if (d > 0.5) {
         var n = Math.min(6, Math.max(1, Math.ceil(d / 16))), amt = 0.3 * cfg.strength * Math.min(1, d / 24) / n;
-        for (var s = 1; s <= n; s++) press(ptr.lx + dx * s / n, ptr.ly + dy * s / n, 16, amt);
+        for (var s = 1; s <= n; s++) press(ptr.lx + dx * s / n, ptr.ly + dy * s / n, Math.max(16, cell * 1.6), amt);   // 半径跟着网格走，大屏上波纹不会变小
       }
       ptr.lx = ptr.x; ptr.ly = ptr.y; ptr.moved = false;
     }
     acc += dt;
     var steps = 0;
-    while (acc >= 1 / 90 && steps < 4) { simulate(); acc -= 1 / 90; steps++; }
-    if (steps === 4) acc = 0;
+    while (acc >= 1 / 90 && steps < 8) { simulate(); acc -= 1 / 90; steps++; }   // 掉帧时多补几步，波纹速度不变慢
+    if (steps === 8) acc = 0;
     if (energy < IDLE || !visible) {            // 水面平了：清零、画一帧静止的、停掉循环
       hCur.fill(0); hPrev.fill(0); hNext.fill(0); energy = 0;
       draw(now); running = false; return;
@@ -267,7 +267,7 @@
   host.addEventListener('pointerdown', function (e) {
     if (!interactive() || e.pointerType === 'touch') return;
     var p = local(e);
-    press(p.x, p.y, 26, 1.2 * cfg.strength);
+    press(p.x, p.y, Math.max(26, cell * 2.6), 1.2 * cfg.strength);
     ptr.x = ptr.lx = p.x; ptr.y = ptr.ly = p.y; ptr.inside = true;
     wake();
   }, { passive: true });
