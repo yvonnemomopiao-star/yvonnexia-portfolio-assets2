@@ -234,7 +234,8 @@
     if (ptr.moved) {
       var dx = ptr.x - ptr.lx, dy = ptr.y - ptr.ly, d = Math.sqrt(dx * dx + dy * dy);
       if (d > 0.5) {
-        var n = Math.min(6, Math.max(1, Math.ceil(d / 16))), amt = 0.3 * cfg.strength * Math.min(1, d / 24) / n;
+        var ds = d / (ptr.k || 1);   // 力度按鼠标在屏幕上实际划过的距离算，首屏被缩放显示时（比如预览）也和真实页面一致
+        var n = Math.min(6, Math.max(1, Math.ceil(d / 16))), amt = 0.3 * cfg.strength * Math.min(1, ds / 24) / n;
         for (var s = 1; s <= n; s++) press(ptr.lx + dx * s / n, ptr.ly + dy * s / n, Math.max(16, cell * 1.6), amt);   // 半径跟着网格走，大屏上波纹不会变小
       }
       ptr.lx = ptr.x; ptr.ly = ptr.y; ptr.moved = false;
@@ -263,7 +264,8 @@
   // 把页面坐标换成首屏内部坐标（首屏被 CSS 缩放时也正确）
   function local(e) {
     var b = host.getBoundingClientRect();
-    return { x: (e.clientX - b.left) * (W / (b.width || 1)), y: (e.clientY - b.top) * (H / (b.height || 1)) };
+    ptr.k = W / (b.width || 1);
+    return { x: (e.clientX - b.left) * ptr.k, y: (e.clientY - b.top) * (H / (b.height || 1)) };
   }
   function interactive() { return ready && !reduced && W >= MIN_WIDTH; }
 
@@ -292,6 +294,7 @@
 
   window.textRipple = {
     refresh: refresh,
+    get: function () { var o = {}; for (var k in cfg) o[k] = cfg[k]; return o; },
     drop: function (x, y, strength) { if (!interactive()) return; press(x, y, 26, (strength || 1.2) * cfg.strength); wake(); },
     set: function (o) {
       var rebuild = false;

@@ -2967,6 +2967,8 @@
     </script>
     <!-- 首屏文字水面：鼠标划过会荡出波纹 -->
     <script src="text-ripple.js" defer></script>
+    <!-- 调参面板：只有网址后面加 ?tune 时才加载，平时访客看不到 -->
+    <script>(function () { if (/[?&]tune\b/.test(location.search)) { var t = document.createElement('script'); t.src = 'ripple-tune.js'; document.body.appendChild(t); } })();</script>
     <!-- 首屏 → 作品章节目录 的像素入侵滚动衔接 -->
     <script src="pixel-rise.js" defer></script>
     <!-- 首页 ⇄ 作品集 跳转时的像素转场：已停用，想启用时取消下一行的注释 -->
