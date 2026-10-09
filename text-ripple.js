@@ -16,15 +16,15 @@
  *
  * 可选属性（写在 <section id="home"> 上）：
  *   data-ripple-text="..."        要铺的文字（英文 / 数字；中文是双倍宽度，会破坏等宽网格）
- *   data-ripple-opacity="0.42"    静止文字的不透明度
- *   data-ripple-vignette="0.5"    四边渐隐带的长度 0~2（1 = 屏幕短边的一半；过渡曲线是 smoothstep）
+ *   data-ripple-opacity="0.38"    静止文字的不透明度
+ *   data-ripple-vignette="0.8"    四边渐隐带的长度 0~2（1 = 屏幕短边的一半；过渡曲线是 smoothstep）
  *   data-ripple-feather="0.38"    机器人留空边缘的柔和度 0~1
  *   data-ripple-hole="0.3"        机器人周围的圆形留空半径 = 首屏高度 × 该值（0 = 不留空）
  *   data-ripple-color="#ffffff"   静止文字颜色
  *   data-ripple-crest="#ffffff"   波峰颜色
  *   data-ripple-trough="#6733ea"  波谷颜色
- *   data-ripple-size="28"         字号(px)，按 2560 宽调校，窄屏等比缩小
- *   data-ripple-strength="2"      鼠标划动的力度倍数
+ *   data-ripple-size="30"         字号(px)，按 2560 宽调校，窄屏等比缩小
+ *   data-ripple-strength="2.9"    鼠标划动的力度倍数
  *   data-ripple-speed="0.8"       波传播速度 0~1
  *   data-ripple-damping="0.035"   衰减，越大波纹消失越快
  *   data-ripple-z="32"            层级
@@ -57,13 +57,13 @@
   var HEAVY = '·.,:;-~=+*%#@';   // 波纹越强，换成越靠后的符号
 
   var cfg = {
-    opacity: num(ds.rippleOpacity, 0.42),
+    opacity: num(ds.rippleOpacity, 0.38),
     hole: num(ds.rippleHole, 0.3),
-    vignette: num(ds.rippleVignette, 0.5),
-    strength: num(ds.rippleStrength, 2),
+    vignette: num(ds.rippleVignette, 0.8),
+    strength: num(ds.rippleStrength, 2.9),
     speed: clamp(num(ds.rippleSpeed, 0.8), 0, 1),
     damping: clamp(num(ds.rippleDamping, 0.035), 0, 0.5),
-    size: num(ds.rippleSize, 28),
+    size: num(ds.rippleSize, 30),
     feather: num(ds.rippleFeather, 0.38),
     color: ds.rippleColor || '#ffffff',
     crest: ds.rippleCrest || '#ffffff',
