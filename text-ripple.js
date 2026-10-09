@@ -17,7 +17,8 @@
  * 可选属性（写在 <section id="home"> 上）：
  *   data-ripple-text="..."        要铺的文字（英文 / 数字；中文是双倍宽度，会破坏等宽网格）
  *   data-ripple-opacity="0.42"    静止文字的不透明度
- *   data-ripple-vignette="0.5"    四边渐隐的宽度 0~1（1 = 渐隐带宽到屏幕短边的一半）
+ *   data-ripple-vignette="0.5"    四边渐隐带的长度 0~2（1 = 屏幕短边的一半；过渡曲线是 smoothstep）
+ *   data-ripple-feather="0.38"    机器人留空边缘的柔和度 0~1
  *   data-ripple-hole="0.3"        机器人周围的圆形留空半径 = 首屏高度 × 该值（0 = 不留空）
  *   data-ripple-color="#ffffff"   静止文字颜色
  *   data-ripple-crest="#ffffff"   波峰颜色
@@ -28,7 +29,7 @@
  *   data-ripple-damping="0.035"   衰减，越大波纹消失越快
  *   data-ripple-z="32"            层级
  *
- * 接口：window.textRipple.set({opacity, vignette, hole, strength, speed, damping, size}) / drop(x, y) / refresh()
+ * 接口：window.textRipple.set({opacity, vignette, hole, feather, strength, speed, damping, size, color, crest, trough}) / drop(x, y) / refresh()
  */
 (function () {
   'use strict';
@@ -62,11 +63,12 @@
     strength: num(ds.rippleStrength, 2),
     speed: clamp(num(ds.rippleSpeed, 0.8), 0, 1),
     damping: clamp(num(ds.rippleDamping, 0.035), 0, 0.5),
-    size: num(ds.rippleSize, 28)
+    size: num(ds.rippleSize, 28),
+    feather: num(ds.rippleFeather, 0.38),
+    color: ds.rippleColor || '#ffffff',
+    crest: ds.rippleCrest || '#ffffff',
+    trough: ds.rippleTrough || '#6733ea'
   };
-  var BASE = ds.rippleColor || '#ffffff';
-  var CREST = ds.rippleCrest || '#ffffff';
-  var TROUGH = ds.rippleTrough || '#6733ea';
   var FONT = 'ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Courier New", monospace';
   var Z = ds.rippleZ || '32';
   var MIN_WIDTH = 768, STEPS = 20, IDLE = 0.002;
@@ -79,15 +81,24 @@
   canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;z-index:' + Z + ';';
   // 四边渐隐 + 机器人周围的圆形留空（画布在机器人上方，不留空的话文字会盖在它脸上）
   function applyMask() {
-    // 渐隐带的宽度按像素算（和屏幕短边成比例），大屏上才不会显得太窄；中间加两个过渡点，像镜头暗角一样缓出
-    var band = clamp(cfg.vignette, 0, 1) * Math.min(W, H) / 2, bx = Math.round(band), by = Math.round(band * 0.62);
+    // 渐隐带的长度按像素算（屏幕短边 × vignette，最长到画面一半）；用 smoothstep 曲线铺 9 个过渡点，过渡更柔和
+    var band = clamp(cfg.vignette, 0, 2) * Math.min(W, H) / 2;
+    var bx = Math.min(Math.round(band), W / 2), by = Math.min(Math.round(band * 0.75), H / 2);
     function edge(dir, size, b) {
-      var a = 'rgba(0,0,0,', px = function (v) { return Math.round(v) + 'px'; }, far = function (v) { return px(size - v); };
-      return 'linear-gradient(' + dir + ', transparent 0, ' + a + '.12) ' + px(b * 0.3) + ', ' + a + '.55) ' + px(b * 0.7) + ', #000 ' + px(b) +
-             ', #000 ' + far(b) + ', ' + a + '.55) ' + far(b * 0.7) + ', ' + a + '.12) ' + far(b * 0.3) + ', transparent 100%)';
+      var stops = ['transparent 0'], tail = [], n = 8;
+      for (var i = 1; i <= n; i++) {
+        var u = i / n, a = (u * u * (3 - 2 * u)).toFixed(3), d = Math.round(b * u);
+        stops.push('rgba(0,0,0,' + a + ') ' + d + 'px');
+        tail.unshift('rgba(0,0,0,' + a + ') ' + Math.round(size - d) + 'px');
+      }
+      return 'linear-gradient(' + dir + ', ' + stops.concat(tail).join(', ') + ', transparent 100%)';
     }
     var m = edge('to bottom', H, by) + ', ' + edge('to right', W, bx);
-    if (cfg.hole > 0) m += ', radial-gradient(circle ' + Math.round(H * cfg.hole) + 'px at 50% 49%, transparent 0, transparent 62%, #000 100%)';
+    if (cfg.hole > 0) {
+      // feather：机器人留空边缘的柔和程度，0 = 硬边，1 = 从中心一路渐变到半径
+      var f = clamp(cfg.feather, 0, 1), inner = Math.round((1 - f) * 100), mid = Math.round(inner + (100 - inner) * 0.5);
+      m += ', radial-gradient(circle ' + Math.round(H * cfg.hole) + 'px at 50% 49%, transparent 0, transparent ' + inner + '%, rgba(0,0,0,.5) ' + mid + '%, #000 100%)';
+    }
     canvas.style.webkitMaskImage = m; canvas.style.maskImage = m;
     canvas.style.webkitMaskComposite = 'source-in'; canvas.style.maskComposite = 'intersect';
   }
@@ -103,7 +114,7 @@
   }
   var up = [], down = [];
   function buildRamps() {
-    var b = rgb(BASE), c = rgb(CREST), t = rgb(TROUGH);
+    var b = rgb(cfg.color), c = rgb(cfg.crest), t = rgb(cfg.trough);
     up = []; down = [];
     for (var i = 0; i <= STEPS; i++) {
       var k = i / STEPS, a = (cfg.opacity + (1 - cfg.opacity) * k).toFixed(3);
@@ -284,7 +295,7 @@
     drop: function (x, y, strength) { if (!interactive()) return; press(x, y, 26, (strength || 1.2) * cfg.strength); wake(); },
     set: function (o) {
       var rebuild = false;
-      for (var k in o) if (k in cfg && cfg[k] !== o[k]) { cfg[k] = o[k]; if (k === 'size') rebuild = true; if ((k === 'hole' || k === 'vignette') && ready) applyMask(); }
+      for (var k in o) if (k in cfg && cfg[k] !== o[k]) { cfg[k] = o[k]; if (k === 'size') rebuild = true; if ((k === 'hole' || k === 'vignette' || k === 'feather') && ready) applyMask(); }
       if (rebuild) refresh(); else { buildRamps(); if (ready && !running) draw(performance.now()); }
     }
   };
