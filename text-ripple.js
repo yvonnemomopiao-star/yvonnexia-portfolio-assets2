@@ -307,7 +307,7 @@
   }, { passive: true });
 
   if ('IntersectionObserver' in window) {
-    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(host);
+    new IntersectionObserver(function (e) { visible = e[e.length - 1].isIntersecting; }).observe(host);
   }
   if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(host);
   else window.addEventListener('resize', refresh, { passive: true });
