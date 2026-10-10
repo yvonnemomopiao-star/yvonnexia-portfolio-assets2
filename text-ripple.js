@@ -25,7 +25,7 @@
  *   data-ripple-trough="#6733ea"  波谷颜色
  *   data-ripple-size="30"         字号(px)，按 2560 宽调校，窄屏等比缩小
  *   data-ripple-strength="2.9"    鼠标划动的力度倍数
- *   data-ripple-speed="0.8"       波传播速度 0~1
+ *   data-ripple-speed="0.8"       波传播速度 0~1（按屏幕像素算，大屏和预览里一致）
  *   data-ripple-damping="0.035"   衰减，越大波纹消失越快
  *   data-ripple-z="32"            层级
  *
@@ -126,6 +126,11 @@
   // ---------- 文字网格 + 水面 ----------
   var W = 0, H = 0, dpr = 1, cols = 0, rows = 0, cw = 0, lh = 0, lines = [];
   var gw = 0, gh = 0, cell = 1, hPrev, hCur, hNext, energy = 0;   // 水面高度场（三帧缓冲）
+  // 水波的物理量按「屏幕像素」计算：REF_CELL 是调参预览里水面格子在屏幕上的大小（约 8.6px）。
+  // 大屏上格子更大（30px 字号时约 19.5px），如果水波按格子走，它会跑得比鼠标快一倍多，划过去只剩一圈圈「按」出来的同心圆；
+  // 按屏幕像素换算后，鼠标速度和水波速度的比例与预览一致，才会顺着鼠标拖出尾迹。
+  var REF_CELL = 8.6, kScr = 1;   // kScr：首屏内部 1px 对应屏幕上几 px 的倒数（被 CSS 缩放显示时 ≠ 1）
+  function measureScale() { var b = host.getBoundingClientRect(); kScr = b.width ? W / b.width : 1; }
 
   function build() {
     W = host.clientWidth; H = host.clientHeight;
@@ -148,6 +153,7 @@
       lines.push(line.slice(0, cols));
     }
     cell = lh / 2;                                // 水面网格比文字网格细一倍
+    measureScale();
     gw = Math.ceil(W / cell) + 3; gh = Math.ceil(H / cell) + 3;
     hPrev = new Float32Array(gw * gh); hCur = new Float32Array(gw * gh); hNext = new Float32Array(gw * gh);
     energy = 0;
@@ -171,12 +177,16 @@
 
   // 离散波动方程：下一帧 = 当前 + 惯性 + 邻居拉力，再乘衰减
   function simulate() {
-    var c2 = 0.03 + cfg.speed * 0.4, keep = 1 - cfg.damping, e = 0;
+    // f = 预览里的格子 / 现在屏幕上的格子：格子越大，每一步走的格数越少、每一步的衰减也越小，
+    // 这样水波在屏幕上的速度（像素/秒）和能荡开多少格字，都和预览里一样
+    var f = REF_CELL / Math.max(1, cell / kScr);
+    var cs = Math.min(0.67, Math.sqrt(0.03 + cfg.speed * 0.4) * f), c2 = cs * cs;
+    var keep = 1 - cfg.damping * f, base = 1 - 0.004 * f, e = 0;
     for (var y = 1; y < gh - 1; y++) {
       var row = y * gw;
       for (var x = 1; x < gw - 1; x++) {
         var i = row + x, c = hCur[i];
-        var v = c * 0.996 + (c - hPrev[i]) * keep + c2 * (hCur[i - 1] + hCur[i + 1] + hCur[i - gw] + hCur[i + gw] - 4 * c);
+        var v = c * base + (c - hPrev[i]) * keep + c2 * (hCur[i - 1] + hCur[i + 1] + hCur[i - gw] + hCur[i + gw] - 4 * c);
         hNext[i] = v;
         var a = v < 0 ? -v : v; if (a > e) e = a;
       }
@@ -230,20 +240,31 @@
 
   function frame(now) {
     if (!ready) { ready = build(); if (!ready) { running = false; return; } }
-    var dt = Math.min(0.1, (now - lastT) / 1000 || 0); lastT = now;
+    // rAF 给的时间戳是这一帧开始的时刻，可能早于 wake() 里记下的时间，所以第一帧按 0 算，避免出现负数
+    var dt = lastT < 0 ? 0 : clamp((now - lastT) / 1000, 0, 0.1); lastT = now;
+    // 这一帧鼠标划过的路径：按「划过了几格」放能量（快慢一致），并把落点分摊到这一帧的每个模拟步里，
+    // 掉帧时（比如机器人占用了显卡）尾迹也是连续的，不会变成一个个按下去的点
+    var pts = [], amt = 0;
     if (ptr.moved) {
-      var dx = ptr.x - ptr.lx, dy = ptr.y - ptr.ly, d = Math.sqrt(dx * dx + dy * dy);
+      var dx = ptr.x - ptr.lx, dy = ptr.y - ptr.ly, d = Math.sqrt(dx * dx + dy * dy), dc = d / cell;
       if (d > 0.5) {
-        var ds = d / (ptr.k || 1);   // 力度按鼠标在屏幕上实际划过的距离算，首屏被缩放显示时（比如预览）也和真实页面一致
-        var n = Math.min(6, Math.max(1, Math.ceil(d / 16))), amt = 0.3 * cfg.strength * Math.min(1, ds / 24) / n;
-        for (var s = 1; s <= n; s++) press(ptr.lx + dx * s / n, ptr.ly + dy * s / n, Math.max(16, cell * 1.6), amt);   // 半径跟着网格走，大屏上波纹不会变小
+        var n = Math.min(8, Math.max(1, Math.ceil(dc * 1.22)));
+        amt = 0.244 * cfg.strength * Math.min(dc, 1.23 * Math.max(1, dt * 60)) / n;
+        for (var s = 1; s <= n; s++) pts.push(ptr.lx + dx * s / n, ptr.ly + dy * s / n);
       }
       ptr.lx = ptr.x; ptr.ly = ptr.y; ptr.moved = false;
     }
+    var R = Math.max(16, cell * 1.6);
     acc += dt;
-    var steps = 0;
-    while (acc >= 1 / 90 && steps < 8) { simulate(); acc -= 1 / 90; steps++; }   // 掉帧时多补几步，波纹速度不变慢
-    if (steps === 8) acc = 0;
+    var steps = clamp(Math.floor(acc * 90), 0, 8), np = pts.length / 2, done = 0;
+    if (steps === 0) { for (var q = 0; q < np; q++) press(pts[q * 2], pts[q * 2 + 1], R, amt); }
+    for (var st = 0; st < steps; st++) {
+      var upto = Math.round(np * (st + 1) / steps);
+      for (; done < upto; done++) press(pts[done * 2], pts[done * 2 + 1], R, amt);
+      simulate();
+    }
+    acc -= steps / 90;
+    if (steps === 8) acc = 0;   // 掉帧太多时不追帧
     if (energy < IDLE || !visible) {            // 水面平了：清零、画一帧静止的、停掉循环
       hCur.fill(0); hPrev.fill(0); hNext.fill(0); energy = 0;
       draw(now); running = false; return;
@@ -253,7 +274,7 @@
   }
   function wake() {
     if (running || reduced) return;
-    running = true; lastT = performance.now(); acc = 0;
+    running = true; lastT = -1; acc = 0; measureScale();
     requestAnimationFrame(frame);
   }
   function refresh() {
