@@ -57,14 +57,14 @@
   var HEAVY = '·.,:;-~=+*%#@';   // 波纹越强，换成越靠后的符号
 
   var cfg = {
-    opacity: num(ds.rippleOpacity, 0.38),
+    opacity: num(ds.rippleOpacity, 0.8),
     hole: num(ds.rippleHole, 0.3),
-    vignette: num(ds.rippleVignette, 0.8),
-    strength: num(ds.rippleStrength, 2.9),
+    vignette: num(ds.rippleVignette, 1),
+    strength: num(ds.rippleStrength, 2),
     speed: clamp(num(ds.rippleSpeed, 0.8), 0, 1),
     damping: clamp(num(ds.rippleDamping, 0.035), 0, 0.5),
-    size: num(ds.rippleSize, 30),
-    feather: num(ds.rippleFeather, 0.38),
+    size: num(ds.rippleSize, 26),
+    feather: num(ds.rippleFeather, 0.3),
     color: ds.rippleColor || '#ffffff',
     crest: ds.rippleCrest || '#ffffff',
     trough: ds.rippleTrough || '#6733ea'

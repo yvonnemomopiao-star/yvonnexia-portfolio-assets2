@@ -278,6 +278,7 @@
   }
 
   // ---------- 进度：由滚动位置决定 ----------
+  var openAt = 0, LINE_MS = 420;   // 每行解码约 0.42 秒
   var ready = false, queued = false, dirty = true, lastKey = '', lastText = '', lastP = 0, badSticky = 0;
 
   function frame() {
@@ -286,7 +287,6 @@
     if (!ready) { ready = build(); if (!ready) return; }
     var scrolled = base() - wrap.getBoundingClientRect().top;
     var p = clamp(scrolled / (pinLen * FULL || 1), 0, 1);
-    var p2 = revealLen ? clamp((scrolled - pinLen) / (revealLen * 0.85), 0, 1) : 1;   // 文字逐行出现的进度
     lastP = p;
 
     // sticky 自检：钉住时舞台在容器里的位移应当等于已经滚过的距离；一直贴在容器顶部说明 sticky 被祖先的 overflow 破坏了
@@ -312,8 +312,12 @@
     // 整屏变黑之后：目录在画面正中逐行"解码"出现
     var open = p >= 1 && lines.length > 0;
     if (open !== target.classList.contains('is-open')) target.classList.toggle('is-open', open);
+    // 文字动画不再跟着滚动：整屏变黑的那一刻开始，按时间自动逐行解码；往回滚出黑屏后复位，下次进来重新播放
+    if (!open) openAt = 0;
+    else if (!openAt) openAt = performance.now();
+    var p2 = open ? clamp((performance.now() - openAt) / (LINE_MS * (lines.length + 0.6)), 0, 1) : 0;
     if (open) {
-      var decoding = p2 > 0 && p2 < 1, tick = decoding ? Math.floor(performance.now() / 55) : 0;
+      var decoding = p2 < 1, tick = decoding ? Math.floor(performance.now() / 55) : 0;
       var tkey = p2.toFixed(3) + ':' + tick;
       if (tkey !== lastText) {
         lastText = tkey;
