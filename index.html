@@ -196,16 +196,26 @@
             }
         }
         #home::after {
+            --hero-glow-shape: ellipse 38.2% 53.9% at 49% 60.3%;
             content: "";
             position: absolute;
             inset: 0;
             z-index: 30;
             pointer-events: none;
-            /* A lavender field with a localized, soft white glow below the robot. */
+            /* Two layers measured from the 2026-10 design: a deeper lavender base and a
+               soft white glow whose centre sits below the robot (not on it), plus a faint
+               blue fade on both screen edges. */
             background:
-                radial-gradient(ellipse 40% 78% at 50% 74%, rgba(250, 250, 253, .8) 0%, rgba(250, 250, 253, .5) 50%, rgba(250, 250, 253, 0) 100%),
-                #ECECFF;
+                linear-gradient(to right, rgba(0, 18, 148, .097) 0%, rgba(0, 18, 148, 0) 26.1%),
+                linear-gradient(to left, rgba(0, 18, 148, .097) 0%, rgba(0, 18, 148, 0) 26.1%),
+                radial-gradient(var(--hero-glow-shape), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .668) 48.8%, rgba(255, 255, 255, 0) 100%),
+                #DDE0FB;
             mix-blend-mode: multiply;
+        }
+
+        @media (max-width: 767px) {
+            /* Portrait screens: keep the glow round instead of a tall beam. */
+            #home::after { --hero-glow-shape: ellipse 85% 42% at 50% 58%; }
         }
 
         .hero-scroll-cue {
