@@ -692,6 +692,25 @@
         .ab-tooltip strong { color: #fff; }
         .ab-tooltip__row { display: flex; justify-content: space-between; gap: 16px; }
         .ab-tooltip__note { margin-top: 2px; font-size: 11px; color: #d1d5db; }
+        .lumina-frame {
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: #0b0d1a;
+            box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .8);
+            transition: border-color .3s ease;
+        }
+        .lumina-frame:hover { border-color: rgba(114, 78, 224, .5); }
+        .lumina-frame__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, .06); background: rgba(255, 255, 255, .03); }
+        .lumina-frame__bar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .16); }
+        .lumina-hero::before {
+            content: "";
+            position: absolute;
+            inset: 8% 10% -6%;
+            z-index: -1;
+            background: radial-gradient(closest-side, rgba(103, 51, 234, .32), rgba(245, 158, 11, .08) 60%, transparent);
+            filter: blur(40px);
+        }
         .speeding-metric {
             display: inline-block;
             min-inline-size: 4ch;
@@ -2514,14 +2533,38 @@
                                 <span>Web App</span> <span>/</span> <span>Dashboard UI</span> <span>/</span> <span>Google AI Studio</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 mb-10">
-                            <div class="md:col-span-8">
-                                <img src="projectui/lumina-hub.jpg" loading="lazy" decoding="async" alt="Lumina 仪表盘：提示词技巧与技术雷达" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                            </div>
-                            <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-6">
-                                <img src="projectui/lumina-tagging.jpg" loading="lazy" decoding="async" alt="Lumina 批量打标引擎" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="projectui/lumina-video.jpg" loading="lazy" decoding="async" alt="Lumina 视频实验室：镜头运动与机位设置" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                            </div>
+                        <div class="lumina-hero relative isolate mb-6 md:mb-8">
+                            <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-hub.jpg" loading="lazy" decoding="async" alt="Lumina 仪表盘：侧边栏汇总全部模块，主区为提示词技巧卡片与技术雷达" class="block w-full" data-lightbox-current>
+                                </div>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase mb-3">8 个功能模块 · Modules</p>
+                        <ul class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">仪表盘</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Dashboard</p><p class="text-[11px] text-gray-500 mt-2">模型技巧与行业动态</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">打标引擎</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Tagging Engine</p><p class="text-[11px] text-gray-500 mt-2">LoRA 训练集批量打标</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">信息提取器</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">The Juicer</p><p class="text-[11px] text-gray-500 mt-2">长内容提炼要点</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">提示词助手</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Prompt Assistant</p><p class="text-[11px] text-gray-500 mt-2">提示词润色与改写</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">提示词实验室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Prompt Lab</p><p class="text-[11px] text-gray-500 mt-2">节点式提示词工作流</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">图像工作室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Image Studio</p><p class="text-[11px] text-gray-500 mt-2">生图与编辑</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">视频实验室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Video Lab</p><p class="text-[11px] text-gray-500 mt-2">镜头运动与机位导演</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">视觉分析仪</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Vision Analyzer</p><p class="text-[11px] text-gray-500 mt-2">图像反推与分析</p></li>
+                        </ul>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-12">
+                            <figure class="m-0">
+                                <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-tagging-detail.jpg" loading="lazy" decoding="async" alt="Lumina 打标引擎：选择模型、训练底模与打标协议" class="block w-full" data-lightbox-current>
+                                </div>
+                                <figcaption class="mt-3 text-xs text-gray-500 leading-relaxed"><strong class="text-gray-300 font-medium">打标引擎</strong> · 按 Flux、SDXL、Pony、Illustrious 等底模切换打标规则，批量导出训练用的文本标注。</figcaption>
+                            </figure>
+                            <figure class="m-0">
+                                <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-video-detail.jpg" loading="lazy" decoding="async" alt="Lumina 视频实验室：场景描述、画幅与镜头运动设置" class="block w-full" data-lightbox-current>
+                                </div>
+                                <figcaption class="mt-3 text-xs text-gray-500 leading-relaxed"><strong class="text-gray-300 font-medium">视频实验室</strong> · 把推、拉、摇、移等镜头语言做成可点选的按钮，区分移动镜头与固定机位。</figcaption>
+                            </figure>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
                             <div>
@@ -2529,8 +2572,8 @@
                                 <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">日常 AIGC 工作要在训练集打标、提示词整理、生图和视频生成之间反复切换工具。我把自己的工作流拆成模块，整合进一个工作台，减少来回切换和重复劳动。</p>
                             </div>
                             <div>
-                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>功能模块 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Modules</span></h5>
-                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">包括 LoRA 训练集批量打标引擎（适配 Flux、SDXL、Pony 等底模）、提示词助手、节点式提示词实验室、图像工作室、带镜头运动与机位选项的视频实验室，以及汇总模型技巧和行业动态的仪表盘。</p>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>界面设计 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Interface</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">深色界面适合长时间盯图；琥珀色只用于当前所在的模块，靛蓝色只用于可操作的按钮，让人一眼分清“我在哪”和“能点什么”。导航采用中英双语标签，方便在中外 AI 工具的术语之间切换。</p>
                             </div>
                             <div>
                                 <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>独立完成 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Solo Build</span></h5>
