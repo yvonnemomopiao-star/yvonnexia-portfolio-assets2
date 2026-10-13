@@ -615,6 +615,102 @@
                 background-position: 50% 50%;
             }
         }
+        /* UI / Product 01: icon exploration filter and A/B lift chart */
+        .ab-icons__grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px 10px;
+        }
+        @media (min-width: 768px) {
+            .ab-icons__grid { grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 12px; }
+        }
+        .ab-icon { margin: 0; text-align: center; }
+        .ab-icon img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: contain;
+            transition: filter .9s ease, opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1);
+            transition-delay: var(--ab-delay, 0s);
+        }
+        .ab-icon figcaption {
+            margin-top: 8px;
+            font-size: 9px;
+            letter-spacing: .14em;
+            color: #9ca3af;
+            opacity: 0;
+            transition: opacity .6s ease 1.2s;
+        }
+        .ab-icon figcaption span { display: block; margin-top: 2px; color: #e5e7eb; }
+        .ab-icons.is-filtered .ab-icon:not(.ab-icon--kept) img {
+            filter: grayscale(1) brightness(.7);
+            opacity: .16;
+            transform: translateY(14px) scale(.84);
+        }
+        .ab-icons.is-filtered .ab-icon--kept figcaption { opacity: 1; }
+        .ab-icons.is-filtered .ab-icon--kept img { transform: translateY(-4px); transition-delay: 1s; }
+        .ab-icons.is-filtered .ab-icon--winner img {
+            filter: drop-shadow(0 0 14px rgba(229, 231, 235, .45));
+            transform: translateY(-6px) scale(1.06);
+        }
+        .ab-icons__count span { transition: opacity .4s ease; }
+        .ab-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .ab-legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
+        .ab-legend__c { background: linear-gradient(90deg, #9aa1ad, #fff); }
+        .ab-legend__ab { background: rgba(255, 255, 255, .3); }
+        .ab-chart { position: relative; }
+        .ab-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
+        .ab-chart__grid line { stroke: rgba(255, 255, 255, .07); }
+        .ab-chart__grid .ab-zero { stroke: rgba(255, 255, 255, .45); }
+        .ab-chart__grid line, .ab-line { vector-effect: non-scaling-stroke; }
+        .ab-chart__grid text { fill: #6b7280; font-size: var(--ab-font, 12px); }
+        .ab-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .ab-line--c { stroke: url(#abSilver); stroke-width: 3; }
+        .ab-line--ab { stroke: rgba(255, 255, 255, .26); stroke-width: 1.6; }
+        .ab-line--dash { stroke-dasharray: 5 7; }
+        .ab-signal { fill: none; stroke: #fff; stroke-linecap: round; filter: url(#abGlow); opacity: 0; }
+        .ab-node { cursor: pointer; opacity: 0; transition: opacity .5s ease; outline: none; }
+        .ab-node.is-visible { opacity: 1; }
+        .ab-node:focus-visible .ab-node__ring { stroke: #fff; }
+        .ab-node__ring { fill: none; stroke: transparent; stroke-width: 1.5; }
+        .ab-tooltip {
+            position: absolute;
+            z-index: 5;
+            min-width: 210px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(12, 12, 16, .92);
+            backdrop-filter: blur(8px);
+            font-size: 12px;
+            line-height: 1.6;
+            color: #9ca3af;
+            pointer-events: none;
+            transform: translate(-50%, calc(-100% - 16px));
+        }
+        .ab-tooltip--below { transform: translate(-50%, 16px); }
+        .ab-tooltip strong { color: #fff; }
+        .ab-tooltip__row { display: flex; justify-content: space-between; gap: 16px; }
+        .ab-tooltip__note { margin-top: 2px; font-size: 11px; color: #d1d5db; }
+        .lumina-frame {
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, .1);
+            background: #0b0d1a;
+            box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .8);
+            transition: border-color .3s ease;
+        }
+        .lumina-frame:hover { border-color: rgba(114, 78, 224, .5); }
+        .lumina-frame__bar { display: flex; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, .06); background: rgba(255, 255, 255, .03); }
+        .lumina-frame__bar i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .16); }
+        .lumina-hero::before {
+            content: "";
+            position: absolute;
+            inset: 8% 10% -6%;
+            z-index: -1;
+            background: radial-gradient(closest-side, rgba(103, 51, 234, .32), rgba(245, 158, 11, .08) 60%, transparent);
+            filter: blur(40px);
+        }
         .speeding-metric {
             display: inline-block;
             min-inline-size: 4ch;
@@ -1091,25 +1187,53 @@
                                 </div>
                                 <div>
                                     <h4 class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
+                                        <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>UI / Product
+                                    </h4>
+                                    <div class="flex flex-col gap-1">
+                                        <a href="#proj-ui-01" data-page="portfolio" data-target="proj-ui-01" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">09</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">短剧 App 图标 A/B 测试</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">上线图标与数据验证</div>
+                                            </div>
+                                        </a>
+                                        <a href="#proj-ui-02" data-page="portfolio" data-target="proj-ui-02" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">10</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">Veyra 股票研究应用</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">桌面产品设计 · 开发中</div>
+                                            </div>
+                                        </a>
+                                        <a href="#proj-ui-03" data-page="portfolio" data-target="proj-ui-03" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">11</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">Lumina AIGC 工作台</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">AI Studio 独立开发</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-gray-100 pb-2">
                                         <span class="w-1.5 h-1.5 bg-gray-300 rounded-full"></span>传统美学落地
                                     </h4>
                                     <div class="flex flex-col gap-1">
                                         <a href="#proj-09" data-page="portfolio" data-target="proj-09" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">09</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">12</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">游戏：欧美卡通RPG及塔防</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">游戏地图关卡及建筑设计</div>
                                             </div>
                                         </a>
                                         <a href="#proj-10" data-page="portfolio" data-target="proj-10" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">10</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">13</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">游戏：女性向恋爱换装</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">游戏场景及loading图绘制</div>
                                             </div>
                                         </a>
                                         <a href="#proj-11" data-page="portfolio" data-target="proj-11" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">11</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">14</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">日本动画场景美术</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">场景原画&手办建模</div>
@@ -1231,25 +1355,53 @@
                                 </div>
                                 <div>
                                     <h4 class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
+                                        <span class="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>UI / Product
+                                    </h4>
+                                    <div class="flex flex-col gap-1">
+                                        <a href="#proj-ui-01" data-page="portfolio" data-target="proj-ui-01" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">09</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">短剧 App 图标 A/B 测试</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">上线图标与数据验证</div>
+                                            </div>
+                                        </a>
+                                        <a href="#proj-ui-02" data-page="portfolio" data-target="proj-ui-02" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">10</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">Veyra 股票研究应用</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">桌面产品设计 · 开发中</div>
+                                            </div>
+                                        </a>
+                                        <a href="#proj-ui-03" data-page="portfolio" data-target="proj-ui-03" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">11</div>
+                                            <div class="flex flex-col justify-center">
+                                                <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">Lumina AIGC 工作台</div>
+                                                <div class="text-[10px] text-gray-500 leading-tight">AI Studio 独立开发</div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-white/10 pb-2">
                                         <span class="w-1.5 h-1.5 bg-gray-500 rounded-full"></span>传统美学落地
                                     </h4>
                                     <div class="flex flex-col gap-1">
                                         <a href="#proj-09" data-page="portfolio" data-target="proj-09" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">09</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">12</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">游戏：欧美卡通RPG及塔防</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">游戏地图关卡及建筑设计</div>
                                             </div>
                                         </a>
                                         <a href="#proj-10" data-page="portfolio" data-target="proj-10" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">10</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">13</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">游戏：女性向恋爱换装</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">游戏场景及loading图绘制</div>
                                             </div>
                                         </a>
                                         <a href="#proj-11" data-page="portfolio" data-target="proj-11" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
-                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">11</div>
+                                            <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">14</div>
                                             <div class="flex flex-col justify-center">
                                                 <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">日本动画场景美术</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">场景原画&手办建模</div>
@@ -1322,6 +1474,13 @@
                             <h3 class="chapter-directory__title" lang="en">AI EXPLORATION</h3>
                             <div class="chapter-directory__detail">
                                 <p class="chapter-directory__description">AI 模型探索 · 专属 LoRA 模型炼制与互动粒子视觉实验</p>
+                                <span class="chapter-directory__cta" aria-hidden="true">VIEW MORE <span>→</span></span>
+                            </div>
+                        </a>
+                        <a class="chapter-directory__link" href="#ui-product" data-page="portfolio" data-target="ui-product">
+                            <h3 class="chapter-directory__title" lang="en">UI / PRODUCT</h3>
+                            <div class="chapter-directory__detail">
+                                <p class="chapter-directory__description">产品设计 · App 图标 A/B 测试、桌面应用与 AI 创作工作台</p>
                                 <span class="chapter-directory__cta" aria-hidden="true">VIEW MORE <span>→</span></span>
                             </div>
                         </a>
@@ -2204,6 +2363,226 @@
                     </div>
                 </div>
 
+                <!-- 🌟 UI / Product 包装 -->
+                <div id="ui-product" class="max-w-[1024px] mx-auto px-6 md:px-12 md:mt-48 mb-32 md:mb-40 text-center relative z-10">
+                    <h2 class="text-3xl md:text-[52px] md:leading-[1.12] font-black tracking-[0.1em] mb-4 text-white">UI / PRODUCT</h2>
+                    <p class="portfolio-section-gradient text-purple-400 tracking-widest text-sm md:text-[20px] uppercase font-bold mb-8">产品设计：从界面到数据验证</p>
+                    <div class="max-w-[800px] mx-auto mt-12">
+                        <p class="text-sm md:text-base text-gray-400 leading-relaxed text-center">
+                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“让设计对结果负责，用数据和可运行的产品说话。”</strong>
+                            以下项目从上线产品的图标 A/B 测试，到借助 AI 编程工具独立完成的桌面应用与 AI 创作工作台，展示我在界面设计、产品定义与数据验证上的实践。
+                        </p>
+                    </div>
+                </div>
+
+                <!-- UI / Product 01：短剧 App 图标 A/B 测试 -->
+                <div id="proj-ui-01" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
+                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">09</div>
+                    <div class="relative z-10">
+                        <div class="mb-12">
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">短剧 App 图标优化与 Google Play A/B 测试</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: App Icon Redesign &amp; Store Listing Experiment for a Short-Drama App</p>
+                            <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
+                                <span>App Icon</span> <span>/</span> <span>A/B Testing</span> <span>/</span> <span>Shipped</span>
+                            </div>
+                        </div>
+                        <div class="ab-icons rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 mb-6" data-ab-icons>
+                            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">图标方向筛选 · Icon Exploration</p>
+                                <p class="ab-icons__count text-xs text-gray-400"><span data-ab-count>15 个设计方向</span></p>
+                            </div>
+                            <div class="ab-icons__grid">
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/01_zm0cai.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/02_vwsbez.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/03_dasnt3.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept" data-variant="A">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/iconA_ubfpjd.png" loading="lazy" decoding="async" alt="进入测试的图标方案 A" data-lightbox-current>
+                                        <figcaption>ICON A</figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/04_xziuoa.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/05_ow7tzn.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/06_hzo9zc.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept" data-variant="B">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/iconB_wl7vvd.png" loading="lazy" decoding="async" alt="进入测试的图标方案 B" data-lightbox-current>
+                                        <figcaption>ICON B</figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/07_kb3jlo.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/08_tndrmi.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/09_xsxenb.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept ab-icon--winner" data-variant="C">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/iconC_ixp42c.png" loading="lazy" decoding="async" alt="进入测试的图标方案 C，最终上线" data-lightbox-current>
+                                        <figcaption>ICON C<span>SHIPPED</span></figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/011_phwlhp.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/020_peaoa1.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/021_oq7p7s.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 mb-6">
+                            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">首次安装用户数 · 累计</p>
+                                <div class="ab-legend text-[10px] md:text-xs text-gray-500 flex gap-4" aria-hidden="true"><span><i class="ab-legend__c"></i>Icon C</span><span><i class="ab-legend__ab"></i>Icon A / B / 原图标</span></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-4">Google Play 商品详情实验，四组各分配 25% 流量</p>
+                            <div class="ab-chart" data-ab-chart>
+                                <svg class="ab-chart__svg" viewBox="0 0 1000 400" role="img" aria-label="四组图标的累计安装曲线，图标 C 领先原图标：8 月 13 日为 +8.2%，8 月 20 日为 +11.2%">
+                                    <defs>
+                                        <linearGradient id="abSilver" x1="0" x2="1" y1="0" y2="0">
+                                            <stop offset="0" stop-color="#9aa1ad"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#ffffff"/>
+                                        </linearGradient>
+                                        <radialGradient id="abOrb"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#8f98a8"/></radialGradient>
+                                        <filter id="abGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                                    </defs>
+                                    <g class="ab-chart__grid" data-ab-grid></g>
+                                    <g data-ab-lines></g>
+                                    <g data-ab-nodes></g>
+                                </svg>
+                                <div class="ab-tooltip" data-ab-tooltip role="status" aria-live="polite" hidden></div>
+                            </div>
+                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线根据 Google Play 后台曲线描摹，虚线连接 8/20 读取的数据；纵轴已隐去安装数。将鼠标移到圆点上可查看各方案相对原图标的领先幅度。</p>
+                            <script type="application/json" data-ab-data>{"step":0.25,"end":17.61,"O":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,74,82,92,101,103,103,113,115,115,159,185,185,185,201,232,274,303,385,457,501,572,601,657,728,836,937,1023,1183,1344,1528,1695,1883,2009,2084,2175,2243,2278,2317,2354,2393,2402,2416,2437,2474,2497,2597,2762,2927,3028,3106,3232,3296,3408,3507,3551,3652,3712,3748],"A":[5,5,5,5,5,7,12,20,33,44,55,55,62,68,76,84,95,104,106,106,116,118,118,162,189,189,189,205,234,280,310,376,447,513,594,662,758,846,906,1040,1162,1297,1403,1554,1711,1865,1957,2071,2205,2277,2331,2362,2409,2448,2457,2472,2498,2537,2565,2680,2840,2952,3088,3200,3312,3458,3544,3629,3709,3808,3840,3840],"B":[5,5,5,5,5,7,12,19,32,53,76,92,93,103,116,120,126,132,137,137,139,139,159,186,186,186,197,223,233,264,305,354,413,504,583,650,745,792,890,1021,1141,1305,1447,1619,1764,1928,2019,2140,2252,2334,2382,2417,2441,2453,2468,2482,2505,2542,2585,2697,2815,2912,3046,3136,3253,3353,3446,3527,3646,3744,3817,3868],"C":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,75,83,93,102,104,109,114,126,159,185,185,185,196,201,230,264,285,390,489,595,691,789,909,976,1069,1167,1242,1401,1556,1761,1904,2050,2162,2276,2384,2454,2503,2545,2564,2570,2585,2602,2620,2647,2673,2757,2910,3017,3146,3276,3433,3571,3654,3733,3828,3929,4010,4056]}</script>
+                        </div>
+                        <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 数据来自前公司项目，已隐去应用名称与绝对安装数，仅展示相对比例</p></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>设计与测试 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Design &amp; Test</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">针对应用评分偏低、商店转化乏力的问题，先发散出约 15 个图标方向，再筛选出三个进入测试：高饱和橙底的粗体字标、深色底的渐变字标，以及把“播放键”和“星形”结合的纯图形符号。随后在 Google Play 商品详情实验中，与原图标同时投放、平分流量，以首次安装用户数作为衡量指标。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>结果与决策 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Outcome</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">测试期间，<strong class="text-gray-300">图标 C 的安装量领先原图标约 11%</strong>（8/13 为 +8.2%，8/20 为 +11.2%，Google 估算区间上限达 +26.5%），三个新方案均优于原版，最终采用 C 上线。测试结束时 C 的领先仍在扩大，曲线尚未趋于平稳。由于 Google Play 当时仍提示“需要更多数据”，我建议延长测试以进一步确认结果；团队综合业务节奏判断后决定先行上线。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>数据洞察 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Insight</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">同样的图标在 App Store 只带来小幅提升，而当时该应用在 App Store 的评分仅 2.4 分。图标决定用户是否愿意点进来，评分和口碑则决定点进来后是否下载：<strong class="text-gray-300">评分是商店转化的上限</strong>，视觉优化需要和产品口碑一起推进。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UI / Product 02：Veyra -->
+                <div id="proj-ui-02" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
+                    <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">10</div>
+                    <div class="relative z-10">
+                        <div class="mb-12">
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide flex flex-wrap items-center gap-3">Veyra：本地优先的 A 股研究桌面应用 <span class="text-[10px] md:text-xs font-medium tracking-widest uppercase text-purple-300 border border-purple-500/50 rounded-full px-3 py-1">In Progress</span></h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Veyra, a Local-First Stock Research Desktop App</p>
+                            <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
+                                <span>Product Design</span> <span>/</span> <span>Desktop UI</span> <span>/</span> <span>AI-Assisted Development</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 mb-6">
+                            <div class="md:col-span-8">
+                                <img src="projectui/veyra-research.jpg" loading="lazy" decoding="async" alt="Veyra 个股研究页：K 线图与证据侧栏" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                            </div>
+                            <div class="md:col-span-4 grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-6">
+                                <img src="projectui/veyra-review.jpg" loading="lazy" decoding="async" alt="Veyra 框架复核页" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <img src="projectui/veyra-discovery.jpg" loading="lazy" decoding="async" alt="Veyra 发现候选页" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                            </div>
+                        </div>
+                        <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 截图为应用内置样本数据，不代表真实行情或投资建议</p></div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>产品定义 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Product</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">为自己和不懂股票的家人设计的研究工具，串起“初筛 → 个股研究 → 框架复核 → 持仓跟踪 → 事件提醒”的完整流程。每个结论都附带证据、规则版本和数据截止日；数据不足时直接显示“证据不足”，不估算、不美化。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>界面设计 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Interface</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">深色专业工具风格，左侧固定导航，主区承载 K 线与数据，右侧侧栏把“支持证据 / 反对证据 / 未知项”分开呈现。文案全部用大白话中文，专业术语第一次出现时附带一句解释，降低新手的理解门槛。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>AI 协作开发 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Built with AI</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">我负责撰写产品规格文档（SPEC）、拆分任务并做设计验收，由 Claude Code 与 Codex 分工编写和互相审查代码。技术栈为 Python + React 桌面应用，配有后端、前端和端到端三层自动化测试。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UI / Product 03：Lumina AI 创作工作台 -->
+                <div id="proj-ui-03" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
+                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">11</div>
+                    <div class="relative z-10">
+                        <div class="mb-12">
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">Lumina：AIGC 创作者工作台</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Lumina, an All-in-One Workspace for AIGC Creators</p>
+                            <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
+                                <span>Web App</span> <span>/</span> <span>Dashboard UI</span> <span>/</span> <span>Google AI Studio</span>
+                            </div>
+                        </div>
+                        <div class="lumina-hero relative isolate mb-6 md:mb-8">
+                            <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-hub.jpg" loading="lazy" decoding="async" alt="Lumina 仪表盘：侧边栏汇总全部模块，主区为提示词技巧卡片与技术雷达" class="block w-full" data-lightbox-current>
+                                </div>
+                        </div>
+                        <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase mb-3">8 个功能模块 · Modules</p>
+                        <ul class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">仪表盘</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Dashboard</p><p class="text-[11px] text-gray-500 mt-2">模型技巧与行业动态</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">打标引擎</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Tagging Engine</p><p class="text-[11px] text-gray-500 mt-2">LoRA 训练集批量打标</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">信息提取器</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">The Juicer</p><p class="text-[11px] text-gray-500 mt-2">长内容提炼要点</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">提示词助手</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Prompt Assistant</p><p class="text-[11px] text-gray-500 mt-2">提示词润色与改写</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">提示词实验室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Prompt Lab</p><p class="text-[11px] text-gray-500 mt-2">节点式提示词工作流</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">图像工作室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Image Studio</p><p class="text-[11px] text-gray-500 mt-2">生图与编辑</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">视频实验室</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Video Lab</p><p class="text-[11px] text-gray-500 mt-2">镜头运动与机位导演</p></li>
+                            <li class="rounded-lg border border-white/10 bg-white/[0.02] px-4 py-3"><p class="text-sm text-gray-200">视觉分析仪</p><p class="text-[10px] text-gray-500 tracking-widest uppercase mt-0.5">Vision Analyzer</p><p class="text-[11px] text-gray-500 mt-2">图像反推与分析</p></li>
+                        </ul>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-12">
+                            <figure class="m-0">
+                                <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-tagging-detail.jpg" loading="lazy" decoding="async" alt="Lumina 打标引擎：选择模型、训练底模与打标协议" class="block w-full" data-lightbox-current>
+                                </div>
+                                <figcaption class="mt-3 text-xs text-gray-500 leading-relaxed"><strong class="text-gray-300 font-medium">打标引擎</strong> · 按 Flux、SDXL、Pony、Illustrious 等底模切换打标规则，批量导出训练用的文本标注。</figcaption>
+                            </figure>
+                            <figure class="m-0">
+                                <div class="lumina-frame">
+                                    <div class="lumina-frame__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+                                    <img src="projectui/lumina-video-detail.jpg" loading="lazy" decoding="async" alt="Lumina 视频实验室：场景描述、画幅与镜头运动设置" class="block w-full" data-lightbox-current>
+                                </div>
+                                <figcaption class="mt-3 text-xs text-gray-500 leading-relaxed"><strong class="text-gray-300 font-medium">视频实验室</strong> · 把推、拉、摇、移等镜头语言做成可点选的按钮，区分移动镜头与固定机位。</figcaption>
+                            </figure>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>为什么做 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Problem</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">日常 AIGC 工作要在训练集打标、提示词整理、生图和视频生成之间反复切换工具。我把自己的工作流拆成模块，整合进一个工作台，减少来回切换和重复劳动。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>界面设计 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Interface</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">深色界面适合长时间盯图；琥珀色只用于当前所在的模块，靛蓝色只用于可操作的按钮，让人一眼分清“我在哪”和“能点什么”。导航采用中英双语标签，方便在中外 AI 工具的术语之间切换。</p>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>独立完成 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Solo Build</span></h5>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">从信息架构、视觉风格到交互细节均由我独立设计，并在 Google AI Studio 中用自然语言描述需求、调用 Gemini 模型完成开发，验证了设计师独立把想法做成可用工具的路径。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- 🌟 美学底座 包装 -->
                 <div class="max-w-[1024px] mx-auto px-6 md:px-12 md:mt-48 mb-32 md:mb-40 text-center relative z-10">
                     <h2 class="text-3xl md:text-[52px] md:leading-[1.12] font-black tracking-[0.1em] mb-4 text-white">THE FOUNDATION OF AESTHETICS</h2>
@@ -2219,7 +2598,7 @@
 
                 <!-- Project 09 -->
                 <div id="proj-09" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
-                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">09</div>
+                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">12</div>
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">欧美卡通风格游戏《才不是童话》日韩台上线</h3>
@@ -2247,7 +2626,7 @@
 
                 <!-- Project 10 -->
                 <div id="proj-10" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
-                    <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">10</div>
+                    <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">13</div>
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">女性向恋爱&换装游戏《依依恋物语》与《七日恋人》</h3>
@@ -2279,7 +2658,7 @@
 
                 <!-- Project 11 -->
                 <div id="proj-11" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
-                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">11</div>
+                    <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">14</div>
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">日本动画《物语系列——化物语，伪物语》</h3>
@@ -3062,6 +3441,156 @@
                 if (event.key !== 'Enter' && event.key !== ' ') return;
                 event.preventDefault();
                 target.click();
+            });
+        })();
+    </script>
+    <script>
+        // UI / Product 01: icon filter and animated A/B lift chart.
+        (() => {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const whenVisible = (target, callback) => {
+                if (!('IntersectionObserver' in window)) return callback();
+                const observer = new IntersectionObserver(entries => {
+                    if (!entries.some(entry => entry.isIntersecting)) return;
+                    observer.disconnect();
+                    callback();
+                }, { threshold: 0.35 });
+                observer.observe(target);
+            };
+
+            const icons = document.querySelector('[data-ab-icons]');
+            if (icons) {
+                icons.querySelectorAll('.ab-icon:not(.ab-icon--kept)').forEach((icon, index) => {
+                    icon.style.setProperty('--ab-delay', `${(index * 0.05).toFixed(2)}s`);
+                });
+                const count = icons.querySelector('[data-ab-count]');
+                whenVisible(icons, () => {
+                    icons.classList.add('is-filtered');
+                    if (count) count.textContent = '15 个设计方向 → 3 个进入测试 → 1 个上线';
+                });
+            }
+
+            const chart = document.querySelector('[data-ab-chart]');
+            const source = document.querySelector('[data-ab-data]');
+            if (!chart || !source) return;
+            // Build once the chart is on screen: the portfolio view is hidden (zero width) at load.
+            whenVisible(chart, () => {
+                const data = JSON.parse(source.textContent);
+                const svg = chart.querySelector('svg');
+                const tooltip = chart.querySelector('[data-ab-tooltip]');
+                const NS = 'http://www.w3.org/2000/svg';
+                // Days from 7/23. The traced curve ends at the 8/13 reading; 8/20 is a week later.
+                const END = data.end, DAY0 = 0, DAY1 = END + 7, MIN = 0, MAX = 6600;
+                // On narrow screens the 1000-unit viewBox shrinks a lot, so text and marks scale up by k.
+                const k = Math.max(1, 640 / (svg.getBoundingClientRect().width || 1000));
+                const HEIGHT = k > 1 ? 720 : 400;
+                svg.setAttribute('viewBox', `0 0 1000 ${HEIGHT}`);
+                svg.style.setProperty('--ab-font', `${12 * k}px`);
+                const LEFT = 16 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
+                const sx = day => LEFT + (day - DAY0) / (DAY1 - DAY0) * (RIGHT - LEFT);
+                const sy = value => BOTTOM - (value - MIN) / (MAX - MIN) * (BOTTOM - TOP);
+                const make = (tag, attrs, parent) => {
+                    const node = document.createElementNS(NS, tag);
+                    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+                    if (parent) parent.appendChild(node);
+                    return node;
+                };
+                // installs are the adjusted counts behind each reading, used only for positions; the page shows percentages.
+                const readings = [
+                    { day: END, date: '8/13', installs: { O: 3748, A: 3840, B: 3868, C: 4056 }, values: { C: 8.2, B: 3.2, A: 2.5 }, upper: { C: 25.1 } },
+                    { day: END + 7, date: '8/20', installs: { O: 5528, A: 5724, B: 5956, C: 6148 }, values: { C: 11.2, B: 7.7, A: 3.5 }, upper: { C: 26.5 } }
+                ];
+
+                const grid = svg.querySelector('[data-ab-grid]');
+                for (let value = MIN; value <= MAX; value += 1650) {
+                    make('line', { x1: LEFT, x2: RIGHT, y1: sy(value), y2: sy(value), class: value === 0 ? 'ab-zero' : '' }, grid);
+                }
+                [[0, '7/23'], [7, '7/30'], [END, '8/13'], [END + 7, '8/20']].forEach(([day, label]) => {
+                    make('text', { x: sx(day), y: BOTTOM + 18 + 12 * k, 'text-anchor': 'middle' }, grid).textContent = label;
+                });
+
+                const smoothPath = points => points.reduce((path, point, i) => {
+                    if (i === 0) return `M${point[0]},${point[1]}`;
+                    const p0 = points[i - 2] || points[i - 1], p1 = points[i - 1], p3 = points[i + 1] || point;
+                    const c1 = [p1[0] + (point[0] - p0[0]) / 6, p1[1] + (point[1] - p0[1]) / 6];
+                    const c2 = [point[0] - (p3[0] - p1[0]) / 6, point[1] - (p3[1] - p1[1]) / 6];
+                    return `${path} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${point[0]},${point[1]}`;
+                }, '');
+
+                const lines = svg.querySelector('[data-ab-lines]');
+                const clip = make('clipPath', { id: 'abReveal' }, svg.querySelector('defs'));
+                const reveal = make('rect', { x: 0, y: -40, width: reduceMotion ? 1000 : LEFT, height: HEIGHT + 80 }, clip);
+                lines.setAttribute('clip-path', 'url(#abReveal)');
+                let fullC = '';
+                ['O', 'A', 'B', 'C'].forEach(key => {
+                    const traced = data[key].map((value, i) => [sx(Math.min(i * data.step, END)), sy(value)]);
+                    const last = traced[traced.length - 1];
+                    const read = [sx(readings[1].day), sy(readings[1].installs[key])];
+                    const solid = smoothPath(traced);
+                    const dashed = `M${last[0]},${last[1]} L${read[0]},${read[1]}`;
+                    const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
+                    make('path', { d: dashed, class: `ab-line ${kind} ab-line--dash` }, lines);
+                    make('path', { d: solid, class: `ab-line ${kind}` }, lines);
+                    if (key === 'C') fullC = `${solid} L${read[0]},${read[1]}`;
+                });
+                const track = make('path', { d: fullC, fill: 'none', stroke: 'none' }, svg);
+                const signal = make('path', { d: fullC, class: 'ab-signal', 'stroke-width': 3.5 * k }, svg);
+                const head = make('circle', { r: 6 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)', opacity: 0 }, svg);
+
+                const nodes = svg.querySelector('[data-ab-nodes]');
+                const showTip = (reading, anchor) => {
+                    const box = svg.getBoundingClientRect();
+                    const scale = box.width / 1000;
+                    const rows = ['C', 'B', 'A'].map(key => `<div class="ab-tooltip__row"><span>${key === 'C' ? '<strong>Icon C</strong>' : `Icon ${key}`}</span><span>${key === 'C' ? '<strong>' : ''}+${reading.values[key]}%${key === 'C' ? '</strong>' : ''}</span></div>`).join('');
+                    tooltip.innerHTML = `<div><strong>${reading.date}</strong> 读取 · 相对原图标</div>${rows}<div class="ab-tooltip__note">Google 估算区间上限：Icon C 最高 +${reading.upper.C}%</div>`;
+                    tooltip.hidden = false;
+                    const left = Math.min(Math.max(anchor[0] * scale, 110), box.width - 110);
+                    tooltip.style.left = `${left}px`;
+                    tooltip.style.top = `${anchor[1] * scale}px`;
+                    tooltip.classList.toggle('ab-tooltip--below', anchor[1] * scale < 160);
+                };
+                const hideTip = () => { tooltip.hidden = true; };
+                const nodeGroups = readings.map(reading => {
+                    const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
+                    ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, fill: 'rgba(255,255,255,.4)' }, group));
+                    const point = [sx(reading.day), sy(reading.installs.C)];
+                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
+                    make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
+                    ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
+                    ['pointerleave', 'blur'].forEach(type => group.addEventListener(type, hideTip));
+                    return { group, x: point[0] };
+                });
+
+                const startSignal = () => {
+                    const length = track.getTotalLength();
+                    signal.style.strokeDasharray = `70 ${length + 70}`;
+                    signal.style.opacity = '1';
+                    signal.animate([{ strokeDashoffset: 70 }, { strokeDashoffset: -length }], { duration: 3400, iterations: Infinity, easing: 'ease-in-out' });
+                };
+                if (reduceMotion) {
+                    nodeGroups.forEach(node => node.group.classList.add('is-visible'));
+                    return;
+                }
+                const length = track.getTotalLength();
+                const duration = 2800;
+                let begin = null;
+                head.setAttribute('opacity', 1);
+                const frame = now => {
+                    if (begin === null) begin = now;
+                    const t = Math.min((now - begin) / duration, 1);
+                    const eased = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+                    const point = track.getPointAtLength(eased * length);
+                    head.setAttribute('cx', point.x);
+                    head.setAttribute('cy', point.y);
+                    reveal.setAttribute('width', point.x);
+                    nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-visible'); });
+                    if (t < 1) return requestAnimationFrame(frame);
+                    head.setAttribute('opacity', 0);
+                    reveal.setAttribute('width', 1000);
+                    startSignal();
+                };
+                requestAnimationFrame(frame);
             });
         })();
     </script>
