@@ -448,7 +448,8 @@
             50% { opacity: 1; transform: translateY(5px); }
         }
         @media (max-width: 480px) {
-            .hero-scroll-cue { bottom: max(18px, env(safe-area-inset-bottom)); }
+            /* Sit above the "Built with Spline" badge that Spline pins to the bottom-right corner. */
+            .hero-scroll-cue { bottom: calc(env(safe-area-inset-bottom, 0px) + 64px); }
             .hero-scroll-cue__button { width: 26px; height: 26px; }
         }
         @media (prefers-reduced-motion: reduce) {
