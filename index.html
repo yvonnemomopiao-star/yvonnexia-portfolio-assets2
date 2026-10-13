@@ -615,6 +615,83 @@
                 background-position: 50% 50%;
             }
         }
+        /* UI / Product 01: icon exploration filter and A/B lift chart */
+        .ab-icons__grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 14px 10px;
+        }
+        @media (min-width: 768px) {
+            .ab-icons__grid { grid-template-columns: repeat(15, minmax(0, 1fr)); gap: 12px; }
+        }
+        .ab-icon { margin: 0; text-align: center; }
+        .ab-icon img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: contain;
+            transition: filter .9s ease, opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1);
+            transition-delay: var(--ab-delay, 0s);
+        }
+        .ab-icon figcaption {
+            margin-top: 8px;
+            font-size: 9px;
+            letter-spacing: .14em;
+            color: #9ca3af;
+            opacity: 0;
+            transition: opacity .6s ease 1.2s;
+        }
+        .ab-icon figcaption span { display: block; margin-top: 2px; color: #e5e7eb; }
+        .ab-icons.is-filtered .ab-icon:not(.ab-icon--kept) img {
+            filter: grayscale(1) brightness(.7);
+            opacity: .16;
+            transform: translateY(14px) scale(.84);
+        }
+        .ab-icons.is-filtered .ab-icon--kept figcaption { opacity: 1; }
+        .ab-icons.is-filtered .ab-icon--kept img { transform: translateY(-4px); transition-delay: 1s; }
+        .ab-icons.is-filtered .ab-icon--winner img {
+            filter: drop-shadow(0 0 14px rgba(229, 231, 235, .45));
+            transform: translateY(-6px) scale(1.06);
+        }
+        .ab-icons__count span { transition: opacity .4s ease; }
+        .ab-legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .ab-legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
+        .ab-legend__c { background: linear-gradient(90deg, #9aa1ad, #fff); }
+        .ab-legend__ab { background: rgba(255, 255, 255, .3); }
+        .ab-legend__o { background: rgba(255, 255, 255, .55); height: 1px !important; }
+        .ab-chart { position: relative; }
+        .ab-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
+        .ab-chart__grid line { stroke: rgba(255, 255, 255, .07); }
+        .ab-chart__grid .ab-zero { stroke: rgba(255, 255, 255, .45); }
+        .ab-chart__grid line, .ab-line { vector-effect: non-scaling-stroke; }
+        .ab-chart__grid text { fill: #6b7280; font-size: var(--ab-font, 12px); }
+        .ab-line { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .ab-line--c { stroke: url(#abSilver); stroke-width: 3; }
+        .ab-line--ab { stroke: rgba(255, 255, 255, .26); stroke-width: 1.6; }
+        .ab-line--dash { stroke-dasharray: 5 7; }
+        .ab-signal { fill: none; stroke: #fff; stroke-linecap: round; filter: url(#abGlow); opacity: 0; }
+        .ab-node { cursor: pointer; opacity: 0; transition: opacity .5s ease; outline: none; }
+        .ab-node.is-visible { opacity: 1; }
+        .ab-node:focus-visible .ab-node__ring { stroke: #fff; }
+        .ab-node__ring { fill: none; stroke: transparent; stroke-width: 1.5; }
+        .ab-tooltip {
+            position: absolute;
+            z-index: 5;
+            min-width: 210px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, .14);
+            background: rgba(12, 12, 16, .92);
+            backdrop-filter: blur(8px);
+            font-size: 12px;
+            line-height: 1.6;
+            color: #9ca3af;
+            pointer-events: none;
+            transform: translate(-50%, calc(-100% - 16px));
+        }
+        .ab-tooltip strong { color: #fff; }
+        .ab-tooltip__row { display: flex; justify-content: space-between; gap: 16px; }
+        .ab-tooltip__note { margin-top: 2px; font-size: 11px; color: #d1d5db; }
         .speeding-metric {
             display: inline-block;
             min-inline-size: 4ch;
@@ -2290,61 +2367,95 @@
                                 <span>App Icon</span> <span>/</span> <span>A/B Testing</span> <span>/</span> <span>Shipped</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 mb-6">
-                            <div class="md:col-span-5 rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 flex flex-col justify-center">
-                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase mb-6">三个新图标方向 · Three New Directions</p>
-                                <div class="grid grid-cols-3 gap-4 md:gap-6">
-                                    <figure class="text-center">
-                                        <img src="projectui/icon-a.png" loading="lazy" decoding="async" alt="图标方案 A：橙底粗体字标" class="w-full max-w-[120px] mx-auto aspect-square object-contain" data-lightbox-current>
-                                        <figcaption class="mt-3 text-xs text-gray-400 tracking-widest">ICON A</figcaption>
-                                    </figure>
-                                    <figure class="text-center">
-                                        <img src="projectui/icon-b.png" loading="lazy" decoding="async" alt="图标方案 B：深色底渐变字标" class="w-full max-w-[120px] mx-auto aspect-square object-contain" data-lightbox-current>
-                                        <figcaption class="mt-3 text-xs text-gray-400 tracking-widest">ICON B</figcaption>
-                                    </figure>
-                                    <figure class="text-center">
-                                        <img src="projectui/icon-c.png" loading="lazy" decoding="async" alt="图标方案 C：播放键与星形组合图形，最终上线" class="w-full max-w-[120px] mx-auto aspect-square object-contain rounded-[22%] ring-2 ring-purple-500/70 ring-offset-4 ring-offset-black" data-lightbox-current>
-                                        <figcaption class="mt-3 text-xs text-white tracking-widest">ICON C · <span class="text-purple-400">SHIPPED</span></figcaption>
-                                    </figure>
-                                </div>
+                        <div class="ab-icons rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 mb-6" data-ab-icons>
+                            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">图标方向筛选 · Icon Exploration</p>
+                                <p class="ab-icons__count text-xs text-gray-400"><span data-ab-count>15 个设计方向</span></p>
                             </div>
-                            <div class="md:col-span-7 rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8">
-                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase mb-1">首次安装用户数 · 相对原图标</p>
-                                <p class="text-xs text-gray-500 mb-6">Google Play 商品详情实验，四组各分配 25% 流量</p>
-                                <div class="space-y-4" role="list" aria-label="各图标相对原图标的安装量变化">
-                                    <div class="grid grid-cols-[64px_1fr_56px] items-center gap-3" role="listitem">
-                                        <span class="text-xs text-gray-400">原图标</span>
-                                        <div class="h-3 rounded-full bg-white/5"><div class="h-3 w-[2px] bg-white/40"></div></div>
-                                        <span class="text-xs text-gray-500 text-right tabular-nums">基准</span>
-                                    </div>
-                                    <div class="grid grid-cols-[64px_1fr_56px] items-center gap-3" role="listitem">
-                                        <span class="text-xs text-gray-400">Icon A</span>
-                                        <div class="h-3 rounded-full bg-white/5"><div class="h-3 rounded-full bg-purple-500/40" style="width: 31%"></div></div>
-                                        <span class="text-xs text-gray-300 text-right tabular-nums">+3.5%</span>
-                                    </div>
-                                    <div class="grid grid-cols-[64px_1fr_56px] items-center gap-3" role="listitem">
-                                        <span class="text-xs text-gray-400">Icon B</span>
-                                        <div class="h-3 rounded-full bg-white/5"><div class="h-3 rounded-full bg-purple-500/60" style="width: 69%"></div></div>
-                                        <span class="text-xs text-gray-300 text-right tabular-nums">+7.7%</span>
-                                    </div>
-                                    <div class="grid grid-cols-[64px_1fr_56px] items-center gap-3" role="listitem">
-                                        <span class="text-xs text-white font-bold">Icon C</span>
-                                        <div class="h-3 rounded-full bg-white/5"><div class="h-3 rounded-full bg-purple-500" style="width: 100%"></div></div>
-                                        <span class="text-xs text-white font-bold text-right tabular-nums">+11.2%</span>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 leading-relaxed mt-6 border-t border-white/10 pt-4">在前后两个观察时间点，三个新图标都高于原图标，排名始终是 C &gt; B &gt; A。</p>
+                            <div class="ab-icons__grid">
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/01_zm0cai.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/02_vwsbez.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/03_dasnt3.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept" data-variant="A">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/iconA_ubfpjd.png" loading="lazy" decoding="async" alt="进入测试的图标方案 A" data-lightbox-current>
+                                        <figcaption>ICON A</figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/04_xziuoa.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/05_ow7tzn.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/06_hzo9zc.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept" data-variant="B">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/iconB_wl7vvd.png" loading="lazy" decoding="async" alt="进入测试的图标方案 B" data-lightbox-current>
+                                        <figcaption>ICON B</figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/07_kb3jlo.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/08_tndrmi.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/09_xsxenb.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon ab-icon--kept ab-icon--winner" data-variant="C">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893894/iconC_ixp42c.png" loading="lazy" decoding="async" alt="进入测试的图标方案 C，最终上线" data-lightbox-current>
+                                        <figcaption>ICON C<span>SHIPPED</span></figcaption>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893895/011_phwlhp.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/020_peaoa1.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
+                                    <figure class="ab-icon">
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto,w_240/v1791893893/021_oq7p7s.png" loading="lazy" decoding="async" alt="未进入测试的图标方案" data-lightbox-current>
+                                    </figure>
                             </div>
+                        </div>
+                        <div class="rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 mb-6">
+                            <div class="flex flex-wrap items-baseline justify-between gap-2 mb-1">
+                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">首次安装用户数 · 相对原图标的领先幅度</p>
+                                <div class="ab-legend text-[10px] md:text-xs text-gray-500 flex gap-4" aria-hidden="true"><span><i class="ab-legend__c"></i>Icon C</span><span><i class="ab-legend__ab"></i>Icon A / B</span><span><i class="ab-legend__o"></i>原图标</span></div>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-4">Google Play 商品详情实验，四组各分配 25% 流量</p>
+                            <div class="ab-chart" data-ab-chart>
+                                <svg class="ab-chart__svg" viewBox="0 0 1000 400" role="img" aria-label="图标 C 相对原图标的安装领先幅度：8 月 13 日为 +8.2%，8 月 20 日为 +11.2%">
+                                    <defs>
+                                        <linearGradient id="abSilver" x1="0" x2="1" y1="0" y2="0">
+                                            <stop offset="0" stop-color="#9aa1ad"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#ffffff"/>
+                                        </linearGradient>
+                                        <radialGradient id="abOrb"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#8f98a8"/></radialGradient>
+                                        <filter id="abGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                                    </defs>
+                                    <g class="ab-chart__grid" data-ab-grid></g>
+                                    <g data-ab-lines></g>
+                                    <g data-ab-nodes></g>
+                                </svg>
+                                <div class="ab-tooltip" data-ab-tooltip role="status" aria-live="polite" hidden></div>
+                            </div>
+                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线根据 Google Play 后台曲线描摹（截至 8/9），虚线连接 8/13 与 8/20 两次读取的数据。将鼠标移到圆点上可查看数值。</p>
+                            <script type="application/json" data-ab-data>{"start":8,"step":0.25,"A":[-2.7,-0.6,3.4,7.8,11.5,10.4,9.0,8.5,8.6,6.2,2.4,-0.2,-1.9,-3.2,-3.5,-2.9,-1.6,-0.6,-0.4,-0.1,-0.1,0.0,0.0,0.1,0.2,0.3,0.5,0.5,-0.1,-0.4,-0.3,0.2,1.1,1.4,1.7,1.5,1.6,1.6,1.0],"B":[-5.6,-2.3,3.4,7.6,9.6,8.8,7.6,8.5,9.4,8.9,7.0,5.0,3.4,1.7,1.5,1.7,2.9,3.5,3.8,3.6,3.0,2.5,2.2,2.3,2.3,2.6,2.8,2.5,1.1,0.1,-0.1,0.3,0.6,0.7,0.6,0.9,1.4,2.1,2.4],"C":[8.9,15.7,23.7,30.3,34.3,32.6,28.0,23.8,20.7,17.8,15.7,13.8,11.5,9.1,8.3,8.3,8.9,9.2,9.3,9.2,8.4,7.6,7.3,7.3,7.1,6.9,6.3,5.7,4.4,3.7,3.9,4.9,6.3,6.9,6.9,6.8,6.9,7.4,7.6]}</script>
                         </div>
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 数据来自前公司项目，已隐去应用名称与绝对安装数，仅展示相对比例</p></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
                             <div>
                                 <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>设计与测试 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Design &amp; Test</span></h5>
-                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">针对应用评分偏低、商店转化乏力的问题，重新设计了三个图标方向：高饱和橙底的粗体字标、深色底的渐变字标，以及把“播放键”和“星形”结合的纯图形符号。随后在 Google Play 商品详情实验中，与原图标同时投放、平分流量，以首次安装用户数作为衡量指标。</p>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">针对应用评分偏低、商店转化乏力的问题，先发散出约 15 个图标方向，再筛选出三个进入测试：高饱和橙底的粗体字标、深色底的渐变字标，以及把“播放键”和“星形”结合的纯图形符号。随后在 Google Play 商品详情实验中，与原图标同时投放、平分流量，以首次安装用户数作为衡量指标。</p>
                             </div>
                             <div>
                                 <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>结果与决策 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Outcome</span></h5>
-                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">测试期间，<strong class="text-gray-300">图标 C 的安装量领先原图标约 11%</strong>，三个新方案均优于原版，最终采用 C 上线。由于 Google Play 当时仍提示“需要更多数据”，我建议延长测试以进一步确认结果；团队综合业务节奏判断后决定先行上线。</p>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">测试期间，<strong class="text-gray-300">图标 C 的安装量领先原图标约 11%</strong>（8/13 为 +8.2%，8/20 为 +11.2%，Google 估算区间上限达 +26.5%），三个新方案均优于原版，最终采用 C 上线。测试结束时 C 的领先仍在扩大，曲线尚未趋于平稳。由于 Google Play 当时仍提示“需要更多数据”，我建议延长测试以进一步确认结果；团队综合业务节奏判断后决定先行上线。</p>
                             </div>
                             <div>
                                 <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>数据洞察 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Insight</span></h5>
@@ -3287,6 +3398,155 @@
                 if (event.key !== 'Enter' && event.key !== ' ') return;
                 event.preventDefault();
                 target.click();
+            });
+        })();
+    </script>
+    <script>
+        // UI / Product 01: icon filter and animated A/B lift chart.
+        (() => {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const whenVisible = (target, callback) => {
+                if (!('IntersectionObserver' in window)) return callback();
+                const observer = new IntersectionObserver(entries => {
+                    if (!entries.some(entry => entry.isIntersecting)) return;
+                    observer.disconnect();
+                    callback();
+                }, { threshold: 0.35 });
+                observer.observe(target);
+            };
+
+            const icons = document.querySelector('[data-ab-icons]');
+            if (icons) {
+                icons.querySelectorAll('.ab-icon:not(.ab-icon--kept)').forEach((icon, index) => {
+                    icon.style.setProperty('--ab-delay', `${(index * 0.05).toFixed(2)}s`);
+                });
+                const count = icons.querySelector('[data-ab-count]');
+                whenVisible(icons, () => {
+                    icons.classList.add('is-filtered');
+                    if (count) count.textContent = '15 个设计方向 → 3 个进入测试 → 1 个上线';
+                });
+            }
+
+            const chart = document.querySelector('[data-ab-chart]');
+            const source = document.querySelector('[data-ab-data]');
+            if (!chart || !source) return;
+            // Build once the chart is on screen: the portfolio view is hidden (zero width) at load.
+            whenVisible(chart, () => {
+                const data = JSON.parse(source.textContent);
+                const svg = chart.querySelector('svg');
+                const tooltip = chart.querySelector('[data-ab-tooltip]');
+                const NS = 'http://www.w3.org/2000/svg';
+                const DAY0 = 8, DAY1 = 28, MIN = -10, MAX = 40;
+                // On narrow screens the 1000-unit viewBox shrinks a lot, so text and marks scale up by k.
+                const k = Math.max(1, 640 / (svg.getBoundingClientRect().width || 1000));
+                const HEIGHT = k > 1 ? 720 : 400;
+                svg.setAttribute('viewBox', `0 0 1000 ${HEIGHT}`);
+                svg.style.setProperty('--ab-font', `${12 * k}px`);
+                const LEFT = 20 + 38 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
+                const sx = day => LEFT + (day - DAY0) / (DAY1 - DAY0) * (RIGHT - LEFT);
+                const sy = value => BOTTOM - (value - MIN) / (MAX - MIN) * (BOTTOM - TOP);
+                const make = (tag, attrs, parent) => {
+                    const node = document.createElementNS(NS, tag);
+                    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+                    if (parent) parent.appendChild(node);
+                    return node;
+                };
+                // Day 8 is 7/31; the two readings were taken on 8/13 and 8/20.
+                const readings = [
+                    { day: 21, date: '8/13', values: { C: 8.2, B: 3.2, A: 2.5 }, upper: { C: 25.1, B: 15.3, A: 14 } },
+                    { day: 28, date: '8/20', values: { C: 11.2, B: 7.7, A: 3.5 }, upper: { C: 26.5, B: 20.1, A: 13.2 } }
+                ];
+
+                const grid = svg.querySelector('[data-ab-grid]');
+                for (let value = MIN; value <= MAX; value += 10) {
+                    make('line', { x1: LEFT, x2: RIGHT, y1: sy(value), y2: sy(value), class: value === 0 ? 'ab-zero' : '' }, grid);
+                    make('text', { x: LEFT - 10, y: sy(value) + 4 * k, 'text-anchor': 'end' }, grid).textContent = value === 0 ? '原图标' : `${value > 0 ? '+' : ''}${value}%`;
+                }
+                [[8, '7/31'], [14, '8/6'], [21, '8/13'], [28, '8/20']].forEach(([day, label]) => {
+                    make('text', { x: sx(day), y: BOTTOM + 18 + 12 * k, 'text-anchor': 'middle' }, grid).textContent = label;
+                });
+
+                const smoothPath = points => points.reduce((path, point, i) => {
+                    if (i === 0) return `M${point[0]},${point[1]}`;
+                    const p0 = points[i - 2] || points[i - 1], p1 = points[i - 1], p3 = points[i + 1] || point;
+                    const c1 = [p1[0] + (point[0] - p0[0]) / 6, p1[1] + (point[1] - p0[1]) / 6];
+                    const c2 = [point[0] - (p3[0] - p1[0]) / 6, point[1] - (p3[1] - p1[1]) / 6];
+                    return `${path} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${point[0]},${point[1]}`;
+                }, '');
+
+                const lines = svg.querySelector('[data-ab-lines]');
+                const clip = make('clipPath', { id: 'abReveal' }, svg.querySelector('defs'));
+                const reveal = make('rect', { x: 0, y: -40, width: reduceMotion ? 1000 : LEFT, height: HEIGHT + 80 }, clip);
+                lines.setAttribute('clip-path', 'url(#abReveal)');
+                let fullC = '';
+                ['A', 'B', 'C'].forEach(key => {
+                    const traced = data[key].map((value, i) => [sx(data.start + i * data.step), sy(value)]);
+                    const last = traced[traced.length - 1];
+                    const read = readings.map(r => [sx(r.day), sy(r.values[key])]);
+                    const solid = smoothPath(traced);
+                    const dashed = `M${last[0]},${last[1]} L${read[0][0]},${read[0][1]} L${read[1][0]},${read[1][1]}`;
+                    const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
+                    make('path', { d: dashed, class: `ab-line ${kind} ab-line--dash` }, lines);
+                    make('path', { d: solid, class: `ab-line ${kind}` }, lines);
+                    if (key === 'C') fullC = `${solid} L${read[0][0]},${read[0][1]} L${read[1][0]},${read[1][1]}`;
+                });
+                const track = make('path', { d: fullC, fill: 'none', stroke: 'none' }, svg);
+                const signal = make('path', { d: fullC, class: 'ab-signal', 'stroke-width': 3.5 * k }, svg);
+                const head = make('circle', { r: 6 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)', opacity: 0 }, svg);
+
+                const nodes = svg.querySelector('[data-ab-nodes]');
+                const showTip = (reading, anchor) => {
+                    const box = svg.getBoundingClientRect();
+                    const scale = box.width / 1000;
+                    const rows = ['C', 'B', 'A'].map(key => `<div class="ab-tooltip__row"><span>${key === 'C' ? '<strong>Icon C</strong>' : `Icon ${key}`}</span><span>${key === 'C' ? '<strong>' : ''}+${reading.values[key]}%${key === 'C' ? '</strong>' : ''}</span></div>`).join('');
+                    tooltip.innerHTML = `<div><strong>${reading.date}</strong> 读取 · 相对原图标</div>${rows}<div class="ab-tooltip__note">Google 估算区间上限：Icon C 最高 +${reading.upper.C}%</div>`;
+                    tooltip.hidden = false;
+                    const left = Math.min(Math.max(anchor[0] * scale, 110), box.width - 110);
+                    tooltip.style.left = `${left}px`;
+                    tooltip.style.top = `${anchor[1] * scale}px`;
+                };
+                const hideTip = () => { tooltip.hidden = true; };
+                const nodeGroups = readings.map(reading => {
+                    const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
+                    ['A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.values[key]), r: 4 * k, fill: 'rgba(255,255,255,.4)' }, group));
+                    const point = [sx(reading.day), sy(reading.values.C)];
+                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
+                    make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
+                    ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
+                    ['pointerleave', 'blur'].forEach(type => group.addEventListener(type, hideTip));
+                    return { group, x: point[0] };
+                });
+
+                const startSignal = () => {
+                    const length = track.getTotalLength();
+                    signal.style.strokeDasharray = `70 ${length + 70}`;
+                    signal.style.opacity = '1';
+                    signal.animate([{ strokeDashoffset: 70 }, { strokeDashoffset: -length }], { duration: 3400, iterations: Infinity, easing: 'ease-in-out' });
+                };
+                if (reduceMotion) {
+                    nodeGroups.forEach(node => node.group.classList.add('is-visible'));
+                    return;
+                }
+                const length = track.getTotalLength();
+                const duration = 2800;
+                let begin = null;
+                head.setAttribute('opacity', 1);
+                const frame = now => {
+                    if (begin === null) begin = now;
+                    const t = Math.min((now - begin) / duration, 1);
+                    const eased = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+                    const point = track.getPointAtLength(eased * length);
+                    head.setAttribute('cx', point.x);
+                    head.setAttribute('cy', point.y);
+                    reveal.setAttribute('width', point.x);
+                    nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-visible'); });
+                    if (t < 1) return requestAnimationFrame(frame);
+                    head.setAttribute('opacity', 0);
+                    reveal.setAttribute('width', 1000);
+                    startSignal();
+                };
+                requestAnimationFrame(frame);
             });
         })();
     </script>
