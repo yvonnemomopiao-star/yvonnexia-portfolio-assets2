@@ -197,6 +197,8 @@
         }
         #home::after {
             --hero-glow-shape: ellipse 38.2% 53.9% at 49% 60.3%;
+            --hero-edge: rgba(0, 18, 148, .097);
+            --hero-edge-width: 26.1%;
             content: "";
             position: absolute;
             inset: 0;
@@ -206,16 +208,24 @@
                soft white glow whose centre sits below the robot (not on it), plus a faint
                blue fade on both screen edges. */
             background:
-                linear-gradient(to right, rgba(0, 18, 148, .097) 0%, rgba(0, 18, 148, 0) 26.1%),
-                linear-gradient(to left, rgba(0, 18, 148, .097) 0%, rgba(0, 18, 148, 0) 26.1%),
+                linear-gradient(to right, var(--hero-edge) 0%, rgba(0, 18, 148, 0) var(--hero-edge-width)),
+                linear-gradient(to left, var(--hero-edge) 0%, rgba(0, 18, 148, 0) var(--hero-edge-width)),
                 radial-gradient(var(--hero-glow-shape), rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, .668) 48.8%, rgba(255, 255, 255, 0) 100%),
                 #DDE0FB;
             mix-blend-mode: multiply;
         }
 
         @media (max-width: 767px) {
-            /* Portrait screens: keep the glow round instead of a tall beam. */
-            #home::after { --hero-glow-shape: ellipse 85% 42% at 50% 58%; }
+            /* Portrait screens: keep the glow round instead of a tall beam, and keep the
+               edge fades narrow and light so they don't close in on a narrow screen. */
+            #home::after {
+                --hero-glow-shape: ellipse 85% 42% at 50% 58%;
+                --hero-edge: rgba(0, 18, 148, .05);
+                --hero-edge-width: 14%;
+            }
+            /* The Spline scene renders the robot right of centre on portrait canvases
+               (about 18px on a 395px-wide phone); pull it back so it sits on the page axis. */
+            .hero-spline-stage { transform: translateX(-4.7vw); }
         }
 
         .hero-scroll-cue {
@@ -1323,7 +1333,7 @@
         <div id="view-main" class="view-active">
             
             <section id="home" class="relative w-full h-screen overflow-hidden bg-[#FAFAFD]">
-                <div class="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+                <div class="hero-spline-stage absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
                     <div class="w-[133.33vw] h-[133.33vh] transform scale-[0.75] md:w-full md:h-full md:scale-100 transition-all duration-500 origin-center flex-shrink-0">
                         <spline-viewer id="heroSpline" url="https://prod.spline.design/H6Meq4gTrZiEzdr5/scene.splinecode" class="w-full h-full"></spline-viewer>
                     </div>
