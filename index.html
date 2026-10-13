@@ -658,7 +658,6 @@
         .ab-legend i { display: inline-block; width: 16px; height: 2px; border-radius: 2px; }
         .ab-legend__c { background: linear-gradient(90deg, #9aa1ad, #fff); }
         .ab-legend__ab { background: rgba(255, 255, 255, .3); }
-        .ab-legend__o { background: rgba(255, 255, 255, .55); height: 1px !important; }
         .ab-chart { position: relative; }
         .ab-chart__svg { display: block; width: 100%; height: auto; overflow: visible; }
         .ab-chart__grid line { stroke: rgba(255, 255, 255, .07); }
@@ -689,6 +688,7 @@
             pointer-events: none;
             transform: translate(-50%, calc(-100% - 16px));
         }
+        .ab-tooltip--below { transform: translate(-50%, 16px); }
         .ab-tooltip strong { color: #fff; }
         .ab-tooltip__row { display: flex; justify-content: space-between; gap: 16px; }
         .ab-tooltip__note { margin-top: 2px; font-size: 11px; color: #d1d5db; }
@@ -2425,12 +2425,12 @@
                         </div>
                         <div class="rounded-lg border border-white/10 bg-white/[0.02] p-6 md:p-8 mb-6">
                             <div class="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">首次安装用户数 · 相对原图标的领先幅度</p>
-                                <div class="ab-legend text-[10px] md:text-xs text-gray-500 flex gap-4" aria-hidden="true"><span><i class="ab-legend__c"></i>Icon C</span><span><i class="ab-legend__ab"></i>Icon A / B</span><span><i class="ab-legend__o"></i>原图标</span></div>
+                                <p class="text-[10px] md:text-xs text-gray-500 tracking-widest uppercase">首次安装用户数 · 累计</p>
+                                <div class="ab-legend text-[10px] md:text-xs text-gray-500 flex gap-4" aria-hidden="true"><span><i class="ab-legend__c"></i>Icon C</span><span><i class="ab-legend__ab"></i>Icon A / B / 原图标</span></div>
                             </div>
                             <p class="text-xs text-gray-500 mb-4">Google Play 商品详情实验，四组各分配 25% 流量</p>
                             <div class="ab-chart" data-ab-chart>
-                                <svg class="ab-chart__svg" viewBox="0 0 1000 400" role="img" aria-label="图标 C 相对原图标的安装领先幅度：8 月 13 日为 +8.2%，8 月 20 日为 +11.2%">
+                                <svg class="ab-chart__svg" viewBox="0 0 1000 400" role="img" aria-label="四组图标的累计安装曲线，图标 C 领先原图标：8 月 13 日为 +8.2%，8 月 20 日为 +11.2%">
                                     <defs>
                                         <linearGradient id="abSilver" x1="0" x2="1" y1="0" y2="0">
                                             <stop offset="0" stop-color="#9aa1ad"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#ffffff"/>
@@ -2444,8 +2444,8 @@
                                 </svg>
                                 <div class="ab-tooltip" data-ab-tooltip role="status" aria-live="polite" hidden></div>
                             </div>
-                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线根据 Google Play 后台曲线描摹（截至 8/9），虚线连接 8/13 与 8/20 两次读取的数据。将鼠标移到圆点上可查看数值。</p>
-                            <script type="application/json" data-ab-data>{"start":8,"step":0.25,"A":[-2.7,-0.6,3.4,7.8,11.5,10.4,9.0,8.5,8.6,6.2,2.4,-0.2,-1.9,-3.2,-3.5,-2.9,-1.6,-0.6,-0.4,-0.1,-0.1,0.0,0.0,0.1,0.2,0.3,0.5,0.5,-0.1,-0.4,-0.3,0.2,1.1,1.4,1.7,1.5,1.6,1.6,1.0],"B":[-5.6,-2.3,3.4,7.6,9.6,8.8,7.6,8.5,9.4,8.9,7.0,5.0,3.4,1.7,1.5,1.7,2.9,3.5,3.8,3.6,3.0,2.5,2.2,2.3,2.3,2.6,2.8,2.5,1.1,0.1,-0.1,0.3,0.6,0.7,0.6,0.9,1.4,2.1,2.4],"C":[8.9,15.7,23.7,30.3,34.3,32.6,28.0,23.8,20.7,17.8,15.7,13.8,11.5,9.1,8.3,8.3,8.9,9.2,9.3,9.2,8.4,7.6,7.3,7.3,7.1,6.9,6.3,5.7,4.4,3.7,3.9,4.9,6.3,6.9,6.9,6.8,6.9,7.4,7.6]}</script>
+                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线根据 Google Play 后台曲线描摹，虚线连接 8/20 读取的数据；纵轴已隐去安装数。将鼠标移到圆点上可查看各方案相对原图标的领先幅度。</p>
+                            <script type="application/json" data-ab-data>{"step":0.25,"end":17.61,"O":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,74,82,92,101,103,103,113,115,115,159,185,185,185,201,232,274,303,385,457,501,572,601,657,728,836,937,1023,1183,1344,1528,1695,1883,2009,2084,2175,2243,2278,2317,2354,2393,2402,2416,2437,2474,2497,2597,2762,2927,3028,3106,3232,3296,3408,3507,3551,3652,3712,3748],"A":[5,5,5,5,5,7,12,20,33,44,55,55,62,68,76,84,95,104,106,106,116,118,118,162,189,189,189,205,234,280,310,376,447,513,594,662,758,846,906,1040,1162,1297,1403,1554,1711,1865,1957,2071,2205,2277,2331,2362,2409,2448,2457,2472,2498,2537,2565,2680,2840,2952,3088,3200,3312,3458,3544,3629,3709,3808,3840,3840],"B":[5,5,5,5,5,7,12,19,32,53,76,92,93,103,116,120,126,132,137,137,139,139,159,186,186,186,197,223,233,264,305,354,413,504,583,650,745,792,890,1021,1141,1305,1447,1619,1764,1928,2019,2140,2252,2334,2382,2417,2441,2453,2468,2482,2505,2542,2585,2697,2815,2912,3046,3136,3253,3353,3446,3527,3646,3744,3817,3868],"C":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,75,83,93,102,104,109,114,126,159,185,185,185,196,201,230,264,285,390,489,595,691,789,909,976,1069,1167,1242,1401,1556,1761,1904,2050,2162,2276,2384,2454,2503,2545,2564,2570,2585,2602,2620,2647,2673,2757,2910,3017,3146,3276,3433,3571,3654,3733,3828,3929,4010,4056]}</script>
                         </div>
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 数据来自前公司项目，已隐去应用名称与绝对安装数，仅展示相对比例</p></div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
@@ -3436,13 +3436,14 @@
                 const svg = chart.querySelector('svg');
                 const tooltip = chart.querySelector('[data-ab-tooltip]');
                 const NS = 'http://www.w3.org/2000/svg';
-                const DAY0 = 8, DAY1 = 28, MIN = -10, MAX = 40;
+                // Days from 7/23. The traced curve ends at the 8/13 reading; 8/20 is a week later.
+                const END = data.end, DAY0 = 0, DAY1 = END + 7, MIN = 0, MAX = 6600;
                 // On narrow screens the 1000-unit viewBox shrinks a lot, so text and marks scale up by k.
                 const k = Math.max(1, 640 / (svg.getBoundingClientRect().width || 1000));
                 const HEIGHT = k > 1 ? 720 : 400;
                 svg.setAttribute('viewBox', `0 0 1000 ${HEIGHT}`);
                 svg.style.setProperty('--ab-font', `${12 * k}px`);
-                const LEFT = 20 + 38 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
+                const LEFT = 16 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
                 const sx = day => LEFT + (day - DAY0) / (DAY1 - DAY0) * (RIGHT - LEFT);
                 const sy = value => BOTTOM - (value - MIN) / (MAX - MIN) * (BOTTOM - TOP);
                 const make = (tag, attrs, parent) => {
@@ -3451,18 +3452,17 @@
                     if (parent) parent.appendChild(node);
                     return node;
                 };
-                // Day 8 is 7/31; the two readings were taken on 8/13 and 8/20.
+                // installs are the adjusted counts behind each reading, used only for positions; the page shows percentages.
                 const readings = [
-                    { day: 21, date: '8/13', values: { C: 8.2, B: 3.2, A: 2.5 }, upper: { C: 25.1, B: 15.3, A: 14 } },
-                    { day: 28, date: '8/20', values: { C: 11.2, B: 7.7, A: 3.5 }, upper: { C: 26.5, B: 20.1, A: 13.2 } }
+                    { day: END, date: '8/13', installs: { O: 3748, A: 3840, B: 3868, C: 4056 }, values: { C: 8.2, B: 3.2, A: 2.5 }, upper: { C: 25.1 } },
+                    { day: END + 7, date: '8/20', installs: { O: 5528, A: 5724, B: 5956, C: 6148 }, values: { C: 11.2, B: 7.7, A: 3.5 }, upper: { C: 26.5 } }
                 ];
 
                 const grid = svg.querySelector('[data-ab-grid]');
-                for (let value = MIN; value <= MAX; value += 10) {
+                for (let value = MIN; value <= MAX; value += 1650) {
                     make('line', { x1: LEFT, x2: RIGHT, y1: sy(value), y2: sy(value), class: value === 0 ? 'ab-zero' : '' }, grid);
-                    make('text', { x: LEFT - 10, y: sy(value) + 4 * k, 'text-anchor': 'end' }, grid).textContent = value === 0 ? '原图标' : `${value > 0 ? '+' : ''}${value}%`;
                 }
-                [[8, '7/31'], [14, '8/6'], [21, '8/13'], [28, '8/20']].forEach(([day, label]) => {
+                [[0, '7/23'], [7, '7/30'], [END, '8/13'], [END + 7, '8/20']].forEach(([day, label]) => {
                     make('text', { x: sx(day), y: BOTTOM + 18 + 12 * k, 'text-anchor': 'middle' }, grid).textContent = label;
                 });
 
@@ -3479,16 +3479,16 @@
                 const reveal = make('rect', { x: 0, y: -40, width: reduceMotion ? 1000 : LEFT, height: HEIGHT + 80 }, clip);
                 lines.setAttribute('clip-path', 'url(#abReveal)');
                 let fullC = '';
-                ['A', 'B', 'C'].forEach(key => {
-                    const traced = data[key].map((value, i) => [sx(data.start + i * data.step), sy(value)]);
+                ['O', 'A', 'B', 'C'].forEach(key => {
+                    const traced = data[key].map((value, i) => [sx(Math.min(i * data.step, END)), sy(value)]);
                     const last = traced[traced.length - 1];
-                    const read = readings.map(r => [sx(r.day), sy(r.values[key])]);
+                    const read = [sx(readings[1].day), sy(readings[1].installs[key])];
                     const solid = smoothPath(traced);
-                    const dashed = `M${last[0]},${last[1]} L${read[0][0]},${read[0][1]} L${read[1][0]},${read[1][1]}`;
+                    const dashed = `M${last[0]},${last[1]} L${read[0]},${read[1]}`;
                     const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
                     make('path', { d: dashed, class: `ab-line ${kind} ab-line--dash` }, lines);
                     make('path', { d: solid, class: `ab-line ${kind}` }, lines);
-                    if (key === 'C') fullC = `${solid} L${read[0][0]},${read[0][1]} L${read[1][0]},${read[1][1]}`;
+                    if (key === 'C') fullC = `${solid} L${read[0]},${read[1]}`;
                 });
                 const track = make('path', { d: fullC, fill: 'none', stroke: 'none' }, svg);
                 const signal = make('path', { d: fullC, class: 'ab-signal', 'stroke-width': 3.5 * k }, svg);
@@ -3504,12 +3504,13 @@
                     const left = Math.min(Math.max(anchor[0] * scale, 110), box.width - 110);
                     tooltip.style.left = `${left}px`;
                     tooltip.style.top = `${anchor[1] * scale}px`;
+                    tooltip.classList.toggle('ab-tooltip--below', anchor[1] * scale < 160);
                 };
                 const hideTip = () => { tooltip.hidden = true; };
                 const nodeGroups = readings.map(reading => {
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
-                    ['A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.values[key]), r: 4 * k, fill: 'rgba(255,255,255,.4)' }, group));
-                    const point = [sx(reading.day), sy(reading.values.C)];
+                    ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, fill: 'rgba(255,255,255,.4)' }, group));
+                    const point = [sx(reading.day), sy(reading.installs.C)];
                     make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)' }, group);
                     make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
