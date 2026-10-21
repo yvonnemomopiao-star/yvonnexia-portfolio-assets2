@@ -293,7 +293,7 @@
         #nav-light .portfolio-nav-trigger[aria-current],
         #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
             color: #fff;
-            background-color: #4f46c8;   /* 与标题文字同一个紫，减少画面里的紫色色相数量 */
+            background-color: #6733ea;   /* 作品集标题渐变的起始紫；白字对比 6.5:1 */
         }
         .site-nav::before {
             content: "";
@@ -2411,7 +2411,8 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : '#4f46c8') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(143,119,233,.16)' : '#6733ea') : '';
+                    link.style.color = active && isDark ? '#8f77e9' : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
