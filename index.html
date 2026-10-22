@@ -678,9 +678,9 @@
         .ab-node { cursor: pointer; outline: none; }
         .ab-dot, .ab-node__orb { fill: #000; stroke: #e5e7eb; vector-effect: non-scaling-stroke; transition: fill .25s ease; }
         .ab-dot { stroke-width: 1.6; }
-        .ab-node__orb { stroke-width: 2; }
+        .ab-node__orb { stroke-width: 3; }
         .ab-dot.is-filled { fill: #e5e7eb; }
-        .ab-dot--c { opacity: 0; transition: fill .25s ease, opacity .3s ease; }
+        .ab-dot--c { stroke-width: 2.6; opacity: 0; transition: fill .25s ease, opacity .3s ease; }
         .ab-dot--c.is-shown { opacity: 1; }
         .ab-node--pending:not(.is-filled) .ab-node__orb { opacity: 0; }
         .ab-node.is-filled .ab-node__orb { fill: url(#abOrb); }
@@ -3494,7 +3494,7 @@
                 };
                 const hideTip = () => { tooltip.hidden = true; };
                 // Hollow points on line C; a point is solid only while the orb or the light is passing it.
-                const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 3.5 * k, class: 'ab-dot ab-dot--c' }, nodes) }));
+                const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 4.5 * k, class: 'ab-dot ab-dot--c' }, nodes) }));
                 const nodeGroups = readings.map(reading => {
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, class: 'ab-dot ab-dot--faint' }, group));
