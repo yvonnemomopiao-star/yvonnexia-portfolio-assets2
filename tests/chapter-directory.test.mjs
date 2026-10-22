@@ -8,7 +8,7 @@ assert.ok(section, 'the chapter directory should exist');
 assert.ok(html.indexOf('id="home"') < html.indexOf(section));
 assert.ok(html.indexOf(section) < html.indexOf('<section id="about"'));
 const links = [...section.matchAll(/<a\b[^>]*href="#([^"]+)"[^>]*data-page="([^"]+)"[^>]*data-target="([^"]+)"/g)];
-assert.deepEqual(links.map(link => link[1]), ['proj-01', 'proj-07', 'proj-09']);
+assert.deepEqual(links.map(link => link[1]), ['proj-01', 'proj-07', 'ui-product', 'proj-09']);
 assert.match(html, /href="#work-chapters" class="hero-scroll-cue"/);
 
 const switchSource = html.slice(html.indexOf('function switchPage('), html.indexOf('function throttle('));
