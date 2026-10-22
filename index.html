@@ -675,8 +675,14 @@
         .ab-line--ab { stroke: rgba(255, 255, 255, .26); stroke-width: 1.6; }
         .ab-line--dash { stroke-dasharray: 5 7; }
         .ab-signal { fill: none; stroke: #fff; stroke-linecap: round; filter: url(#abGlow); opacity: 0; }
-        .ab-node { cursor: pointer; opacity: 0; transition: opacity .5s ease; outline: none; }
-        .ab-node.is-visible { opacity: 1; }
+        .ab-node { cursor: pointer; outline: none; }
+        .ab-dot, .ab-node__orb { fill: #000; stroke: #e5e7eb; vector-effect: non-scaling-stroke; transition: fill .25s ease; }
+        .ab-dot { stroke-width: 1.6; }
+        .ab-node__orb { stroke-width: 2; }
+        .ab-dot.is-filled { fill: #e5e7eb; }
+        .ab-node.is-filled .ab-node__orb { fill: url(#abOrb); }
+        .ab-dot--faint { stroke: rgba(255, 255, 255, .35); }
+        .ab-chart__grid .ab-vgrid { stroke: rgba(255, 255, 255, .05); stroke-dasharray: 2 4; }
         .ab-node:focus-visible .ab-node__ring { stroke: #fff; }
         .ab-node__ring { fill: none; stroke: transparent; stroke-width: 1.5; }
         .ab-tooltip {
@@ -2373,7 +2379,7 @@
                                 </svg>
                                 <div class="ab-tooltip" data-ab-tooltip role="status" aria-live="polite" hidden></div>
                             </div>
-                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线根据 Google Play 后台曲线描摹，虚线连接 8/20 读取的数据；纵轴已隐去安装数。将鼠标移到圆点上可查看各方案相对原图标的领先幅度。</p>
+                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线按 Google Play 后台曲线逐日取点，虚线连接 8/20 读取的数据；纵轴为相对刻度，已隐去真实安装数。将鼠标移到大圆点上可查看各方案相对原图标的领先幅度。</p>
                             <script type="application/json" data-ab-data>{"step":0.25,"end":17.61,"O":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,74,82,92,101,103,103,113,115,115,159,185,185,185,201,232,274,303,385,457,501,572,601,657,728,836,937,1023,1183,1344,1528,1695,1883,2009,2084,2175,2243,2278,2317,2354,2393,2402,2416,2437,2474,2497,2597,2762,2927,3028,3106,3232,3296,3408,3507,3551,3652,3712,3748],"A":[5,5,5,5,5,7,12,20,33,44,55,55,62,68,76,84,95,104,106,106,116,118,118,162,189,189,189,205,234,280,310,376,447,513,594,662,758,846,906,1040,1162,1297,1403,1554,1711,1865,1957,2071,2205,2277,2331,2362,2409,2448,2457,2472,2498,2537,2565,2680,2840,2952,3088,3200,3312,3458,3544,3629,3709,3808,3840,3840],"B":[5,5,5,5,5,7,12,19,32,53,76,92,93,103,116,120,126,132,137,137,139,139,159,186,186,186,197,223,233,264,305,354,413,504,583,650,745,792,890,1021,1141,1305,1447,1619,1764,1928,2019,2140,2252,2334,2382,2417,2441,2453,2468,2482,2505,2542,2585,2697,2815,2912,3046,3136,3253,3353,3446,3527,3646,3744,3817,3868],"C":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,75,83,93,102,104,109,114,126,159,185,185,185,196,201,230,264,285,390,489,595,691,789,909,976,1069,1167,1242,1401,1556,1761,1904,2050,2162,2276,2384,2454,2503,2545,2564,2570,2585,2602,2620,2647,2673,2757,2910,3017,3146,3276,3433,3571,3654,3733,3828,3929,4010,4056]}</script>
                         </div>
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 数据来自前公司项目，已隐去应用名称与绝对安装数，仅展示相对比例</p></div>
@@ -3414,7 +3420,7 @@
                 const HEIGHT = k > 1 ? 720 : 400;
                 svg.setAttribute('viewBox', `0 0 1000 ${HEIGHT}`);
                 svg.style.setProperty('--ab-font', `${12 * k}px`);
-                const LEFT = 16 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
+                const LEFT = 52 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
                 const sx = day => LEFT + (day - DAY0) / (DAY1 - DAY0) * (RIGHT - LEFT);
                 const sy = value => BOTTOM - (value - MIN) / (MAX - MIN) * (BOTTOM - TOP);
                 const make = (tag, attrs, parent) => {
@@ -3430,31 +3436,33 @@
                 ];
 
                 const grid = svg.querySelector('[data-ab-grid]');
-                for (let value = MIN; value <= MAX; value += 1650) {
+                // Abstract y scale: one tick = "100x"; the real install count stays hidden.
+                for (let value = MIN, tick = 0; value <= MAX; value += 1650, tick++) {
                     make('line', { x1: LEFT, x2: RIGHT, y1: sy(value), y2: sy(value), class: value === 0 ? 'ab-zero' : '' }, grid);
+                    make('text', { x: LEFT - 10 * k, y: sy(value) + 4 * k, 'text-anchor': 'end' }, grid).textContent = tick ? `${tick * 100}x` : '0';
                 }
                 [[0, '7/23'], [7, '7/30'], [END, '8/13'], [END + 7, '8/20']].forEach(([day, label]) => {
+                    make('line', { x1: sx(day), x2: sx(day), y1: TOP, y2: BOTTOM, class: 'ab-vgrid' }, grid);
                     make('text', { x: sx(day), y: BOTTOM + 18 + 12 * k, 'text-anchor': 'middle' }, grid).textContent = label;
                 });
 
-                const smoothPath = points => points.reduce((path, point, i) => {
-                    if (i === 0) return `M${point[0]},${point[1]}`;
-                    const p0 = points[i - 2] || points[i - 1], p1 = points[i - 1], p3 = points[i + 1] || point;
-                    const c1 = [p1[0] + (point[0] - p0[0]) / 6, p1[1] + (point[1] - p0[1]) / 6];
-                    const c2 = [point[0] - (p3[0] - p1[0]) / 6, point[1] - (p3[1] - p1[1]) / 6];
-                    return `${path} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${point[0]},${point[1]}`;
-                }, '');
+                const linePath = points => points.map((point, i) => `${i ? 'L' : 'M'}${point[0]},${point[1]}`).join(' ');
+                // One point per day from the traced curve, plus the 8/13 reading at the end.
+                const sampleDays = [...Array(Math.floor(END) + 1).keys()];
+                const sample = key => [...sampleDays.map(day => [sx(day), sy(data[key][Math.round(day / data.step)])]),
+                    [sx(END), sy(data[key][data[key].length - 1])]];
 
                 const lines = svg.querySelector('[data-ab-lines]');
                 const clip = make('clipPath', { id: 'abReveal' }, svg.querySelector('defs'));
                 const reveal = make('rect', { x: 0, y: -40, width: reduceMotion ? 1000 : LEFT, height: HEIGHT + 80 }, clip);
                 lines.setAttribute('clip-path', 'url(#abReveal)');
-                let fullC = '';
+                let fullC = '', dailyC = [];
                 ['O', 'A', 'B', 'C'].forEach(key => {
-                    const traced = data[key].map((value, i) => [sx(Math.min(i * data.step, END)), sy(value)]);
+                    const traced = sample(key);
+                    if (key === 'C') dailyC = traced.slice(0, -1);
                     const last = traced[traced.length - 1];
                     const read = [sx(readings[1].day), sy(readings[1].installs[key])];
-                    const solid = smoothPath(traced);
+                    const solid = linePath(traced);
                     const dashed = `M${last[0]},${last[1]} L${read[0]},${read[1]}`;
                     const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
                     make('path', { d: dashed, class: `ab-line ${kind} ab-line--dash` }, lines);
@@ -3467,6 +3475,7 @@
 
                 const nodes = svg.querySelector('[data-ab-nodes]');
                 svg.appendChild(nodes); // orbs sit above the travelling light
+                svg.appendChild(head);
                 const showTip = (reading, anchor) => {
                     const box = svg.getBoundingClientRect();
                     const scale = box.width / 1000;
@@ -3479,11 +3488,13 @@
                     tooltip.classList.toggle('ab-tooltip--below', anchor[1] * scale < 160);
                 };
                 const hideTip = () => { tooltip.hidden = true; };
+                // Hollow daily points on line C; the travelling orb fills each one as it passes.
+                const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 3.5 * k, class: 'ab-dot' }, nodes) }));
                 const nodeGroups = readings.map(reading => {
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
-                    ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, fill: 'rgba(255,255,255,.4)' }, group));
+                    ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, class: 'ab-dot ab-dot--faint' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
-                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', stroke: 'rgba(255,255,255,.55)', 'stroke-width': 1.2 * k }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, class: 'ab-node__orb' }, group);
                     make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
@@ -3498,7 +3509,8 @@
                     signal.animate([{ strokeDashoffset: 70 }, { strokeDashoffset: -length }], { duration: 3400, iterations: Infinity, easing: 'ease-in-out' });
                 };
                 if (reduceMotion) {
-                    nodeGroups.forEach(node => node.group.classList.add('is-visible'));
+                    nodeGroups.forEach(node => node.group.classList.add('is-filled'));
+                    dots.forEach(dot => dot.el.classList.add('is-filled'));
                     return;
                 }
                 const length = track.getTotalLength();
@@ -3513,7 +3525,8 @@
                     head.setAttribute('cx', point.x);
                     head.setAttribute('cy', point.y);
                     reveal.setAttribute('width', point.x);
-                    nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-visible'); });
+                    nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-filled'); });
+                    dots.forEach(dot => { if (point.x >= dot.x - 1) dot.el.classList.add('is-filled'); });
                     if (t < 1) return requestAnimationFrame(frame);
                     head.setAttribute('opacity', 0);
                     reveal.setAttribute('width', 1000);
