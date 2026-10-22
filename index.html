@@ -680,6 +680,9 @@
         .ab-dot { stroke-width: 1.6; }
         .ab-node__orb { stroke-width: 2; }
         .ab-dot.is-filled { fill: #e5e7eb; }
+        .ab-dot--c { opacity: 0; transition: fill .25s ease, opacity .3s ease; }
+        .ab-dot--c.is-shown { opacity: 1; }
+        .ab-node--pending:not(.is-filled) .ab-node__orb { opacity: 0; }
         .ab-node.is-filled .ab-node__orb { fill: url(#abOrb); }
         .ab-dot--faint { stroke: rgba(255, 255, 255, .35); }
         .ab-chart__grid .ab-vgrid { stroke: rgba(255, 255, 255, .05); stroke-dasharray: 2 4; }
@@ -3373,13 +3376,13 @@
         // UI / Product 01: icon filter and animated A/B lift chart.
         (() => {
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const whenVisible = (target, callback) => {
+            const whenVisible = (target, callback, threshold = 0.35) => {
                 if (!('IntersectionObserver' in window)) return callback();
                 const observer = new IntersectionObserver(entries => {
                     if (!entries.some(entry => entry.isIntersecting)) return;
                     observer.disconnect();
                     callback();
-                }, { threshold: 0.35 });
+                }, { threshold });
                 observer.observe(target);
             };
 
@@ -3436,10 +3439,10 @@
                 ];
 
                 const grid = svg.querySelector('[data-ab-grid]');
-                // Abstract y scale: one tick = "100x"; the real install count stays hidden.
+                // Abstract y scale: one tick = "2000x"; the real install count stays hidden.
                 for (let value = MIN, tick = 0; value <= MAX; value += 1650, tick++) {
                     make('line', { x1: LEFT, x2: RIGHT, y1: sy(value), y2: sy(value), class: value === 0 ? 'ab-zero' : '' }, grid);
-                    make('text', { x: LEFT - 10 * k, y: sy(value) + 4 * k, 'text-anchor': 'end' }, grid).textContent = tick ? `${tick * 100}x` : '0';
+                    make('text', { x: LEFT - 10 * k, y: sy(value) + 4 * k, 'text-anchor': 'end' }, grid).textContent = tick ? `${tick * 2000}x` : '0';
                 }
                 [[0, '7/23'], [7, '7/30'], [END, '8/13'], [END + 7, '8/20']].forEach(([day, label]) => {
                     make('line', { x1: sx(day), x2: sx(day), y1: TOP, y2: BOTTOM, class: 'ab-vgrid' }, grid);
@@ -3455,7 +3458,8 @@
                 const lines = svg.querySelector('[data-ab-lines]');
                 const clip = make('clipPath', { id: 'abReveal' }, svg.querySelector('defs'));
                 const reveal = make('rect', { x: 0, y: -40, width: reduceMotion ? 1000 : LEFT, height: HEIGHT + 80 }, clip);
-                lines.setAttribute('clip-path', 'url(#abReveal)');
+                // The grey lines stay on screen; only line C is revealed by the orb.
+                const linesC = make('g', { 'clip-path': 'url(#abReveal)' }, lines);
                 let fullC = '', dailyC = [];
                 ['O', 'A', 'B', 'C'].forEach(key => {
                     const traced = sample(key);
@@ -3465,8 +3469,9 @@
                     const solid = linePath(traced);
                     const dashed = `M${last[0]},${last[1]} L${read[0]},${read[1]}`;
                     const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
-                    make('path', { d: dashed, class: `ab-line ${kind}` }, lines);
-                    make('path', { d: solid, class: `ab-line ${kind}` }, lines);
+                    const target = key === 'C' ? linesC : lines;
+                    make('path', { d: dashed, class: `ab-line ${kind}` }, target);
+                    make('path', { d: solid, class: `ab-line ${kind}` }, target);
                     if (key === 'C') fullC = `${solid} L${read[0]},${read[1]}`;
                 });
                 const track = make('path', { d: fullC, fill: 'none', stroke: 'none' }, svg);
@@ -3489,12 +3494,13 @@
                 };
                 const hideTip = () => { tooltip.hidden = true; };
                 // Hollow points on line C; a point is solid only while the orb or the light is passing it.
-                const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 3.5 * k, class: 'ab-dot' }, nodes) }));
+                const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 3.5 * k, class: 'ab-dot ab-dot--c' }, nodes) }));
                 const nodeGroups = readings.map(reading => {
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, class: 'ab-dot ab-dot--faint' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
                     make('circle', { cx: point[0], cy: point[1], r: 8 * k, class: 'ab-node__orb' }, group);
+                    group.classList.add('ab-node--pending');
                     make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
@@ -3521,10 +3527,16 @@
                     };
                     requestAnimationFrame(loop);
                 };
+                const reach = x => {
+                    dots.forEach(dot => { if (x >= dot.x - 1) dot.el.classList.add('is-shown'); });
+                    nodeGroups.forEach(node => { if (x >= node.x - 1) node.group.classList.add('is-filled'); });
+                };
                 if (reduceMotion) {
-                    nodeGroups.forEach(node => node.group.classList.add('is-filled'));
+                    reach(1e4);
                     return;
                 }
+                // Line C starts drawing once about half of the chart is on screen.
+                whenVisible(chart, () => {
                 const length = track.getTotalLength();
                 const duration = 2800;
                 let begin = null;
@@ -3537,7 +3549,7 @@
                     head.setAttribute('cx', point.x);
                     head.setAttribute('cy', point.y);
                     reveal.setAttribute('width', point.x);
-                    nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-filled'); });
+                    reach(point.x);
                     lightDots(point.x);
                     if (t < 1) return requestAnimationFrame(frame);
                     head.setAttribute('opacity', 0);
@@ -3545,7 +3557,8 @@
                     startSignal();
                 };
                 requestAnimationFrame(frame);
-            });
+                }, 0.5);
+            }, 0.01);
         })();
     </script>
 </body>
