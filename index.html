@@ -2246,8 +2246,8 @@
                             </div>
                         </div>
                         <div class="mb-12">
-                            <div class="relative w-full rounded-lg border border-white/10 shadow-[0_0_40px_rgba(103,51,234,0.12)] overflow-hidden group bg-[#0a0a0a] flex items-center justify-center">
-                                <video class="w-full h-auto max-h-[80vh] object-contain mix-blend-screen" autoplay loop muted playsinline preload="auto">
+                            <div class="relative w-full rounded-lg border border-white/10 overflow-hidden group bg-black flex items-center justify-center">
+                                <video class="w-full h-auto max-h-[80vh] object-contain mix-blend-screen" style="clip-path: inset(0 3px)" autoplay loop muted playsinline preload="auto">
                                     <source src="https://res.cloudinary.com/duzkdvaki/video/upload/f_auto,q_auto/v1775980684/christmas_fco6qu.mp4" type="video/mp4">
                                 </video>
                                 <div class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded text-[10px] text-gray-300 font-mono tracking-widest border border-white/10 opacity-60 group-hover:opacity-100 transition-opacity">
@@ -2364,7 +2364,7 @@
                                         <linearGradient id="abSilver" x1="0" x2="1" y1="0" y2="0">
                                             <stop offset="0" stop-color="#9aa1ad"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#ffffff"/>
                                         </linearGradient>
-                                        <radialGradient id="abOrb"><stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#e5e7eb"/><stop offset="1" stop-color="#8f98a8"/></radialGradient>
+                                        <linearGradient id="abOrb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfbfb"/><stop offset="1" stop-color="#ababab"/></linearGradient>
                                         <filter id="abGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                                     </defs>
                                     <g class="ab-chart__grid" data-ab-grid></g>
@@ -3473,7 +3473,7 @@
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, fill: 'rgba(255,255,255,.4)' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
-                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', stroke: 'rgba(255,255,255,.55)', 'stroke-width': 1.2 * k }, group);
                     make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
