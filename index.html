@@ -208,10 +208,12 @@
             mix-blend-mode: multiply;
         }
 
+        /* The Spline scene renders the robot right of centre; pull it back onto the page axis
+           (and over its shadow). Measured 2026-10-22: about 20px on a 1987px desktop window,
+           about 16px on a 392px-wide phone. */
+        .hero-spline-stage { transform: translateX(-1vw); }
         @media (max-width: 767px) {
-            /* The Spline scene renders the robot right of centre on portrait canvases
-               (about 18px on a 395px-wide phone); pull it back so it sits on the page axis. */
-            .hero-spline-stage { transform: translateX(-4.7vw); }
+            .hero-spline-stage { transform: translateX(-4.2vw); }
         }
 
         .hero-scroll-cue {
