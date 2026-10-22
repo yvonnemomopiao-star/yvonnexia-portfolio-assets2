@@ -2379,7 +2379,7 @@
                                 </svg>
                                 <div class="ab-tooltip" data-ab-tooltip role="status" aria-live="polite" hidden></div>
                             </div>
-                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">实线按 Google Play 后台曲线逐日取点，虚线连接 8/20 读取的数据；纵轴为相对刻度，已隐去真实安装数。将鼠标移到大圆点上可查看各方案相对原图标的领先幅度。</p>
+                            <p class="text-[10px] md:text-xs text-gray-500 leading-relaxed mt-4">折线按 Google Play 后台曲线取点，8/13 之后只有 8/20 一次读数，两点直接相连；纵轴为相对刻度，已隐去真实安装数。将鼠标移到大圆点上可查看各方案相对原图标的领先幅度。</p>
                             <script type="application/json" data-ab-data>{"step":0.25,"end":17.61,"O":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,74,82,92,101,103,103,113,115,115,159,185,185,185,201,232,274,303,385,457,501,572,601,657,728,836,937,1023,1183,1344,1528,1695,1883,2009,2084,2175,2243,2278,2317,2354,2393,2402,2416,2437,2474,2497,2597,2762,2927,3028,3106,3232,3296,3408,3507,3551,3652,3712,3748],"A":[5,5,5,5,5,7,12,20,33,44,55,55,62,68,76,84,95,104,106,106,116,118,118,162,189,189,189,205,234,280,310,376,447,513,594,662,758,846,906,1040,1162,1297,1403,1554,1711,1865,1957,2071,2205,2277,2331,2362,2409,2448,2457,2472,2498,2537,2565,2680,2840,2952,3088,3200,3312,3458,3544,3629,3709,3808,3840,3840],"B":[5,5,5,5,5,7,12,19,32,53,76,92,93,103,116,120,126,132,137,137,139,139,159,186,186,186,197,223,233,264,305,354,413,504,583,650,745,792,890,1021,1141,1305,1447,1619,1764,1928,2019,2140,2252,2334,2382,2417,2441,2453,2468,2482,2505,2542,2585,2697,2815,2912,3046,3136,3253,3353,3446,3527,3646,3744,3817,3868],"C":[5,5,5,5,5,7,12,19,32,43,54,54,60,66,75,83,93,102,104,109,114,126,159,185,185,185,196,201,230,264,285,390,489,595,691,789,909,976,1069,1167,1242,1401,1556,1761,1904,2050,2162,2276,2384,2454,2503,2545,2564,2570,2585,2602,2620,2647,2673,2757,2910,3017,3146,3276,3433,3571,3654,3733,3828,3929,4010,4056]}</script>
                         </div>
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 数据来自前公司项目，已隐去应用名称与绝对安装数，仅展示相对比例</p></div>
@@ -3447,8 +3447,8 @@
                 });
 
                 const linePath = points => points.map((point, i) => `${i ? 'L' : 'M'}${point[0]},${point[1]}`).join(' ');
-                // One point per day from the traced curve, plus the 8/13 reading at the end.
-                const sampleDays = [...Array(Math.floor(END) + 1).keys()];
+                // Every other day from the traced curve (about 10 points), plus the 8/13 reading at the end.
+                const sampleDays = [...Array(Math.floor(END / 2) + 1).keys()].map(i => i * 2).filter(day => day < END - 1);
                 const sample = key => [...sampleDays.map(day => [sx(day), sy(data[key][Math.round(day / data.step)])]),
                     [sx(END), sy(data[key][data[key].length - 1])]];
 
@@ -3465,7 +3465,7 @@
                     const solid = linePath(traced);
                     const dashed = `M${last[0]},${last[1]} L${read[0]},${read[1]}`;
                     const kind = key === 'C' ? 'ab-line--c' : 'ab-line--ab';
-                    make('path', { d: dashed, class: `ab-line ${kind} ab-line--dash` }, lines);
+                    make('path', { d: dashed, class: `ab-line ${kind}` }, lines);
                     make('path', { d: solid, class: `ab-line ${kind}` }, lines);
                     if (key === 'C') fullC = `${solid} L${read[0]},${read[1]}`;
                 });
@@ -3488,7 +3488,7 @@
                     tooltip.classList.toggle('ab-tooltip--below', anchor[1] * scale < 160);
                 };
                 const hideTip = () => { tooltip.hidden = true; };
-                // Hollow daily points on line C; the travelling orb fills each one as it passes.
+                // Hollow points on line C; a point is solid only while the orb or the light is passing it.
                 const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 3.5 * k, class: 'ab-dot' }, nodes) }));
                 const nodeGroups = readings.map(reading => {
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
@@ -3502,15 +3502,27 @@
                     return { group, x: point[0] };
                 });
 
+                const near = 14 * k;
+                const lightDots = x => dots.forEach(dot => dot.el.classList.toggle('is-filled', Math.abs(x - dot.x) < near));
                 const startSignal = () => {
                     const length = track.getTotalLength();
                     signal.style.strokeDasharray = `70 ${length + 70}`;
                     signal.style.opacity = '1';
-                    signal.animate([{ strokeDashoffset: 70 }, { strokeDashoffset: -length }], { duration: 3400, iterations: Infinity, easing: 'ease-in-out' });
+                    const cycle = 3400;
+                    const loop = now => {
+                        const t = (now % cycle) / cycle;
+                        const eased = t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+                        const offset = 70 - eased * (length + 70);
+                        signal.style.strokeDashoffset = offset;
+                        // The bright end of the dash is at distance -offset + 70 along the path.
+                        const tip = Math.min(Math.max(70 - offset, 0), length);
+                        lightDots(tip > 0 && tip < length ? track.getPointAtLength(tip).x : -1e4);
+                        requestAnimationFrame(loop);
+                    };
+                    requestAnimationFrame(loop);
                 };
                 if (reduceMotion) {
                     nodeGroups.forEach(node => node.group.classList.add('is-filled'));
-                    dots.forEach(dot => dot.el.classList.add('is-filled'));
                     return;
                 }
                 const length = track.getTotalLength();
@@ -3526,7 +3538,7 @@
                     head.setAttribute('cy', point.y);
                     reveal.setAttribute('width', point.x);
                     nodeGroups.forEach(node => { if (point.x >= node.x - 1) node.group.classList.add('is-filled'); });
-                    dots.forEach(dot => { if (point.x >= dot.x - 1) dot.el.classList.add('is-filled'); });
+                    lightDots(point.x);
                     if (t < 1) return requestAnimationFrame(frame);
                     head.setAttribute('opacity', 0);
                     reveal.setAttribute('width', 1000);
