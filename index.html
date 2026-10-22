@@ -208,6 +208,12 @@
             mix-blend-mode: multiply;
         }
 
+        @media (max-width: 767px) {
+            /* The Spline scene renders the robot right of centre on portrait canvases
+               (about 18px on a 395px-wide phone); pull it back so it sits on the page axis. */
+            .hero-spline-stage { transform: translateX(-4.7vw); }
+        }
+
         .hero-scroll-cue {
             position: absolute;
             left: 50%;
@@ -287,7 +293,7 @@
         #nav-light .portfolio-nav-trigger[aria-current],
         #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
             color: #fff;
-            background-color: #4f46c8;   /* 与标题文字同一个紫，减少画面里的紫色色相数量 */
+            background-color: #6733ea;   /* 作品集标题渐变的起始紫；白字对比 6.5:1 */
         }
         .site-nav::before {
             content: "";
@@ -442,7 +448,8 @@
             50% { opacity: 1; transform: translateY(5px); }
         }
         @media (max-width: 480px) {
-            .hero-scroll-cue { bottom: max(18px, env(safe-area-inset-bottom)); }
+            /* Sit above the "Built with Spline" badge that Spline pins to the bottom-right corner. */
+            .hero-scroll-cue { bottom: calc(env(safe-area-inset-bottom, 0px) + 64px); }
             .hero-scroll-cue__button { width: 26px; height: 26px; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -1313,7 +1320,7 @@
         <div id="view-main" class="view-active">
             
             <section id="home" class="relative w-full h-screen overflow-hidden bg-[#FAFAFD]">
-                <div class="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+                <div class="hero-spline-stage absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
                     <div class="w-[133.33vw] h-[133.33vh] transform scale-[0.75] md:w-full md:h-full md:scale-100 transition-all duration-500 origin-center flex-shrink-0">
                         <spline-viewer id="heroSpline" url="https://prod.spline.design/H6Meq4gTrZiEzdr5/scene.splinecode" class="w-full h-full"></spline-viewer>
                     </div>
@@ -2404,7 +2411,8 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : '#4f46c8') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(143,119,233,.16)' : '#6733ea') : '';
+                    link.style.color = active && isDark ? '#8f77e9' : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>

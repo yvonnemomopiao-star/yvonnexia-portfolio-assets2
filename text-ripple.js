@@ -84,16 +84,20 @@
     // 渐隐带的长度按像素算（屏幕短边 × vignette，最长到画面一半）；用 smoothstep 曲线铺 9 个过渡点，过渡更柔和
     var band = clamp(cfg.vignette, 0, 2) * Math.min(W, H) / 2;
     var bx = Math.min(Math.round(band), W / 2), by = Math.min(Math.round(band * 0.75), H / 2);
-    function edge(dir, size, b) {
-      var stops = ['transparent 0'], tail = [], n = 8;
+    // 手机竖屏上左右渐隐会吃掉大半屏文字：带宽缩到 35%，边缘也不完全透明，只留一点点过渡
+    var narrow = W < MIN_WIDTH, fx = narrow ? 0.35 : 0;
+    if (narrow) bx = Math.round(bx * 0.35);
+    function edge(dir, size, b, floor) {
+      floor = floor || 0;
+      var stops = [floor ? 'rgba(0,0,0,' + floor + ') 0' : 'transparent 0'], tail = [], n = 8;
       for (var i = 1; i <= n; i++) {
-        var u = i / n, a = (u * u * (3 - 2 * u)).toFixed(3), d = Math.round(b * u);
+        var u = i / n, a = (floor + (1 - floor) * u * u * (3 - 2 * u)).toFixed(3), d = Math.round(b * u);
         stops.push('rgba(0,0,0,' + a + ') ' + d + 'px');
         tail.unshift('rgba(0,0,0,' + a + ') ' + Math.round(size - d) + 'px');
       }
-      return 'linear-gradient(' + dir + ', ' + stops.concat(tail).join(', ') + ', transparent 100%)';
+      return 'linear-gradient(' + dir + ', ' + stops.concat(tail).join(', ') + ', ' + stops[0].replace(/ 0$/, ' 100%') + ')';
     }
-    var m = edge('to bottom', H, by) + ', ' + edge('to right', W, bx);
+    var m = edge('to bottom', H, by) + ', ' + edge('to right', W, bx, fx);
     if (cfg.hole > 0) {
       // feather：机器人留空边缘的柔和程度，0 = 硬边，1 = 从中心一路渐变到半径
       var f = clamp(cfg.feather, 0, 1), inner = Math.round((1 - f) * 100), mid = Math.round(inner + (100 - inner) * 0.5);
