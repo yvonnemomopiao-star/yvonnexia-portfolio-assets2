@@ -554,9 +554,9 @@
 
         .custom-scrollbar::-webkit-scrollbar { height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(103, 51, 234, 0.5); border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(103, 51, 234, 0.9); }
-        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(103, 51, 234, 0.5) rgba(255, 255, 255, 0.1); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(229, 231, 235, 0.5); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(229, 231, 235, 0.85); }
+        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(229, 231, 235, 0.5) rgba(255, 255, 255, 0.1); }
 
         /* 项目经历页：紫色只用于项目标签与关键结论 */
         #portfolio h5 > span.w-1\.5.h-1\.5.bg-purple-500.rounded-full {
@@ -565,11 +565,12 @@
         #portfolio .border-l-2.border-purple-500 {
             border-color: rgba(255, 255, 255, 0.2) !important;
         }
-        #portfolio img[class*="hover:border-purple-500/50"]:hover,
-        #portfolio div[class*="hover:border-purple-500/50"]:hover {
+        /* 作品集里的图片悬停描边统一为灰白，不用紫色 */
+        #portfolio [class*="hover:border-purple"]:hover,
+        #portfolio .lumina-frame:hover {
             border-color: rgba(255, 255, 255, 0.3) !important;
         }
-        #portfolio .group:hover [class*="group-hover:border-purple-500/30"] {
+        #portfolio .group:hover [class*="group-hover:border-purple"] {
             border-color: rgba(255, 255, 255, 0.3) !important;
         }
         .portfolio-silver-symbol {
@@ -3472,7 +3473,7 @@
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, fill: 'rgba(255,255,255,.4)' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
-                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)', filter: 'url(#abGlow)' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, fill: 'url(#abOrb)' }, group);
                     make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
