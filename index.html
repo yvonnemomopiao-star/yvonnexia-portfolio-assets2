@@ -38,7 +38,6 @@
     <!-- 🌟 核心提速 2：预加载最大内容绘制资产 (LCP Preload) -->
     <link rel="preload" as="image" href="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1790580554/title_etqh9l.png">
     
-    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 🌟 核心提速 3：提前建立与服务器的握手连接 -->
     <link rel="preconnect" href="https://prod.spline.design" crossorigin>
@@ -47,38 +46,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Microsoft YaHei', 'sans-serif'],
-                    },
-                    colors: {
-                        purple: {
-                            50: '#f0f0fd', 100: '#e4e2fb', 200: '#cfc9f7', 300: '#b1a4f1',
-                            400: '#8f77e9', 500: '#724ee0', 600: '#6733ea', 700: '#5824cd',
-                            800: '#481fa7', 900: '#3d1a88', 950: '#250e5e',
-                        }
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-15px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     
     <!-- 引入 Spline 3D 引擎 -->
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.61/build/spline-viewer.js"></script>
     <!-- 🌟 引入顶级 Lottie 动画播放引擎 (延迟加载防阻塞) -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.12/dist/lottie-player.js"></script>
     
     <style>
         @font-face {
@@ -193,6 +165,8 @@
             width: 100%;
             max-width: 100%;
         }
+        /* clip (not hidden) keeps <body> from becoming a scroll container, which would break position: sticky. */
+        body { overflow-x: clip; }
 
         spline-viewer { width: 100%; height: 100%; }
         #spline-watermark { display: none !important; }
@@ -232,6 +206,14 @@
                 radial-gradient(ellipse 40% 78% at 50% 74%, rgba(250, 250, 253, .8) 0%, rgba(250, 250, 253, .5) 50%, rgba(250, 250, 253, 0) 100%),
                 #ECECFF;
             mix-blend-mode: multiply;
+        }
+
+        /* The Spline scene renders the robot right of centre; pull it back onto the page axis
+           (and over its shadow). Measured 2026-10-22: about 20px on a 1987px desktop window,
+           about 16px on a 392px-wide phone. */
+        .hero-spline-stage { transform: translateX(-1vw); }
+        @media (max-width: 767px) {
+            .hero-spline-stage { transform: translateX(-4.2vw); }
         }
 
         .hero-scroll-cue {
@@ -279,10 +261,10 @@
         /* Keep the header glass on a sibling layer so dropdowns can blur the page. */
         #nav-light,
         #backToTop {
-            --nav-glass-bg: rgba(250, 250, 253, .7);
-            --nav-glass-border: rgba(229, 231, 235, .5);
-            --nav-glass-shadow: 0 4px 30px rgba(0, 0, 0, .03);
-            --nav-icon-color: #4b5563;
+            --nav-glass-bg: rgba(236, 234, 253, .6);
+            --nav-glass-border: rgba(178, 184, 248, .5);
+            --nav-glass-shadow: none;
+            --nav-icon-color: #5a5478;
             --nav-icon-hover: #5824cd;
         }
         #nav-dark,
@@ -292,6 +274,28 @@
             --nav-glass-shadow: 0 4px 30px rgba(0, 0, 0, .5);
             --nav-icon-color: #9ca3af;
             --nav-icon-hover: #8f77e9;
+        }
+        /* Lavender-tinted light navigation: ink and accent come from the brand purple, not neutral grey. */
+        #nav-light {
+            border-bottom-color: var(--nav-glass-border);
+            box-shadow: var(--nav-glass-shadow);
+        }
+        #nav-light nav > a,
+        #nav-light .portfolio-nav-trigger {
+            color: #5a5478;
+        }
+        #nav-light nav > a:hover,
+        #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger {
+            color: #5824cd;
+            background-color: rgba(103, 51, 234, .08);
+        }
+        /* Current page: a solid pill. Its fill is set inline by syncNavigationTheme. */
+        #nav-light nav > a[aria-current],
+        #nav-light nav > a[aria-current]:hover,
+        #nav-light .portfolio-nav-trigger[aria-current],
+        #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
+            color: #fff;
+            background-color: #6733ea;   /* 作品集标题渐变的起始紫；白字对比 6.5:1 */
         }
         .site-nav::before {
             content: "";
@@ -446,7 +450,8 @@
             50% { opacity: 1; transform: translateY(5px); }
         }
         @media (max-width: 480px) {
-            .hero-scroll-cue { bottom: max(18px, env(safe-area-inset-bottom)); }
+            /* Sit above the "Built with Spline" badge that Spline pins to the bottom-right corner. */
+            .hero-scroll-cue { bottom: calc(env(safe-area-inset-bottom, 0px) + 64px); }
             .hero-scroll-cue__button { width: 26px; height: 26px; }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -796,6 +801,46 @@
         #about.paper-grain::before {
             mix-blend-mode: normal;
         }
+
+        /* ---------- 关于我（含核心技能）卡片 ---------- */
+        /* TODO 上线前：Chaslow 目前是试用版，记得换掉（换正式授权版或其他字体） */
+        @font-face { font-family: 'Chaslow'; src: url('assets/fonts/chaslow.woff') format('woff'); font-display: swap; }
+        :root { --about-ink: #4f46c8; --about-line: #b2b8f8; --font-display: 'Chaslow', 'Inter', sans-serif; }
+        .about-card { max-width: 1060px; margin: 0 auto; }
+        .about-hello { position: relative; width: min(900px, 100%); margin: 0 auto 48px; display: flex; justify-content: center; align-items: center; }
+        .about-hello__avatar { width: 40%; aspect-ratio: 1; }
+        .about-hello__avatar img { width: 100%; height: 100%; object-fit: contain; transition: transform .5s; }
+        .about-hello:hover .about-hello__avatar img { transform: scale(1.03); }
+        .about-hello__lottie { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); width: 100%; aspect-ratio: 1348 / 442; pointer-events: none; z-index: 2; }
+        .about-card__panel { background: rgba(255,255,255,.82); border: 1px solid rgba(178, 184, 248, .45); border-radius: 22px; padding: clamp(28px, 5vw, 64px) clamp(20px, 6vw, 76px); box-shadow: 0 10px 40px rgba(103,51,234,.05); }
+        .about-card__title { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: clamp(22px, 2.3vw, 30px); letter-spacing: -.03em; color: #2a2840; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid #e4e3f3; margin-bottom: 18px; }
+        .about-card__title--center { justify-content: center; border: 0; gap: 24px; margin-bottom: 28px; font-family: var(--font-display); font-weight: 400; letter-spacing: 0; font-size: clamp(30px, 3.4vw, 46px); color: #1f1d2e; }
+        .about-card__mark { color: #8f77e9; font-size: .8em; line-height: 1; }
+        .about-card__summary { color: #4b4a5e; font-size: 15px; line-height: 1.75; display: grid; gap: 14px; }
+        .about-card__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 clamp(32px, 7vw, 96px); margin-top: 56px; }
+        .about-card__col { display: grid; align-content: start; gap: 48px; min-width: 0; }
+        .about-list { display: grid; gap: 10px; font-size: 15px; color: #4b4a5e; }
+        .about-list li { display: flex; align-items: baseline; gap: 12px; overflow-wrap: anywhere; }
+        .about-list li > span[aria-hidden] { color: #6f5ae0; font-size: 11px; flex-shrink: 0; }
+        .about-link { color: inherit; text-decoration: underline; text-decoration-color: #c9c4f5; text-underline-offset: 3px; }
+        .about-link:hover { color: #5824cd; }
+        .about-qr { margin-left: 8px; font: 600 10px/1 'Inter', sans-serif; padding: 4px 6px; border-radius: 6px; background: #efedfd; color: #6f5ae0; cursor: pointer; }
+        .about-qr:hover { background: #8f77e9; color: #fff; }
+        .about-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+        .about-tags li { padding: 6px 16px; border: 1.5px solid #8b88a8; border-radius: 999px; font-size: 14px; color: #3d3b52; }
+        .skill-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 72px)); gap: 16px 14px; }
+        .skill-chip { display: grid; justify-items: center; gap: 6px; }
+        .skill-chip__icon { width: 56px; height: 56px; border-radius: 12px; background: #4a4862; color: #fff; display: grid; place-items: center; font: 700 18px/1 'Inter', sans-serif; letter-spacing: -.02em; transition: background .2s, transform .2s; }
+        .skill-grid--ai .skill-chip__icon { background: #5b4fd6; }
+        .skill-chip:hover .skill-chip__icon { transform: translateY(-2px); background: #8f77e9; }
+        .skill-chip__name { font-size: 11px; color: #6b6a80; text-align: center; line-height: 1.25; }
+        @media (max-width: 767px) {
+            .about-card__title--center { font-size: 26px; gap: 12px; white-space: nowrap; }
+            .about-card__grid { display: flex; flex-direction: column; gap: 36px; margin-top: 40px; }
+            .about-card__col { display: contents; }
+            .about-card #skills { order: -1; }   /* 手机上 AI 技能紧跟在个人总结后面 */
+            .skill-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
         .about-glass-panel {
             background: rgba(250, 250, 253, .7);
             -webkit-backdrop-filter: blur(24px) saturate(1.08);
@@ -932,8 +977,10 @@
             .chapter-directory__detail { transform: none; }
         }
     </style>
+    <!-- Tailwind 预编译样式（改了 class 之后运行 scripts/build-css.sh 重新生成）。放在 head 最后，保持和原先 CDN 注入时相同的层叠顺序 -->
+    <link rel="stylesheet" href="tailwind.css">
 </head>
-<body class="w-full relative bg-[#FAFAFD] text-gray-900 overflow-x-hidden">
+<body class="w-full relative bg-[#FAFAFD] text-gray-900 overflow-x-clip">
 
     <div class="site-preloader paper-grain" id="sitePreloader" role="status" aria-live="polite" aria-label="网站资源加载中">
         <div class="site-preloader__loader">
@@ -1247,7 +1294,6 @@
                 </div>
 
                 <a href="#about" data-page="about" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all whitespace-nowrap cursor-pointer">关于我</a>
-                <a href="#skills" data-page="skills" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all whitespace-nowrap cursor-pointer">核心技能</a>
                 <a href="#experience" data-page="experience" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all whitespace-nowrap cursor-pointer">职业经历</a>
                 <a href="#contact" data-page="contact" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-all whitespace-nowrap cursor-pointer">联系我</a>
             </nav>
@@ -1415,7 +1461,6 @@
                 </div>
 
                 <a href="#about" data-page="about" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-all whitespace-nowrap cursor-pointer">关于我</a>
-                <a href="#skills" data-page="skills" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-all whitespace-nowrap cursor-pointer">核心技能</a>
                 <a href="#experience" data-page="experience" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-all whitespace-nowrap cursor-pointer">职业经历</a>
                 <a href="#contact" data-page="contact" class="px-3 py-1.5 md:px-4 md:py-2 text-[11px] md:text-xs lg:text-sm font-bold text-gray-400 hover:text-purple-400 hover:bg-purple-500/20 rounded-lg transition-all whitespace-nowrap cursor-pointer">联系我</a>
             </nav>
@@ -1429,10 +1474,17 @@
         <div id="view-main" class="view-active">
             
             <section id="home" class="relative w-full h-screen overflow-hidden bg-[#FAFAFD]">
-                <div class="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
+                <div class="hero-spline-stage absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
                     <div class="w-[133.33vw] h-[133.33vh] transform scale-[0.75] md:w-full md:h-full md:scale-100 transition-all duration-500 origin-center flex-shrink-0">
                         <spline-viewer id="heroSpline" url="https://prod.spline.design/H6Meq4gTrZiEzdr5/scene.splinecode" class="w-full h-full"></spline-viewer>
                     </div>
+                    <!-- 机器人会吞掉鼠标滚轮，导致鼠标停在首屏时页面滚不动：在滚轮到达机器人之前截住，让页面正常滚动 -->
+                    <script>
+                        (function () {
+                            var box = document.getElementById('heroSpline').parentElement;
+                            box.addEventListener('wheel', function (e) { e.stopPropagation(); }, { capture: true, passive: true });
+                        })();
+                    </script>
                 </div>
 
                 <div class="hero-title-lockup absolute top-1/2 left-1/2 z-50 w-[360px] md:w-[700px] -translate-x-1/2 -translate-y-1/2 -mt-[32vh] md:-mt-[30vh] lg:-mt-[32vh] pointer-events-none select-none">
@@ -1496,220 +1548,71 @@
             </section>
 
             <!-- About Me 版块 -->
-            <section id="about" class="paper-grain w-full bg-[#F3F3FC] text-gray-900 relative z-40 py-32 px-6 md:px-12 flex items-center justify-center min-h-[50vh]">
-                <div class="max-w-[1024px] mx-auto w-full flex flex-col items-center relative z-10">
-                    
-                    <!-- 1. 个人头像 -->
-                    <div class="relative w-full md:w-3/6 lg:w-2/3 group cursor-zoom-in animate-float flex justify-center items-center" 
-                         data-lightbox-source="#avatar-base-img">
-                        <img id="avatar-base-img" 
-                             src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996071/mebg_wsanyx.png" 
-                             loading="lazy" decoding="async" alt="HI~ THIS IS YVONNE!" 
-                             class="w-[40%] object-contain hover:scale-105 transition-transform duration-500"
-                             onerror="this.src='https://placehold.co/1000x400/ffffff/9333ea?text=AVATAR+BACKGROUND&font=Montserrat'">
-                        
-                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-transform duration-500 group-hover:scale-110">
-                            <lottie-player 
-                                src="https://cdn.jsdelivr.net/gh/yvonnemomopiao-star/yvonnexia-portfolio-assets@main/hi.json" 
-                                background="transparent" 
-                                speed="1" 
-                                style="width: 100%;" 
-                                loop 
-                                autoplay>
-                            </lottie-player>
+            <section id="about" class="paper-grain w-full bg-[#F3F3FC] text-gray-900 relative z-40 py-24 md:py-32 px-4 md:px-12">
+                <!-- 关于我 + 核心技能 合并为一张卡片。✦ 是占位标记，拿到 logo SVG 后替换 .about-card__mark -->
+                <div class="about-card">
+                    <header class="about-hello">
+                        <div class="about-hello__avatar cursor-zoom-in" data-lightbox-source="#avatar-base-img">
+                            <img id="avatar-base-img" src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996071/mebg_wsanyx.png" loading="lazy" decoding="async" alt="夏怡静 Yijing Xia">
                         </div>
-                    </div>
+                        <!-- 原有的 HI~ THIS IS / YIJING XIA ! Lottie 动画，叠在头像上 -->
+                        <lottie-player class="about-hello__lottie" src="https://cdn.jsdelivr.net/gh/yvonnemomopiao-star/yvonnexia-portfolio-assets@main/hi.json" background="transparent" speed="1" loop autoplay aria-hidden="true"></lottie-player>
+                        <h2 class="sr-only">HI~ THIS IS YIJING XIA !</h2>
+                    </header>
 
-                    <!-- 🌟 2. 个人总结 (移至此处) -->
-                    <div class="mt-12 md:mt-20 w-full max-w-4xl">
-                        <div class="about-glass-panel p-8 md:p-10 rounded-2xl transition-all duration-300 group">
-                            <h4 class="text-xl font-black text-gray-900 mb-6 flex items-center gap-3">
-                                Personal Summary <span class="text-sm font-normal text-gray-400 ml-2 tracking-widest uppercase">个人总结</span>
-                            </h4>
-                            <h5 class="text-lg md:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 to-purple-400 mb-6">AIGC 视觉全栈 | 游戏美术 AI 工作流搭建 | AI产品方案设计</h5>
-                            <div class="space-y-4 text-sm md:text-base text-gray-600 leading-relaxed">
-                                <p class="text-gray-800 font-medium mb-6 leading-relaxed">
-                                    7年视觉设计经验，先后任职日企、韩企及新浪旗下，具备多元企业文化适配经验，熟悉不同体系办公模式与职场运作逻辑，专注 AI 视觉产品设计与落地，擅长需求拆解、AI 生成工作流搭建、视觉体验优化，具备美术 + AI + 产品复合能力。
-                                </p>
-                                <p class="leading-relaxed">
-                                    作为 AIGC 视觉工业化实践者，精通 Midjourney、Stable Diffusion、ComfyUI、Kling、Sora 等前沿 AI 创作工具，成功搭建「AI 生成 + 3D（Blender）建模 + 2D 精修」一体化高效视觉生产流程，以创新技术赋能视觉创作，实现高质量、高效率的设计项目落地。
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- 3. 个人基础信息网格 (原位置下移) -->
-                    <div class="about-glass-panel mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-12 w-full max-w-4xl px-8 py-10 rounded-2xl transition-all duration-300 group">
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">Name / 姓名</span>
-                            <span class="text-gray-800 font-bold text-lg">夏怡静</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">City / 所在城市</span>
-                            <span class="text-gray-800 font-bold text-lg">上海</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">Email / 邮箱</span>
-                            <span class="text-gray-800 font-bold text-lg font-mono break-all">1246599899@qq.com</span>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">Phone / 电话</span>
-                            <span class="text-gray-800 font-bold text-lg font-mono break-all">15821344318</span>
-                        </div>
-                        
-                        <div class="relative flex flex-col w-full">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold pr-12">WeChat / 微信</span>
-                            <span class="text-gray-800 font-bold text-lg font-mono break-all pr-12">Yueyexiandewxhao</span>
-                            <button data-lightbox-src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1776008502/wechat_u8xdxm.png"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-gray-100 hover:bg-purple-100 text-gray-500 hover:text-purple-600 rounded-lg transition-all duration-300 cursor-pointer group shrink-0"
-                                    title="点击查看微信二维码">
-                                <svg class="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                                </svg>
-                            </button>
+                    <div class="about-card__panel">
+                        <h3 class="about-card__title about-card__title--center"><span class="about-card__mark" aria-hidden="true">✦</span>PERSONAL SUMMARY<span class="about-card__mark" aria-hidden="true">✦</span></h3>
+                        <div class="about-card__summary">
+                            <p>拥有多元跨界美学积淀，深耕品牌设计、游戏原画与 K-pop 视觉延伸设计领域，具备顶尖审美把控力与极强的风格适配能力。</p>
+                            <p>作为 AIGC 视觉工业化实践者，精通 Midjourney、Stable Diffusion、ComfyUI、Kling、Sora 等前沿 AI 创作工具，成功搭建「AI 生成 + 3D（Blender）建模 + 2D 精修」一体化高效视觉生产流程，以创新技术赋能视觉创作，实现高质量、高效率的设计落地。</p>
                         </div>
 
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">Major / 本科专业</span>
-                            <span class="text-gray-800 font-bold text-lg">动画</span>
-                        </div>
-                        <div class="flex flex-col sm:col-span-2 md:col-span-3">
-                            <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase mb-2 font-bold">Education / 最高学历</span>
-                            <span class="text-gray-800 font-bold text-lg">上海理工大学（全日制本科）</span>
-                        </div>
-                    </div>
-
-                    <!-- 4. 荣誉与证书 -->
-                    <div class="mt-8 w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
-                        
-                        <!-- 个人荣誉：使用统一奖杯图标 -->
-                        <div class="about-glass-panel p-8 rounded-2xl transition-all duration-300 group">
-                            <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-200 pb-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                                    <path d="M4 22h16"></path>
-                                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                                </svg>
-                                Honors & Awards <span class="text-xs font-normal text-gray-400 ml-2 tracking-widest">个人荣誉</span>
-                            </h4>
-                            <ul class="space-y-3 text-sm text-gray-600">
-                                <li class="flex items-start gap-3">
-                                    <span class="text-purple-400 mt-0.5 text-xs">✦</span> 东方之星“香港永发杯”包装设计大赛 (铜奖)</li>
-                                        <li class="flex items-start gap-3"><span class="text-purple-400 mt-0.5 text-xs">✦</span> 毕业作品留校，并被加入学校宣传短片</li>
-                                        <li class="flex items-start gap-3"><span class="text-purple-400 mt-0.5 text-xs">✦</span> 校优秀学生奖学金 (优秀作品奖)</li>
-                                        <li class="flex items-start gap-3"><span class="text-purple-400 mt-0.5 text-xs">✦</span> 校优秀学生奖学金 (三等奖)</li>
-                                        <li class="flex items-start gap-3"><span class="text-purple-400 mt-0.5 text-xs">✦</span> 上海理工大学学习优秀奖学金 (二等奖)</li>
-                                        <li class="flex items-start gap-3"><span class="text-purple-400 mt-0.5 text-xs">✦</span> 上海理工大学精神文明专项奖学金</li>
+                        <div class="about-card__grid">
+                            <div class="about-card__col">
+                                <section class="about-block" aria-labelledby="about-contact">
+                                    <h3 id="about-contact" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>CONTACT</h3>
+                                    <ul class="about-list">
+                                        <li><span aria-hidden="true">✦</span><span>姓名：夏怡静</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>电话：15821344318</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>邮箱：1246599899@qq.com</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>WeChat：Yueyexiandewxhao
+                                            <button type="button" class="about-qr" data-lightbox-src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1776008502/wechat_u8xdxm.png" title="查看微信二维码" aria-label="查看微信二维码">QR</button></span></li>
+                                        <li><span aria-hidden="true">✦</span><span>个人网站：<a href="https://yijingxia-portfolio.netlify.app" class="about-link">yijingxia-portfolio.netlify.app</a></span></li>
                                     </ul>
-                                </div>
-
-                                <div class="about-glass-panel p-8 rounded-2xl transition-all duration-300 group">
-                                    <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2 border-b border-gray-200 pb-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                                        </svg>
-                                        Certifications <span class="text-xs font-normal text-gray-400 ml-2 tracking-widest">专业证书</span>
-                                    </h4>
-                                    <div class="flex flex-wrap gap-3">
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">高级漫画师</span>
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">大学英语四级</span>
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">高等学校英语应用能力考试 (B级)</span>
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">全国计算机信息高新技术考试合格证书</span>
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">国家信息化计算机教育认证合格证书</span>
-                                        <span class="px-4 py-2 bg-white border border-gray-200 text-gray-700 text-sm rounded-lg shadow-sm hover:border-purple-300 hover:text-purple-600 transition-colors">上海市高等学校计算机等级考试一级</span>
-                                    </div>
-                                </div>
+                                </section>
+                                <section class="about-block" aria-labelledby="about-tech">
+                                    <h3 id="about-tech" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>TECHNICAL SKILLS</h3>
+                                    <ul class="skill-grid"><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Ps</span><span class="skill-chip__name">Photoshop</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Ai</span><span class="skill-chip__name">Illustrator</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Ae</span><span class="skill-chip__name">After Effects</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Bl</span><span class="skill-chip__name">Blender</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">My</span><span class="skill-chip__name">Maya</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Cc</span><span class="skill-chip__name">CapCut</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Fg</span><span class="skill-chip__name">Figma</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Pc</span><span class="skill-chip__name">Procreate</span></li></ul>
+                                </section>
+                                <section class="about-block" aria-labelledby="about-honors">
+                                    <h3 id="about-honors" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>HONORS &amp; AWARDS</h3>
+                                    <ul class="about-list">
+                                        <li><span aria-hidden="true">✦</span><span>东方之星“香港永发杯”包装设计大赛（铜奖）</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>毕业作品留校，并被加入学校宣传短片</span></li>
+                                    </ul>
+                                </section>
                             </div>
-                </div>
-            </section>
-
-            <!-- 🌟 核心技能 版块 (Skills Section) -->
-            <section id="skills" class="w-full bg-[#08070D] text-white relative z-40 py-32 px-6 md:px-12">
-                <div class="max-w-[1024px] mx-auto">
-                    <div class="mb-16 text-center md:text-left">
-                        <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-2 text-purple-400">CORE SKILLS</h2>
-                        <div class="w-16 h-1 bg-purple-500 mx-auto md:mx-0"></div>
-                        <p class="text-gray-400 mt-4 tracking-widest text-sm uppercase">前沿软件与工业化工作流 / 2D, 3D & AIGC</p>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-                        
-                        <div class="bg-[#111] p-8 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(103,51,234,0.15)] transition-all duration-300 group">
-                            <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
-                                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
-                                        <path d="M20 3v4"/>
-                                        <path d="M22 5h-4"/>
-                                        <path d="M4 17v2"/>
-                                        <path d="M5 18H3"/>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-bold text-white tracking-wide">AIGC 工作流</h3>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-6 leading-relaxed">
-                                精通多模态 AI 生成与节点流控制，实现从创意推演到工业级视觉/视频的高效产出。
-                            </p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Midjourney</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">ComfyUI</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Stable Diffusion</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Nano Banana</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Kling</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Sora</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Veo 3</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Dreamina</span>
+                            <div class="about-card__col">
+                                <section id="skills" class="about-block" aria-labelledby="about-ai">
+                                    <h3 id="about-ai" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>AI SKILLS</h3>
+                                    <ul class="skill-grid skill-grid--ai"><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">MJ</span><span class="skill-chip__name">Midjourney</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">SD</span><span class="skill-chip__name">Stable Diffusion</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Cf</span><span class="skill-chip__name">ComfyUI</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">NB</span><span class="skill-chip__name">Nano Banana</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">Kl</span><span class="skill-chip__name">Kling</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">So</span><span class="skill-chip__name">Sora</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">V3</span><span class="skill-chip__name">Veo 3</span></li><li class="skill-chip"><span class="skill-chip__icon" aria-hidden="true">即梦</span><span class="skill-chip__name">Dreamina</span></li></ul>
+                                </section>
+                                <section class="about-block" aria-labelledby="about-edu">
+                                    <h3 id="about-edu" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>EDUCATION</h3>
+                                    <ul class="about-list">
+                                        <li><span aria-hidden="true">✦</span><span>学校：上海理工大学</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>专业：动画</span></li>
+                                        <li><span aria-hidden="true">✦</span><span>学位：学士学位</span></li>
+                                    </ul>
+                                </section>
+                                <section class="about-block" aria-labelledby="about-cert">
+                                    <h3 id="about-cert" class="about-card__title"><span class="about-card__mark" aria-hidden="true">✦</span>CERTIFICATIONS</h3>
+                                    <ul class="about-tags">
+                                        <li>高级漫画师</li><li>大学英语四级</li><li>全国计算机信息高新技术考试合格证书</li><li>国家信息化计算机教育认证合格证书</li>
+                                    </ul>
+                                </section>
                             </div>
                         </div>
-
-                        <div class="bg-[#111] p-8 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(103,51,234,0.15)] transition-all duration-300 group">
-                            <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
-                                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                                        <line x1="12" y1="22.08" x2="12" y2="12"/>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-bold text-white tracking-wide">3D 辅助与结构控制</h3>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-6 leading-relaxed">
-                                利用 3D 工具构建底层空间与透视逻辑，精准修复 AI 生成中的结构错乱与物理失真。
-                            </p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Blender</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">MAYA</span>
-                            </div>
-                        </div>
-
-                        <div class="bg-[#111] p-8 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:shadow-[0_0_30px_rgba(103,51,234,0.15)] transition-all duration-300 group">
-                            <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
-                                <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 group-hover:bg-purple-500 group-hover:text-white transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M12 19l7-7 3 3-7 7-3-3z"/>
-                                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
-                                        <path d="M2 2l7.586 7.586"/>
-                                        <circle cx="11" cy="11" r="2"/>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-bold text-white tracking-wide">传统视觉与后期</h3>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-6 leading-relaxed">
-                                具备深厚的跨界美学底蕴，负责最终画面的商业级交付、视觉统一与动态效果合成。
-                            </p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Photoshop</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">After Effects</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Illustrator</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">CapCut 剪映</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Procreate</span>
-                                <span class="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-300 text-xs rounded-md hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors">Figma</span>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </section>
@@ -1785,25 +1688,20 @@
                 <!-- Project 01 -->
                 <div id="proj-01" class="max-w-[1440px] mx-auto px-6 md:px-12 mb-40 relative">
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">01</div>
-                    <div class="mb-12 md:mb-16 relative z-10 grid grid-cols-1 md:grid-cols-12 items-end gap-y-5 md:gap-x-8 lg:gap-x-10">
-                        <div class="md:col-span-8 lg:col-span-9 max-w-[56rem]">
-                            <h3 class="text-2xl md:text-[30px] lg:text-[34px] font-bold tracking-wide leading-tight [text-wrap:balance]">项目名称：《If the police arrive》MV场景概念设计</h3>
-                            <p class="text-sm md:text-base text-gray-400 mt-3 md:mt-4 tracking-wide leading-relaxed max-w-[46rem]">Project Name: Concept Design for the Music Video "If the police Arrive"</p>
+                    <div class="mb-10 md:mb-12 relative z-10">
+                        <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">《If the police arrive》MV场景概念设计</h3>
+                        <p class="text-sm text-gray-400 mt-3 tracking-wide">Concept Design for the Music Video "If the police Arrive"</p>
+                        <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
+                            <span>Volumetric Moonlight</span> <span>/</span> <span>Cyber-Noir</span> <span>/</span> <span>Human-in-the-loop</span>
                         </div>
-                        <div class="project-meta-preview md:col-span-4 lg:col-span-3 flex flex-wrap gap-x-3 gap-y-2 md:justify-end md:text-right text-xs tracking-widest uppercase font-medium">
-                            <span class="whitespace-nowrap">Volumetric Moonlight <span class="project-meta-separator" aria-hidden="true">/</span></span>
-                            <span class="whitespace-nowrap">Cyber-Noir <span class="project-meta-separator" aria-hidden="true">/</span></span>
-                            <span class="whitespace-nowrap">Human-in-the-loop</span>
-                        </div>
+                        <dl class="mt-8 grid grid-cols-3 gap-4 md:gap-8 max-w-[44rem] border-t border-white/10 pt-6">
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">前期视觉过稿</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">2<span class="text-sm md:text-base font-bold ml-1">周</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">传统周期 1.5–2 个月</dd></div>
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">高保真方案</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">10+<span class="text-sm md:text-base font-bold ml-1">版</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">AIGC 管线推演</dd></div>
+                            <div><dt class="text-[11px] md:text-xs text-gray-500 tracking-widest uppercase">最终落地</dt><dd class="mt-1 text-2xl md:text-4xl font-black text-white">1<span class="text-sm md:text-base font-bold ml-1">版</span></dd><dd class="mt-1 text-[11px] md:text-xs text-gray-400">领导看中两版</dd></div>
+                        </dl>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-10 relative z-10">
-                        <div class="md:col-span-4 lg:col-span-3 flex flex-col gap-4 lg:gap-6">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/topview_k3kduk.jpg" loading="lazy" fetchpriority="high" alt="MV Concept" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planA_v9fhoe.jpg" loading="lazy" fetchpriority="high" alt="Plan A" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/planB_idwrep.jpg" loading="lazy" fetchpriority="high" alt="Plan B" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                            <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planC_q1shh5.jpg" loading="lazy" fetchpriority="high" alt="Plan C" class="w-full object-cover rounded-md border border-white/10 hover:border-purple-500/50 transition-colors">
-                        </div>
-                        <div class="md:col-span-8 lg:col-span-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-[auto_1fr] gap-6 lg:gap-x-10 lg:gap-y-8 relative z-10">
+                        <div class="lg:col-span-7 lg:row-span-2">
                             <div class="project-compare-frame relative w-full md:h-[450px] lg:h-full md:min-h-[400px] lg:min-h-[800px] rounded-md border border-white/10 overflow-hidden group select-none">
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto/v1775982370/building_tto7yk.jpg" loading="lazy" fetchpriority="high" alt="修改后的主视觉" class="relative md:absolute md:inset-0 w-full h-auto md:h-full object-cover pointer-events-none">
                                 <img id="project01CompareImage" src="https://res.cloudinary.com/duzkdvaki/image/upload/f_auto,q_auto/v1775982365/buildingbase_cvy9lz.jpg" loading="lazy" fetchpriority="high" alt="修改前的主视觉" class="absolute inset-0 w-full h-full object-cover pointer-events-none bg-[#111]" style="clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);">
@@ -1820,26 +1718,37 @@
                                 <input type="range" min="0" max="100" value="50" id="project01CompareSlider" aria-label="调整修改前与修改后主视觉的对比范围" aria-valuetext="修改后画面显示 50%" class="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20 m-0 p-0 appearance-none">
                             </div>
                         </div>
-                        <div class="md:col-span-12 lg:col-span-3 flex flex-col justify-start pt-6 md:pt-10 lg:pt-0 lg:pl-1">
-                            <div class="space-y-6 lg:space-y-8">
+                        <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory no-scrollbar -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible lg:order-3 lg:col-span-5 lg:grid-cols-2 lg:gap-4 lg:self-end" aria-label="顶视图与三个候选方案">
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/topview_k3kduk.jpg" loading="lazy" alt="顶视图功能分区" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">TOP VIEW</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planA_v9fhoe.jpg" loading="lazy" alt="候选方案 A" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN A</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982368/planB_idwrep.jpg" loading="lazy" alt="候选方案 B" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN B</figcaption>
+                            </figure>
+                            <figure class="relative m-0 w-[72%] shrink-0 snap-start md:w-auto aspect-[4/3] rounded-md border border-white/10 overflow-hidden hover:border-purple-500/50 transition-colors">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775982370/planC_q1shh5.jpg" loading="lazy" alt="候选方案 C" class="absolute inset-0 w-full h-full object-cover">
+                                <figcaption class="absolute left-2 bottom-2 bg-black/60 backdrop-blur-md text-white text-[10px] tracking-widest px-2 py-1 rounded border border-white/5">PLAN C</figcaption>
+                            </figure>
+                        </div>
+                        <div class="lg:order-2 lg:col-span-5 pt-4 lg:pt-0">
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-8 md:gap-6 lg:gap-8">
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>设计逻辑与光影 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Design Logic & Lighting</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>设计逻辑与光影<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Design Logic &amp; Lighting</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
                                 </div>
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>深度人工干预 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Human-In-The-Loop</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">
-                                        <strong class="text-gray-300">技术难点突破：</strong><br>
-                                        项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>
-                                        为此，我引入了深度干预管线：首先使用<strong class="text-gray-400">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。
-                                    </p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>深度人工干预<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Human-In-The-Loop</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">技术难点突破：</strong>项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>为此，我引入了深度干预管线：首先使用<strong class="text-gray-200">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。</p>
                                 </div>
                                 <div>
-                                    <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>业务成果验证 <span class="text-[10px] lg:text-xs text-gray-500 font-normal uppercase ml-2">Project Outcome</span></h5>
-                                    <p class="text-[10px] lg:text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">
-                                        独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-400">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br>
-                                        <strong class="text-gray-400">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-400">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。
-                                    </p>
+                                    <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>业务成果验证<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Project Outcome</span></h5>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-200">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br><strong class="text-gray-200">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-200">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。</p>
                                 </div>
                             </div>
                         </div>
@@ -1851,8 +1760,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">02</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：黑暗天使 - 电影时尚研究</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Dark Angel - Cinematic Fashion Study</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">黑暗天使 - 电影时尚研究</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Dark Angel - Cinematic Fashion Study</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>High-Fashion K-Pop Aesthetic</span> <span>/</span> <span>Dark Moonlight</span> <span>/</span> <span>Ethereal Realism</span>
                             </div>
@@ -1951,8 +1860,8 @@
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">03</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：冷静系列——AIGC 叙事中的情感韧性</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: [The Stoic Series] — Emotional Resilience in AIGC Storytelling</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">冷静系列——AIGC 叙事中的情感韧性</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">[The Stoic Series] — Emotional Resilience in AIGC Storytelling</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Vertical Ad</span> <span>/</span> <span>AIGC Storytelling</span> <span>/</span> <span>Emotional Resilience</span>
                             </div>
@@ -2080,8 +1989,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">04</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：K-Pop 舞台视觉与仿生人概念设计</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Cyber-Ethereal Stage Visual & Android Concept</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">K-Pop 舞台视觉与仿生人概念设计</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Cyber-Ethereal Stage Visual & Android Concept</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Liquid-Chrome Fluidity</span> <span>/</span> <span>Iridescent Porcelain</span> <span>/</span> <span>Anisotropic Metal</span>
                             </div>
@@ -2154,8 +2063,8 @@
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">05</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：ADAM 音乐节海报设计</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: ADAM Music Festival Poster Design</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">ADAM 音乐节海报设计</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">ADAM Music Festival Poster Design</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Humanoid</span> <span>/</span> <span>Inorganic Texture</span> <span>/</span> <span>Futuristic Digital Life</span>
                             </div>
@@ -2215,8 +2124,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">06</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">项目名称：K-Pop Q版手办——BOSS系列</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: K-Pop Q-version Figurines - BOSS Series</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide">K-Pop Q版手办——BOSS系列</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">K-Pop Q-version Figurines - BOSS Series</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>IP Design</span> <span>/</span> <span>Character Consistency</span> <span>/</span> <span>Commercial Standard</span>
                             </div>
@@ -2257,8 +2166,8 @@
                         <div class="mb-12">
                             <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                                 <div>
-                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：专属 LORA 模型炼制与风格克隆</h3>
-                                    <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Custom LoRA Model Training &amp; Style Replication</p>
+                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">专属 LORA 模型炼制与风格克隆</h3>
+                                    <p class="text-sm text-gray-400 mt-3 tracking-wide">Custom LoRA Model Training &amp; Style Replication</p>
                                     <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                         <span>LORA Training</span> <span>/</span> <span>Model Generalization</span> <span>/</span> <span>Style Consistency</span>
                                     </div>
@@ -2329,8 +2238,8 @@
                     <div class="absolute -top-20 md:-top-32 right-0 md:-right-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">08</div>
                     <div class="relative z-10">
                         <div class="mb-12">
-                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">项目名称：互动视觉实验 - 基于 Google AI Studio</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Interactive Visual Experiment — Powered by Google AI Studio</p>
+                            <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">互动视觉实验 - 基于 Google AI Studio</h3>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Interactive Visual Experiment — Powered by Google AI Studio</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Creative Coding</span> <span>/</span> <span>Google AI Studio</span> <span>/</span> <span>Generative UI</span>
                             </div>
@@ -2602,7 +2511,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">欧美卡通风格游戏《才不是童话》日韩台上线</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: The dark fairy tale-style mobile game "It's Not a Fairy Tale"</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">The dark fairy tale-style mobile game "It's Not a Fairy Tale"</p>
                             <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Dark Fairy Tale</span> <span>/</span> <span>Mobile Game</span> <span>/</span> <span>Scene Design</span>
                             </div>
@@ -2630,7 +2539,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide">女性向恋爱&换装游戏《依依恋物语》与《七日恋人》</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Otome Romance & Dress-up Games</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Otome Romance & Dress-up Games</p>
                             <div class="flex flex-wrap gap-4 mt-6 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Otome Game</span> <span>/</span> <span>Romantic Fantasy</span> <span>/</span> <span>2D Illustration</span>
                             </div>
@@ -2662,7 +2571,7 @@
                     <div class="relative z-10">
                         <div class="mb-12">
                             <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">日本动画《物语系列——化物语，伪物语》</h3>
-                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Project Name: Japanese Anime Series "Bakemonogatari & Nisemonogatari"</p>
+                            <p class="text-sm text-gray-400 mt-3 tracking-wide">Japanese Anime Series "Bakemonogatari & Nisemonogatari"</p>
                             <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
                                 <span>Japanese Anime</span> <span>/</span> <span>Background Art</span> <span>/</span> <span>2D Layout</span>
                             </div>
@@ -2691,7 +2600,7 @@
     </div>
 
     <!-- 底部 Contact -->
-    <footer id="contact" class="w-full bg-[#08070D] text-white py-20 text-center relative z-40">
+    <footer id="contact" class="w-full bg-black text-white py-20 text-center relative z-40">
         <h2 class="text-2xl font-bold mb-8">LET'S CONNECT</h2>
         <p class="text-gray-400 mb-8">Feel free to reach out for collaborations or just a say hi.</p>
         <div class="flex flex-wrap items-center justify-center gap-6 mt-8">
@@ -2856,9 +2765,9 @@
             const dark = document.getElementById('nav-dark');
             const back = document.getElementById('backToTop');
             const meta = document.querySelector('meta[name="theme-color"]');
-            const sections = ['home', 'work-chapters', 'about', 'skills', 'experience', 'portfolio', 'contact']
+            const sections = ['home', 'work-chapters', 'about', 'experience', 'portfolio', 'contact']
                 .map(id => document.getElementById(id)).filter(Boolean);
-            const darkSections = new Set(['work-chapters', 'skills', 'portfolio', 'contact']);
+            const darkSections = new Set(['work-chapters', 'portfolio', 'contact']);
             const links = [light, dark].flatMap(nav => [...nav.querySelectorAll('a[data-page]:not([data-target])')]);
             links.forEach(link => link.classList.remove('bg-gray-200/50', 'bg-white/10'));
             let observer;
@@ -2871,7 +2780,7 @@
                     return rect.top <= sampleY && rect.bottom > sampleY;
                 });
                 if (!section) return;
-                const isDark = darkSections.has(section.id);
+                const isDark = darkSections.has(section.id) || (section.id === 'home' && !!window.pixelRise?.covering?.());
                 const next = isDark ? dark : light;
                 const previous = isDark ? light : dark;
                 const focused = previous.contains(document.activeElement) ? document.activeElement.closest('a[data-page]') : null;
@@ -2883,7 +2792,8 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(255,255,255,.1)' : 'rgba(229,231,235,.5)') : '';
+                    link.style.backgroundColor = active ? (isDark ? 'rgba(143,119,233,.16)' : '#6733ea') : '';
+                    link.style.color = active && isDark ? '#8f77e9' : '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
@@ -3444,6 +3354,14 @@
             });
         })();
     </script>
+    <!-- 首屏文字水面：鼠标划过会荡出波纹 -->
+    <script src="text-ripple.js" defer></script>
+    <!-- 调参面板：只有网址后面加 ?tune 时才加载，平时访客看不到 -->
+    <script>(function () { if (/[?&]tune\b/.test(location.search)) { var t = document.createElement('script'); t.src = 'ripple-tune.js'; document.body.appendChild(t); } })();</script>
+    <!-- 首屏 → 作品章节目录 的像素入侵滚动衔接 -->
+    <script src="pixel-rise.js" defer></script>
+    <!-- 首页 ⇄ 作品集 跳转时的像素转场：已停用，想启用时取消下一行的注释 -->
+    <!-- <script src="pixel-transition.js" defer></script> -->
     <script>
         // UI / Product 01: icon filter and animated A/B lift chart.
         (() => {
