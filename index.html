@@ -688,6 +688,7 @@
         .ab-chart__grid .ab-vgrid { stroke: rgba(255, 255, 255, .05); stroke-dasharray: 2 4; }
         .ab-node:focus-visible .ab-node__ring { stroke: #fff; }
         .ab-node__ring { fill: none; stroke: transparent; stroke-width: 1.5; }
+        .ab-node--quiet .ab-node__orb, .ab-node--quiet .ab-dot--faint { display: none; }
         .ab-tooltip {
             position: absolute;
             z-index: 5;
@@ -3431,7 +3432,7 @@
                 const END = data.end, DAY0 = 0, DAY1 = END + 7, MIN = 0, MAX = 6600;
                 // On narrow screens the 1000-unit viewBox shrinks a lot, so text and marks scale up by k.
                 const k = Math.max(1, 640 / (svg.getBoundingClientRect().width || 1000));
-                const HEIGHT = k > 1 ? 720 : 400;
+                const HEIGHT = k > 1 ? 540 : 400;
                 svg.setAttribute('viewBox', `0 0 1000 ${HEIGHT}`);
                 svg.style.setProperty('--ab-font', `${12 * k}px`);
                 const LEFT = 52 * k, RIGHT = 1000 - 32 * k, TOP = 16, BOTTOM = HEIGHT - 26 - 18 * k;
@@ -3474,7 +3475,8 @@
                 let fullC = '', dailyC = [];
                 ['O', 'A', 'B', 'C'].forEach(key => {
                     const traced = sample(key);
-                    if (key === 'C') dailyC = traced.slice(0, -1);
+                    // Only the origin (7/23) gets a hollow point; the line itself carries the turns.
+                    if (key === 'C') dailyC = traced.slice(0, 1);
                     const last = traced[traced.length - 1];
                     const read = [sx(readings[1].day), sy(readings[1].installs[key])];
                     const solid = linePath(traced);
@@ -3506,13 +3508,14 @@
                 const hideTip = () => { tooltip.hidden = true; };
                 // Hollow points on line C; a point is solid only while the orb or the light is passing it.
                 const dots = dailyC.map(([x, y]) => ({ x, el: make('circle', { cx: x, cy: y, r: 4.5 * k, class: 'ab-dot ab-dot--c' }, nodes) }));
-                const nodeGroups = readings.map(reading => {
-                    const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
+                // 8/13 keeps its hover tooltip but shows no orb, so only the start and the end are marked.
+                const nodeGroups = readings.map((reading, i) => {
+                    const group = make('g', { class: i ? 'ab-node' : 'ab-node ab-node--quiet', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, class: 'ab-dot ab-dot--faint' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
-                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, class: 'ab-node__orb' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 6.5 * k, class: 'ab-node__orb' }, group);
                     group.classList.add('ab-node--pending');
-                    make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 12 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
                     ['pointerleave', 'blur'].forEach(type => group.addEventListener(type, hideTip));
