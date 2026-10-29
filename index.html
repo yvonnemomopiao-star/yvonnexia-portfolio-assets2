@@ -3463,8 +3463,8 @@
                 let fullC = '', dailyC = [];
                 ['O', 'A', 'B', 'C'].forEach(key => {
                     const traced = sample(key);
-                    // Only every fourth day gets a hollow point (7/25, 7/29, 8/2, 8/6): fewer orbs, the line keeps its full shape.
-                    if (key === 'C') dailyC = traced.slice(0, -1).filter((_, i) => sampleDays[i] % 4 === 2);
+                    // Hollow points only where line C clearly turns: take-off (7/31), slowdown (8/4), second climb (8/6).
+                    if (key === 'C') dailyC = traced.slice(0, -1).filter((_, i) => [8, 12, 14].includes(sampleDays[i]));
                     const last = traced[traced.length - 1];
                     const read = [sx(readings[1].day), sy(readings[1].installs[key])];
                     const solid = linePath(traced);
