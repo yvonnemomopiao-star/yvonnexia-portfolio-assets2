@@ -3463,8 +3463,8 @@
                 let fullC = '', dailyC = [];
                 ['O', 'A', 'B', 'C'].forEach(key => {
                     const traced = sample(key);
-                    // Hollow points only where line C clearly turns: take-off (7/31), slowdown (8/4), second climb (8/6).
-                    if (key === 'C') dailyC = traced.slice(0, -1).filter((_, i) => [8, 12, 14].includes(sampleDays[i]));
+                    // Hollow points: the origin (7/23), then where line C clearly turns: slowdown (8/4) and second climb (8/6).
+                    if (key === 'C') dailyC = traced.slice(0, -1).filter((_, i) => [0, 12, 14].includes(sampleDays[i]));
                     const last = traced[traced.length - 1];
                     const read = [sx(readings[1].day), sy(readings[1].installs[key])];
                     const solid = linePath(traced);
@@ -3500,9 +3500,9 @@
                     const group = make('g', { class: 'ab-node', tabindex: 0, role: 'button', 'aria-label': `${reading.date}：Icon C 领先原图标 ${reading.values.C}%` }, nodes);
                     ['O', 'A', 'B'].forEach(key => make('circle', { cx: sx(reading.day), cy: sy(reading.installs[key]), r: 3.5 * k, class: 'ab-dot ab-dot--faint' }, group));
                     const point = [sx(reading.day), sy(reading.installs.C)];
-                    make('circle', { cx: point[0], cy: point[1], r: 8 * k, class: 'ab-node__orb' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 6.5 * k, class: 'ab-node__orb' }, group);
                     group.classList.add('ab-node--pending');
-                    make('circle', { cx: point[0], cy: point[1], r: 14 * k, class: 'ab-node__ring' }, group);
+                    make('circle', { cx: point[0], cy: point[1], r: 12 * k, class: 'ab-node__ring' }, group);
                     make('rect', { x: point[0] - 22 * k, y: TOP, width: 44 * k, height: BOTTOM - TOP, fill: 'transparent' }, group);
                     ['pointerenter', 'focus', 'click'].forEach(type => group.addEventListener(type, () => showTip(reading, point)));
                     ['pointerleave', 'blur'].forEach(type => group.addEventListener(type, hideTip));
