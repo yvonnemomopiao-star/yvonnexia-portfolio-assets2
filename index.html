@@ -923,8 +923,17 @@
             transition: opacity .25s ease, transform .25s ease;
             pointer-events: none;
         }
-        /* 通栏项目描述统一行宽：约 48 字一行，避免宽屏下一行过长 */
-        .proj-desc { max-width: 48em; text-wrap: pretty; }
+        /* 通栏项目描述：短段落左标题右正文，长段落保持通栏宽度；桌面统一 14px */
+        p.proj-desc { text-wrap: pretty; }
+        @media (min-width: 768px) {
+            p.proj-desc--wide { max-width: 80%; }
+        }
+        @media (min-width: 1024px) {
+            p.proj-desc { font-size: 14px; line-height: 1.9; }
+            .proj-desc-split { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; align-items: start; }
+            .proj-desc-split > h5 { margin: 0; }
+            .proj-desc-split.proj-desc-split > p.proj-desc { margin-top: 0; } /* 压过 space-y-4 */
+        }
         .chapter-directory__description {
             margin: 0;
             color: #d9dcff;
@@ -2063,7 +2072,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-12 lg:mt-16 pt-4">
+                        <div class="proj-desc-split mt-12 lg:mt-16 pt-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>工业化落地 <span class="text-xs text-gray-500 font-normal uppercase ml-2">Pipeline Implementation</span></h5>
                             <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">AIGC 生成的机械与仿生结构极易出现“透视畸变”与“关节逻辑错乱”，导致其通常只能停留在概念草图阶段。本项目展示了如何通过<strong class="text-gray-400">“底层拓扑重构 + 局部节点重绘”</strong>的混合管线，精准修复硬伤，将 AI 废片转化为完全符合下游 3D 建模严格规范的商业级资产。</p>
                         </div>
@@ -2124,7 +2133,7 @@
                             <img src="https://cdn.jsdelivr.net/gh/yvonnemomopiao-star/yvonnexia-portfolio-assets@main/project03/04.jpg" loading="lazy" decoding="async" alt="变体推演" class="w-full rounded-lg border border-white/10 opacity-90 hover:opacity-100 transition-opacity" data-lightbox-current>
                             <p class="text-center text-[10px] text-gray-600 mt-3 tracking-widest font-bold">Under the same theme, different hues or materials were used to test the aesthetic stability.</p>
                         </div>
-                        <div class="mt-10 lg:mt-12">
+                        <div class="proj-desc-split mt-10 lg:mt-12">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>视觉锚点测试</h5>
                             <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">在确立 K-Pop 虚拟艺人或数字生命 IP 时，高精度的材质与光影设定直接决定了受众的潮流感。通过系统性的变体推演，验证了该套材质逻辑在不同色彩情绪与打光环境下的极强<strong class="text-gray-400">“鲁棒性（Robustness）”</strong>，为后续的衍生品开发与动态 CG 制作输出了极其稳定、可复制的视觉规范（Style Guide）。</p>
                         </div>
@@ -2151,7 +2160,7 @@
                             </div>
                             <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775995359/boss02_lsboqd.jpg" loading="lazy" decoding="async" alt="K-Pop 团体" class="w-full h-[300px] md:h-[500px] lg:h-[450px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-all" data-lightbox-current>
                         </div>
-                        <div class="space-y-4">
+                        <div class="proj-desc-split space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目成果 <span class="text-xs text-gray-500 font-normal uppercase ml-2">Project Outcome</span></h5>
                             <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">成功解决了 AIGC 在多角色 IP 设计中的一致性难题，通过精准的 Prompt 管线，实现了商用级别的手办开发标准。(当时并无 NANO BANANA)</p>
                         </div>
@@ -2540,7 +2549,7 @@
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 图片为无 UI 和角色状态下战斗场景，右图为游戏网络截图</p></div>
                         <div class="space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">《才不是童话》是一款主打“暗黑童话”风格的策略放置类卡牌 RPG 手游。作为核心场景原画师，我深度参与了游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制。在设计中，通过对冷暖色调的精准把控与碎片化叙事元素的植入，成功确立了游戏诡谲而不失精致的独特美术调性，助力产品在日韩台等海外市场取得优异的商业表现。</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款主打“暗黑童话”风格的策略放置类卡牌 RPG 手游。作为核心场景原画师，我深度参与了游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制。在设计中，通过对冷暖色调的精准把控与碎片化叙事元素的植入，成功确立了游戏诡谲而不失精致的独特美术调性，助力产品在日韩台等海外市场取得优异的商业表现。</p>
                         </div>
                     </div>
                 </div>
@@ -2600,7 +2609,7 @@
                         </div>
                         <div class="space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">参与日本经典动画《物语系列——化物语、伪物语》制作，核心负责场景原画设计相关工作，严格遵循导演分镜脚本及创作意图，精准把控动画场景的风格调性、空间布局与细节呈现，确保场景与角色动作、剧情氛围高度契合。<br>工作过程中，深入研读分镜脚本，拆解导演对场景的光影、色调、透视及氛围要求，绘制符合动画整体暗黑奇幻风格的场景原画，涵盖日常场景、奇幻场景等多种类型，配合团队完成原画审核、修改迭代，保障场景原画按时交付，助力动画画面的流畅呈现与风格统一。<br><br>同时，同步参与公司Q版手办建模项目，结合动画角色的核心特征，协助完成Q版角色的建模设计、细节优化工作，兼顾手办的可爱调性与角色辨识度，配合建模团队完成模型调整、适配等相关事宜，确保手办建模符合项目要求，助力项目顺利推进。</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本经典动画《物语系列——化物语、伪物语》制作，核心负责场景原画设计相关工作，严格遵循导演分镜脚本及创作意图，精准把控动画场景的风格调性、空间布局与细节呈现，确保场景与角色动作、剧情氛围高度契合。<br>工作过程中，深入研读分镜脚本，拆解导演对场景的光影、色调、透视及氛围要求，绘制符合动画整体暗黑奇幻风格的场景原画，涵盖日常场景、奇幻场景等多种类型，配合团队完成原画审核、修改迭代，保障场景原画按时交付，助力动画画面的流畅呈现与风格统一。<br><br>同时，同步参与公司Q版手办建模项目，结合动画角色的核心特征，协助完成Q版角色的建模设计、细节优化工作，兼顾手办的可爱调性与角色辨识度，配合建模团队完成模型调整、适配等相关事宜，确保手办建模符合项目要求，助力项目顺利推进。</p>
                         </div>
                     </div>
                 </div>
