@@ -19,7 +19,9 @@
  *   data-ripple-text        背景文字
  *   data-ripple-size="26"   字号(px)，按 2560 宽调校，窄屏等比缩小；手机端最多 12      data-ripple-line-height="1.2"
  *   data-ripple-color / -crest / -trough                 静止文字色 / 波峰色 / 波谷色
- *   data-ripple-opacity     静止文字不透明度（参考是深色底用 0.15；这里是浅色底，默认 0.5）
+ *   data-ripple-opacity="0.35" 静止文字不透明度：压低一些，白色波峰（不透明）才和底字拉开差距
+ *   data-ripple-hot-weight="700" 被波纹点亮的字用粗体，浅色底上白色波峰更显眼
+ *   data-ripple-outline="0"     可选：给亮起的字描深色边（默认关）
  *   data-ripple-speed="0.7" data-ripple-damping="0.01"  data-ripple-viscosity="0.2"  data-ripple-edges="absorb|reflect"
  *   data-ripple-rain="1.5"  每秒雨滴数（0 = 不下雨）    data-ripple-refraction="2"
  *   data-ripple-vignette="0.6"  四边渐隐长度（1 = 短边的一半）
@@ -60,7 +62,7 @@
     color: ds.rippleColor || '#ffffff',
     crest: ds.rippleCrest || '#ffffff',
     trough: ds.rippleTrough || '#ad57ff',
-    opacity: num(ds.rippleOpacity, 0.8),
+    opacity: num(ds.rippleOpacity, 0.35),
     resolution: 3,
     speed: num(ds.rippleSpeed, 0.7),
     damping: num(ds.rippleDamping, 0.01),
@@ -75,7 +77,8 @@
     vignette: num(ds.rippleVignette, 0.6),
     hole: num(ds.rippleHole, 0.3),
     feather: num(ds.rippleFeather, 0.3),
-    outline: num(ds.rippleOutline, 1.5),
+    outline: num(ds.rippleOutline, 0),
+    hotWeight: num(ds.rippleHotWeight, 700),
     outlineColor: ds.rippleOutlineColor || '#3c2896'
   };
   var FONT = 'ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace';
@@ -266,6 +269,7 @@
     // 被波纹点亮的字：不透明，颜色按强度从底色过渡到波峰 / 波谷色
     ctx.globalAlpha = 1;
     if (hot) {
+      if (cfg.hotWeight !== 400) ctx.font = font.replace(/^400 /, cfg.hotWeight + ' ');
       // 浅色底上白色看不出来：先给亮起来的字描一圈淡淡的深色边（越强越深），白色波峰才能「浮」出来
       if (cfg.outline > 0) {
         ctx.lineWidth = cfg.outline * kz; ctx.lineJoin = 'round';
