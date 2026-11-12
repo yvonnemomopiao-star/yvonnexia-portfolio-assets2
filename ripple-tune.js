@@ -13,11 +13,14 @@
     ['hole', '机器人留空半径', 0, 0.45, 0.01],
     ['feather', '留空边缘柔和度', 0, 1, 0.02],
     ['size', '字号', 10, 40, 1],
-    ['strength', '波纹力度', 0.3, 5, 0.1],
     ['speed', '传播速度', 0.1, 1, 0.05],
-    ['damping', '衰减', 0.005, 0.15, 0.005]
+    ['damping', '衰减', 0, 0.15, 0.005],
+    ['viscosity', '粘滞（越大越圆润）', 0, 1, 0.05],
+    ['refraction', '折射错位', 0, 6, 0.5],
+    ['rain', '每秒雨滴数', 0, 5, 0.5],
+    ['outline', '白色波峰描边', 0, 3, 0.1]
   ];
-  var COLORS = [['crest', '划过 · 波峰颜色'], ['trough', '划过 · 波谷颜色']];
+  var COLORS = [['color', '静止文字颜色'], ['crest', '划过 · 波峰颜色'], ['trough', '划过 · 波谷颜色'], ['outlineColor', '波峰描边颜色']];
 
   function start() {
     var api = window.textRipple;
