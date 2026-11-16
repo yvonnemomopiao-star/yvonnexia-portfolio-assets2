@@ -942,6 +942,9 @@
             .proj-desc-split > h5 { margin: 0; }
             .proj-desc-split.proj-desc-split > p.proj-desc { margin-top: 0; } /* 压过 space-y-4 */
         }
+        #view-portfolio .wr-pair img { display: block; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+        #view-portfolio .wr-pair figure { margin: 0 0 16px; }
+        #view-portfolio .wr-pair__text { margin-bottom: 16px; }
         /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
         #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
         /* 灰色文字整体提亮 */
@@ -962,6 +965,20 @@
         /* 06：参考照在左（4）、手办长图在右（8） */
         @media (min-width: 1024px) {
             #view-portfolio .wr-ref-pair { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; }
+            /* 11：原画与成片成对错落，成片压在原画一角，文字填在错开的空位里 */
+            #view-portfolio .wr-pair { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+            #view-portfolio .wr-pair + .wr-pair { margin-top: 112px; }
+            #view-portfolio .wr-pair__art { grid-column: 1 / 9; grid-row: 1; margin: 0 0 88px; }
+            #view-portfolio .wr-pair__side { grid-column: 8 / 13; grid-row: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 2; }
+            #view-portfolio .wr-pair__text { padding-left: calc((100% - 96px) / 5 + 56px); padding-bottom: 32px; }
+            #view-portfolio .wr-pair__shot { margin: 0; }
+            #view-portfolio .wr-pair__shot img { box-shadow: 0 0 0 8px #000, 0 24px 60px rgba(0,0,0,.6); }
+            #view-portfolio .wr-pair__shot figcaption { text-align: right; }
+            #view-portfolio .wr-pair--flip .wr-pair__art { grid-column: 5 / 13; }
+            #view-portfolio .wr-pair--flip .wr-pair__art figcaption { text-align: right; }
+            #view-portfolio .wr-pair--flip .wr-pair__side { grid-column: 1 / 6; }
+            #view-portfolio .wr-pair--flip .wr-pair__text { padding-left: 0; padding-right: calc((100% - 96px) / 5 + 56px); }
+            #view-portfolio .wr-pair--flip .wr-pair__shot figcaption { text-align: left; }
             #view-portfolio .wr-ref-pair > :first-child { order: 2; }
         }
         @media (min-width: 1024px) {
@@ -2631,19 +2648,37 @@
                                 <span>Japanese Anime</span> <span>/</span> <span>Background Art</span> <span>/</span> <span>2D Layout</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-12 mb-10">
-                            <div class="flex flex-col gap-2 md:gap-6">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                            </div>
-                            <div class="flex flex-col gap-2 md:gap-6">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                        <div class="wr-pair">
+                            <figure class="wr-pair__art">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
+                            </figure>
+                            <div class="wr-pair__side">
+                                <div class="wr-pair__text">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
+                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。</p>
+                                </div>
+                                <figure class="wr-pair__shot">
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
+                                </figure>
                             </div>
                         </div>
-                        <div class="space-y-4">
-                            <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。<br><br>同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
+                        <div class="wr-pair wr-pair--flip">
+                            <figure class="wr-pair__art">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
+                            </figure>
+                            <div class="wr-pair__side">
+                                <div class="wr-pair__text">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>同期项目</h5>
+                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
+                                </div>
+                                <figure class="wr-pair__shot">
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
+                                </figure>
+                            </div>
                         </div>
                     </div>
                 </div>
