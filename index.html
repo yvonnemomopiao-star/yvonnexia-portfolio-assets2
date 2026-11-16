@@ -269,7 +269,7 @@
         }
         #nav-dark,
         #backToTop[data-theme="dark"] {
-            --nav-glass-bg: rgba(10, 10, 10, .7);
+            --nav-glass-bg: rgba(8, 7, 13, .72);
             --nav-glass-border: rgba(255, 255, 255, .1);
             --nav-glass-shadow: 0 4px 30px rgba(0, 0, 0, .5);
             --nav-icon-color: #9ca3af;
@@ -938,8 +938,20 @@
         #view-portfolio .wr-pair img { display: block; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
         #view-portfolio .wr-pair figure { margin: 0 0 16px; }
         #view-portfolio .wr-pair__text { margin-bottom: 16px; }
+        /* ===== 深色模式 = 淡紫系统的夜间版：带紫调的近黑底、淡紫灰文字、同一层颗粒（与章节目录 .chapter-directory 同值） ===== */
+        :root { --night: #08070D; --night-raised: #121019; --night-raised-2: #17151f; }
+        #view-portfolio { position: relative; isolation: isolate; }
+        #view-portfolio.bg-black, #view-portfolio .bg-black, footer#contact.bg-black { background-color: var(--night); }
+        #view-portfolio .bg-\[\#111\] { background-color: var(--night-raised); }
+        #view-portfolio .bg-\[\#151515\] { background-color: var(--night-raised-2); }
+        #view-portfolio::before {
+            content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .05;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='white' filter='url(%23grain2)' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+        }
+        #view-portfolio .text-gray-200 { color: #e6e3f5; }
+        #view-portfolio .text-gray-300 { color: #d3d0e8; }
         /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
-        #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
+        #view-portfolio { --wr-body: #b9b6d4; --wr-muted: #9b97b8; --wr-faint: #8884a6; }
         /* 灰色文字整体提亮 */
         #view-portfolio .text-gray-400 { color: var(--wr-body); }
         #view-portfolio .text-gray-500 { color: var(--wr-muted); }
@@ -974,7 +986,7 @@
             #view-portfolio .wr-pair__side { grid-column: 8 / 13; grid-row: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 2; }
             #view-portfolio .wr-pair__text { padding-left: calc((100% - 96px) / 5 + 56px); padding-bottom: 32px; }
             #view-portfolio .wr-pair__shot { margin: 0; }
-            #view-portfolio .wr-pair__shot img { box-shadow: 0 0 0 8px #000, 0 24px 60px rgba(0,0,0,.6); }
+            #view-portfolio .wr-pair__shot img { box-shadow: 0 0 0 8px var(--night), 0 24px 60px rgba(0,0,0,.6); }
             #view-portfolio .wr-pair__shot figcaption { text-align: right; }
             #view-portfolio .wr-pair--flip .wr-pair__art { grid-column: 5 / 13; }
             #view-portfolio .wr-pair--flip .wr-pair__art figcaption { text-align: right; }
@@ -2881,7 +2893,7 @@
                 light.classList.toggle('hidden', isDark);
                 dark.classList.toggle('hidden', !isDark);
                 back.dataset.theme = isDark ? 'dark' : 'light';
-                if (meta) meta.setAttribute('content', isDark ? '#000000' : '#ffffff');
+                if (meta) meta.setAttribute('content', isDark ? '#08070D' : '#ffffff');
                 links.forEach(link => {
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
@@ -2927,7 +2939,7 @@
                 viewPortfolio.classList.remove('view-hidden');
                 navLight.classList.add('hidden'); 
                 navDark.classList.remove('hidden'); 
-                if (themeColorMeta) themeColorMeta.setAttribute('content', '#000000');
+                if (themeColorMeta) themeColorMeta.setAttribute('content', '#08070D');
                 
                 if (targetId) {
                     setTimeout(() => {
