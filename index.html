@@ -948,6 +948,8 @@
         /* 正文段落：15px，行宽限制在约 40 个汉字 */
         #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 15px; line-height: 1.7; max-width: 40em; }
         #view-portfolio p.leading-relaxed.text-center { font-size: 15px; line-height: 1.7; }
+        /* 避免段落最后一行只剩几个字 */
+        #view-portfolio p.leading-relaxed { text-wrap: pretty; }
         #view-portfolio p.text-\[11px\].text-gray-500:not(.uppercase) { font-size: 13px; line-height: 1.7; }
         @media (min-width: 1024px) {
             #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
@@ -1780,15 +1782,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-8 md:gap-6 lg:gap-8">
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>设计逻辑与光影<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Design Logic &amp; Lighting</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">依据 MV 概念、导演运镜和整体色调设计主场景与建筑。用顶视图划分功能区，保证方案能进入 3D 建模；光影上用大气透视和冷暖对比拉开空间深度，以建筑边缘的 LED 光带引导视线。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>深度人工干预<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Human-In-The-Loop</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">技术难点突破：</strong>项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>为此，我引入了深度干预管线：首先使用<strong class="text-gray-200">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">难点：</strong>楼顶要嵌入一个类似加油站的复杂功能建筑，只靠 Midjourney 提示词抽卡，得不到透视准确的画面。<br><strong class="text-gray-200">做法：</strong>先用<strong class="text-gray-200">基础 3D 模型锁定机位、角度和轮廓</strong>，以它作为结构底图，再用提示词和参考图引导赛博朋克氛围，输出导演需要的画面。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>业务成果验证<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Project Outcome</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-200">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br><strong class="text-gray-200">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-200">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 场景全案设计，用 AIGC 管线推演了<strong class="text-gray-200">十余版高保真方案</strong>，领导选中两版，最终落地一版。<br>前期视觉过稿周期从通常的 1.5–2 个月<strong class="text-gray-200">缩短到 2 周</strong>，试错成本同步降低。</p>
                                 </div>
                             </div>
                         </div>
