@@ -938,7 +938,7 @@
         #view-portfolio .wr-pair img { display: block; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
         #view-portfolio .wr-pair figure { margin: 0 0 16px; }
         #view-portfolio .wr-pair__text { margin-bottom: 16px; }
-        /* ===== 深色模式 = 淡紫系统的夜间版：带紫调的近黑底、淡紫灰文字、同一层颗粒（与章节目录 .chapter-directory 同值） ===== */
+        /* ===== 深色模式 = 淡紫系统的夜间版：带紫调的近黑底、同一层颗粒，文字保持中性灰（与章节目录 .chapter-directory 同值） ===== */
         :root { --night: #08070D; --night-raised: #121019; --night-raised-2: #17151f; }
         #view-portfolio { position: relative; isolation: isolate; }
         #view-portfolio.bg-black, #view-portfolio .bg-black, footer#contact.bg-black { background-color: var(--night); }
@@ -948,10 +948,8 @@
             content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .05;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='grain2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Cpath fill='white' filter='url(%23grain2)' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
         }
-        #view-portfolio .text-gray-200 { color: #e6e3f5; }
-        #view-portfolio .text-gray-300 { color: #d3d0e8; }
         /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
-        #view-portfolio { --wr-body: #b9b6d4; --wr-muted: #9b97b8; --wr-faint: #8884a6; }
+        #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
         /* 灰色文字整体提亮 */
         #view-portfolio .text-gray-400 { color: var(--wr-body); }
         #view-portfolio .text-gray-500 { color: var(--wr-muted); }
