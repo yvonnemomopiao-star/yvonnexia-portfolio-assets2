@@ -27,7 +27,7 @@
     
     <!-- 🌟 核心优化 1：SEO 与社交分享 (Open Graph) 卡片配置 -->
     <title>XIA YIJING - AIGC Visual Architect Portfolio 2026</title>
-    <meta name="description" content="夏怡静 (XIA YIJING) 的 2026 AIGC 作品集。深度探索 AIGC 工业化管线、多模态视听叙事、LORA 底层模型炼制与生成式交互设计。">
+    <meta name="description" content="夏怡静 (XIA YIJING) 的 2026 AIGC 作品集。深度探索 AIGC 工业化管线、多模态视听叙事、LoRA 底层模型炼制与生成式交互设计。">
     
     <!-- Open Graph (微信/飞书/LinkedIn 等社交软件分享预览卡片) -->
     <meta property="og:title" content="XIA YIJING - AIGC Visual Architect Portfolio">
@@ -296,6 +296,13 @@
         #nav-light .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
             color: #fff;
             background-color: #6733ea;   /* 作品集标题渐变的起始紫；白字对比 6.5:1 */
+        }
+        #nav-dark nav > a[aria-current],
+        #nav-dark nav > a[aria-current]:hover,
+        #nav-dark .portfolio-nav-trigger[aria-current],
+        #nav-dark .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
+            color: #8f77e9;
+            background-color: rgba(143, 119, 233, .16);
         }
         .site-nav::before {
             content: "";
@@ -935,6 +942,48 @@
             .proj-desc-split > h5 { margin: 0; }
             .proj-desc-split.proj-desc-split > p.proj-desc { margin-top: 0; } /* 压过 space-y-4 */
         }
+        #view-portfolio .wr-pair img { display: block; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+        #view-portfolio .wr-pair figure { margin: 0 0 16px; }
+        #view-portfolio .wr-pair__text { margin-bottom: 16px; }
+        /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
+        #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
+        /* 灰色文字整体提亮 */
+        #view-portfolio .text-gray-400 { color: var(--wr-body); }
+        #view-portfolio .text-gray-500 { color: var(--wr-muted); }
+        #view-portfolio .text-gray-600 { color: var(--wr-faint); }
+        #view-portfolio p strong.text-gray-400, #view-portfolio p strong.text-gray-300 { color: #ededf2; }
+        /* 标签类小字：最小 12px */
+        #view-portfolio .text-\[8px\] { font-size: 11px; }
+        #view-portfolio .text-\[10px\], #view-portfolio .text-\[11px\] { font-size: 12px; }
+        /* 正文段落：15px，行宽限制在约 40 个汉字 */
+        #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 15px; line-height: 1.7; }
+        #view-portfolio p.leading-relaxed.text-center { font-size: 15px; line-height: 1.7; }
+        #view-portfolio p.text-\[11px\].text-gray-500:not(.uppercase) { font-size: 13px; line-height: 1.7; }
+        /* 提示框：去掉紫色底和紫色描边，用作品区原有的黑灰卡片色；标题图标保留紫色作点缀 */
+        #view-portfolio .bg-purple-900\/20 { background-color: #111; border-color: rgba(255,255,255,.1); }
+        #view-portfolio .bg-purple-900\/20:hover { background-color: #151515; }
+        /* 06：参考照在左（4）、手办长图在右（8） */
+        @media (min-width: 1024px) {
+            #view-portfolio .wr-ref-pair { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; }
+            /* 11：原画与成片成对错落，成片压在原画一角，文字填在错开的空位里 */
+            #view-portfolio .wr-pair { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
+            #view-portfolio .wr-pair + .wr-pair { margin-top: 112px; }
+            #view-portfolio .wr-pair__art { grid-column: 1 / 9; grid-row: 1; margin: 0 0 88px; }
+            #view-portfolio .wr-pair__side { grid-column: 8 / 13; grid-row: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 2; }
+            #view-portfolio .wr-pair__text { padding-left: calc((100% - 96px) / 5 + 56px); padding-bottom: 32px; }
+            #view-portfolio .wr-pair__shot { margin: 0; }
+            #view-portfolio .wr-pair__shot img { box-shadow: 0 0 0 8px #000, 0 24px 60px rgba(0,0,0,.6); }
+            #view-portfolio .wr-pair__shot figcaption { text-align: right; }
+            #view-portfolio .wr-pair--flip .wr-pair__art { grid-column: 5 / 13; }
+            #view-portfolio .wr-pair--flip .wr-pair__art figcaption { text-align: right; }
+            #view-portfolio .wr-pair--flip .wr-pair__side { grid-column: 1 / 6; }
+            #view-portfolio .wr-pair--flip .wr-pair__text { padding-left: 0; padding-right: calc((100% - 96px) / 5 + 56px); }
+            #view-portfolio .wr-pair--flip .wr-pair__shot figcaption { text-align: left; }
+            #view-portfolio .wr-ref-pair > :first-child { order: 2; }
+        }
+        @media (min-width: 1024px) {
+            #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
+        }
         .chapter-directory__description {
             margin: 0;
             color: #d9dcff;
@@ -1241,7 +1290,7 @@
                                         <a href="#proj-07" data-page="portfolio" data-target="proj-07" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer group/item">
                                             <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-400 group-hover/item:text-gray-900 font-black text-sm md:text-base transition-colors">07</div>
                                             <div class="flex flex-col justify-center">
-                                                <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">专属 LORA 模型炼制</div>
+                                                <div class="text-xs font-bold text-gray-800 group-hover/item:text-gray-900 leading-tight mb-0.5">专属 LoRA 模型炼制</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">底层控制与风格克隆</div>
                                             </div>
                                         </a>
@@ -1408,7 +1457,7 @@
                                         <a href="#proj-07" data-page="portfolio" data-target="proj-07" class="flex items-center gap-3 p-2 -mx-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group/item">
                                             <div class="w-8 h-8 flex items-center justify-center shrink-0 text-gray-500 group-hover/item:text-white font-black text-sm md:text-base transition-colors">07</div>
                                             <div class="flex flex-col justify-center">
-                                                <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">专属 LORA 模型炼制</div>
+                                                <div class="text-xs font-bold text-gray-200 group-hover/item:text-white leading-tight mb-0.5">专属 LoRA 模型炼制</div>
                                                 <div class="text-[10px] text-gray-500 leading-tight">底层控制与风格克隆</div>
                                             </div>
                                         </a>
@@ -1589,8 +1638,8 @@
                     <div class="about-card__panel">
                         <h3 class="about-card__title about-card__title--center"><span class="about-card__mark" aria-hidden="true">✦</span>PERSONAL SUMMARY<span class="about-card__mark" aria-hidden="true">✦</span></h3>
                         <div class="about-card__summary">
-                            <p>拥有多元跨界美学积淀，深耕品牌设计、游戏原画与 K-pop 视觉延伸设计领域，具备顶尖审美把控力与极强的风格适配能力。</p>
-                            <p>作为 AIGC 视觉工业化实践者，精通 Midjourney、Stable Diffusion、ComfyUI、Kling、Sora 等前沿 AI 创作工具，成功搭建「AI 生成 + 3D（Blender）建模 + 2D 精修」一体化高效视觉生产流程，以创新技术赋能视觉创作，实现高质量、高效率的设计落地。</p>
+                            <p>拥有多元跨界美学积淀，深耕品牌设计、游戏原画与 K-pop 视觉延伸设计领域，审美把控扎实，能适配多种视觉风格。</p>
+                            <p>作为 AIGC 视觉工业化实践者，熟练使用 Midjourney、Stable Diffusion、ComfyUI、Kling 等 AI 创作工具，搭建「AI 生成 + 3D（Blender）建模 + 2D 精修」一体化高效视觉生产流程，兼顾质量与效率。</p>
                         </div>
 
                         <div class="about-card__grid">
@@ -1705,8 +1754,7 @@
                     <p class="portfolio-section-gradient text-purple-400 tracking-widest text-sm md:text-[20px] uppercase font-bold mb-8">项目经历：AI-Driven Visual Exploration</p>
                     <div class="max-w-[800px] mx-auto mt-12">
                         <p class="text-sm md:text-base text-gray-400 leading-relaxed text-center">
-                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“利用 AIGC 探索视觉上限，通过人工干预回归真实逻辑。”</strong>
-                            在以下项目中，我将展示如何将 Midjourney、ComfyUI 等前沿 AI 生成能力，与传统的 3D 辅助、后期精修和美学标准相融合，突破单一工具的局限，实现从概念推演到高保真商业交付的全链路视觉架构。
+                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“利用 AIGC 探索视觉上限，通过人工干预回归真实逻辑。”</strong> 以下项目展示如何将 Midjourney、ComfyUI 等 AI 生成能力与 3D 辅助、后期精修及美学标准相结合，完成从概念推演到高保真商业交付的完整流程。
                         </p>
                     </div>
                 </div>
@@ -1766,15 +1814,15 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 gap-8 md:gap-6 lg:gap-8">
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>设计逻辑与光影<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Design Logic &amp; Lighting</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">基于 MV 概念、导演运镜范围及整体色调进行主场景与建筑概念设计。利用顶视图确立功能区域划分，确保设计的空间逻辑可落地于 3D 建模阶段。光影上采用大气透视与冷暖对比，利用高空雾气增加空间深度，通过建筑边缘的 LED 发光带引导视觉动线。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">依据 MV 概念、导演运镜范围与整体色调，完成主场景与建筑的概念设计。以顶视图确立功能分区，确保空间逻辑可延续至 3D 建模阶段；光影采用大气透视与冷暖对比营造空间纵深，并以建筑边缘的 LED 光带引导视觉动线。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>深度人工干预<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Human-In-The-Loop</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">技术难点突破：</strong>项目要求大楼顶部需精准嵌合一个类似加油站的复杂功能性建筑。单纯依靠 Midjourney 的提示词（Prompt）盲盒抽卡，根本无法生成如此高精度且符合空间透视的图片。<br>为此，我引入了深度干预管线：首先使用<strong class="text-gray-200">基础 3D 模型控制了整体角度与大致轮廓</strong>，强制锁死相机的空间透视关系；随后将此作为结构约束底图，辅以提示词和参考图来引导赛博朋克的大致氛围；最终精准输出了导演所需的画面。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-200">难点：</strong>楼顶需嵌合一座类似加油站的复杂功能性建筑，仅凭 Midjourney 提示词难以生成透视准确、结构可信的画面。<br><strong class="text-gray-200">做法：</strong>先以<strong class="text-gray-200">基础 3D 模型锁定机位、角度与整体轮廓</strong>，将其作为结构约束底图，再结合提示词与参考图控制赛博朋克氛围，最终输出符合导演要求的画面。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full self-center"></span>业务成果验证<span class="text-[11px] text-gray-500 font-normal uppercase tracking-widest">Project Outcome</span></h5>
-                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 场景全案设计。通过 AIGC 工业化管线高效推演了<strong class="text-gray-200">十余版高保真视觉方案</strong>供挑选（领导最终看中两版，成功落地一版）。<br><strong class="text-gray-200">核心业务价值：</strong>将这类项目传统通常需要 1.5 到 2 个月的前期视觉过稿周期，<strong class="text-gray-200">极速压缩至短短 2 周</strong>。不仅精准交付了高标准画面，更实现了前期试错成本与时间的大幅降低。</p>
+                                    <p class="text-[13px] lg:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">独立负责公司艺人官方 MV 的场景设计，基于 AIGC 管线产出<strong class="text-gray-200">十余版高保真方案</strong>，其中两版进入终选，一版最终落地。<br>前期视觉定稿周期由常规的 1.5–2 个月<strong class="text-gray-200">缩短至 2 周</strong>，试错成本显著降低。</p>
                                 </div>
                             </div>
                         </div>
@@ -1814,7 +1862,7 @@
                             
                             <div class="mt-8">
                                 <h5 class="text-white font-bold text-base md:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目推广背景</h5>
-                                <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4 lg:max-w-[85%]">本项目基于公司旗下艺人新歌发行节点进行专属推广创作。核心目标是通过突破常规的 Cinematic 视觉表现，深度强化艺人的<strong class="text-gray-200">个人辨识度与先锋时尚属性</strong>，从而在社交与流媒体平台为新歌发布强势造势，实现高转化率的视觉宣发。</p>
+                                <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4 lg:max-w-[85%]">本项目配合公司旗下艺人的新歌发行节点而创作。目标是以 Cinematic 视觉语言强化艺人的<strong class="text-gray-200">个人辨识度与先锋时尚属性</strong>，在社交与流媒体平台为新歌预热。</p>
                             </div>
                             <div class="mt-8 border-l-2 border-purple-500 pl-6 py-2 inline-block">
                                 <p class="text-gray-400 text-xs tracking-widest uppercase font-mono"><strong class="text-white">TOOLS:</strong> MIDJOURNEY, COMFYUI, NANO BANANA, KLING, JIMENG, VEO3, SORA, 剪映</p>
@@ -1836,7 +1884,7 @@
                                         <div class="mt-2 md:mt-3 flex items-start justify-center"><p class="text-center text-[8px] md:text-xs text-gray-400 font-bold tracking-widest leading-tight">IDOL单人MV截图</p></div>
                                     </div>
                                     <div class="flex flex-col mt-auto pt-2 md:pt-4">
-                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775988225/aicomfyui06_qenena.jpg" loading="lazy" decoding="async" alt="LORA换脸" class="w-full h-[56px] sm:h-[76px] md:h-[135px] lg:h-[220px] object-cover rounded-lg border border-white/10 cursor-zoom-in" data-lightbox-current>
+                                        <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775988225/aicomfyui06_qenena.jpg" loading="lazy" decoding="async" alt="LoRA换脸" class="w-full h-[56px] sm:h-[76px] md:h-[135px] lg:h-[220px] object-cover rounded-lg border border-white/10 cursor-zoom-in" data-lightbox-current>
                                         <div class="h-8 md:h-10 mt-2 md:mt-3 flex items-start justify-center"><p class="text-center text-[8px] md:text-xs text-gray-400 font-bold tracking-widest">COMFYUI</p></div>
                                     </div>
                                 </div>
@@ -1863,17 +1911,17 @@
                                 <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%]">
                                     <div>
                                         <strong class="text-gray-200 text-sm block mb-1">✦ AIGC 工业化管线搭建：</strong>
-                                        <p class="text-xs md:text-sm text-gray-400 leading-relaxed">独立设计并落地了从概念生成到高保真交付的 AIGC 图像工作流。利用 Midjourney 确立场景光影与时尚基调，结合 ComfyUI 节点网络与专属角色 LoRA 模型，彻底解决 AI 生成过程中的“人物特征随机性”痛点。</p>
+                                        <p class="text-xs md:text-sm text-gray-400 leading-relaxed">独立搭建从概念生成到高保真交付的 AIGC 图像工作流：以 Midjourney 确立场景光影与时尚基调，结合 ComfyUI 节点网络与专属角色 LoRA 模型，解决生成过程中人物特征不稳定的问题。</p>
                                     </div>
                                     <div>
                                         <strong class="text-gray-200 text-sm block mb-1">✦ 高精度特征融合 (Identity Preservation)：</strong>
-                                        <p class="text-xs md:text-sm text-gray-400 leading-relaxed">攻克了跨风格图像的特征迁移技术。在保持品牌视觉调性（如 Cinematic 美学）绝对统一的前提下，实现了“目标人物/代言人”面部结构、肤质细节与光影环境的像素级自然融合。</p>
+                                        <p class="text-xs md:text-sm text-gray-400 leading-relaxed">在保持 Cinematic 视觉调性统一的前提下，完成跨风格图像的特征迁移，使目标人物的面部结构、肤质细节与光影环境自然融合。</p>
                                     </div>
                                     <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
                                         <strong class="text-purple-300 text-sm block mb-2 flex items-center gap-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>攻克 AIGC 视频的“时间一致性”痛点
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>处理 AIGC 视频的“时间一致性”痛点
                                         </strong>
-                                        <p class="text-xs md:text-sm text-gray-300 leading-relaxed">针对当前 AI 视频模型（如 Sora、Veo 3、Kling）生成时极易出现的<strong class="text-purple-400">“时间一致性缺失”与“局部物理闪烁”</strong>大坑，如果纯靠反复抽卡将极大地浪费排期。在本项目中，我确立了“AI 原片筛选 + 帧级后期修复”的务实管线：通过高频剪辑剔除崩溃帧，结合 剪映 (capcut) 的局部遮罩（Masking）与运动跟踪补偿，硬核挽救高价值的“微瑕废片”，实现了工业级标准的稳定交付。</p>
+                                        <p class="text-xs md:text-sm text-gray-300 leading-relaxed">当前 AI 视频模型（Sora、Veo 3、Kling 等）普遍存在<strong class="text-purple-400">“时间一致性缺失”与“局部物理闪烁”</strong>问题，反复重新生成会大量占用排期。本项目采用“AI 原片筛选 + 帧级后期修复”的流程：先以剪辑剔除崩溃帧，再用剪映的局部遮罩（Masking）与运动跟踪修复有价值的瑕疵镜头，保证稳定交付。</p>
                                     </div>
                                 </div>
                             </div>
@@ -1921,7 +1969,7 @@
                         <div class="mt-16 lg:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 bg-[#111] p-6 md:p-10 rounded-2xl border border-white/10">
                             <div class="lg:col-span-4 flex flex-col justify-start">
                                 <h4 class="text-lg md:text-xl font-bold text-white mb-4 border-b border-white/10 pb-4">Strategic Narrative</h4>
-                                <p class="text-sm text-gray-400 leading-relaxed mb-6">突破贴片广告“5秒跳过”的注意力瓶颈，建立适用于海外高要求市场（Top-tier Markets）的 AIGC 视频广告投流视觉范式。</p>
+                                <p class="text-sm text-gray-400 leading-relaxed mb-6">突破贴片广告“5 秒跳过”的注意力瓶颈，建立适用于海外高要求市场的 AIGC 视频广告视觉范式。</p>
                                 <div class="hidden lg:flex gap-2 opacity-50 mt-auto">
                                     <div class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
                                     <div class="w-2 h-2 bg-white rounded-full"></div>
@@ -1931,22 +1979,22 @@
                             <div class="lg:col-span-8 space-y-10">
                                 <div>
                                     <h5 class="text-white font-bold text-base md:text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目背景</h5>
-                                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">为配合公司旗下艺人进军欧美市场的新 MV 宣发，主导设计名为《If... Arrives》的系列 YouTube，Pinterest 贴片广告。针对欧美受众对传统“高饱和、重包装”偶像视觉的审美疲劳，确立了以“电影叙事（Cinematic Narrative）”和“末日反差美学”为核心的视觉重构策略，旨在突破贴片广告“5秒跳过”的注意力瓶颈。</p>
+                                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">为配合公司旗下艺人进军欧美市场的新 MV 宣发，主导设计《If... Arrives》系列 YouTube、Pinterest 贴片广告。针对欧美受众对“高饱和、重包装”偶像视觉的审美疲劳，确立以“电影叙事（Cinematic Narrative）”与“末日反差美学”为核心的视觉策略。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base md:text-lg mb-4 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>核心贡献与技术实施</h5>
                                     <div class="space-y-5 border-l border-white/10 pl-4">
                                         <div>
-                                            <strong class="text-gray-200 text-sm block mb-1">✦ 跨文化美学降维定位：</strong>
-                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">摒弃常规偶像广告的糖水色调，精准切中欧美年轻圈层推崇的“A24 独立电影质感”与“废土/末日（Apocalyptic）美学”。通过引入 35mm 胶片颗粒与极端的冷暖光影对撞，为 Idol 打造极具国际化与先锋感的高奢视觉人设。</p>
+                                            <strong class="text-gray-200 text-sm block mb-1">✦ 跨文化美学定位：</strong>
+                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">舍弃常规偶像广告的糖水色调，转向欧美年轻群体认可的 A24 独立电影质感与末日（Apocalyptic）美学；以 35mm 胶片颗粒和强烈的冷暖光影对比，塑造更国际化的艺人形象。</p>
                                         </div>
                                         <div>
                                             <strong class="text-gray-200 text-sm block mb-1">✦ “黄金5秒”注意力工程与 Sora 调度：</strong>
-                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">针对贴片广告的转化漏斗，利用 Sora 实现了极高难度的动态张力控制。0-2秒以“电视雪花+末日警报”的剧烈手持镜头制造全局恐慌（视觉 Hook），紧接着在第2-4秒以极致平稳的慢镜头切入海滩与冰块气泡微距特写（Macro Shot）。通过动静结合与极端的感官反差，强制锁定用户注意力。</p>
+                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">围绕贴片广告的转化漏斗设计节奏：0–2 秒以“电视雪花 + 末日警报”的剧烈手持镜头制造紧张感（视觉 Hook），2–4 秒切入海滩与冰块气泡的慢速微距特写，以动静反差留住观众。</p>
                                         </div>
                                         <div>
                                             <strong class="text-gray-200 text-sm block mb-1">✦ AIGC 工业化管线与物理真实感：</strong>
-                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">深度调优 Sora 提示词模型，攻克复杂物理交互难题。完美呈现了“防晒喷雾在阳光下形成的虹光物理反馈”与“陨石坠落的高光反射”，确保最终成片达到好莱坞级别的商业交付标准。</p>
+                                            <p class="text-xs md:text-sm text-gray-400 leading-relaxed">通过多轮提示词调整解决复杂物理交互问题，呈现防晒喷雾在阳光下的虹光效果与陨石坠落的高光反射，成片达到商业投放标准。</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1962,7 +2010,7 @@
                                     
                                     <div class="space-y-8 relative z-10">
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
-                                            通过 AIGC 管线，团队得以用极低成本进行高规格视觉的 A/B 测试。其中 <strong class="text-gray-200 font-medium border-b border-white/20 pb-0.5 transition-colors hover:border-purple-400">Case B (Meteorites 末日反差主题)</strong> 表现出惊人的数据爆发力，成功建立了一套适用于海外高要求市场的 AIGC 投流视觉范式。
+                                            借助 AIGC 管线，团队得以用较低成本对高规格视觉进行 A/B 测试。其中 <strong class="text-gray-200 font-medium border-b border-white/20 pb-0.5 transition-colors hover:border-purple-400">Case B（Meteorites 末日反差主题）</strong> 数据表现最佳，由此形成一套适用于海外市场的 AIGC 投流视觉范式。
                                         </p>
 
                                         <!-- 苹果级参数卡片：1px 切割线排版 -->
@@ -1998,7 +2046,7 @@
                                         <div class="pt-2">
                                             <strong class="text-gray-200 text-xs md:text-sm block mb-2 tracking-wide">✦ 商业洞察与壁垒 (Commercial Value)：</strong>
                                             <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
-                                                传统影视级“陨石坠落 CGI 特效”成本极高，根本无法用于短平快的投流试错。本项目利用 AI 视频生成技术将制作周期从数周压缩至数天，不仅验证了“末日叙事”的超高吸睛能力，更证明了 AIGC 在压榨视觉上限与快速试错中的绝对商业优势。
+                                                传统影视级的陨石坠落 CGI 成本高，难以用于快速投流试错。本项目以 AI 视频生成将制作周期由数周压缩至数天，既验证了“末日叙事”的吸引力，也体现了 AIGC 在快速试错上的成本优势。
                                             </p>
                                         </div>
                                     </div>
@@ -2023,7 +2071,7 @@
                         </div>
                         <div class="mb-10 border-l-2 border-purple-500 pl-6 py-2">
                             <h4 class="text-lg font-bold text-white mb-2">Concept Definition</h4>
-                            <p class="text-sm text-gray-400 leading-relaxed">针对 AI 生成过程中出现的结构失真、逻辑错乱问题，通过机械逻辑回归 + 结构化校正，重建合理的空间与形体关系，实现从错误生成到规范输出的自动化修正。</p>
+                            <p class="text-sm text-gray-400 leading-relaxed">针对 AI 生成中出现的结构失真与逻辑错乱，以机械逻辑回归和结构化校正重建合理的空间与形体关系，使错误生成转化为规范输出。</p>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 mb-10">
                             <div>
@@ -2079,7 +2127,7 @@
                         </div>
                         <div class="proj-desc-split mt-12 lg:mt-16 pt-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>工业化落地 <span class="text-xs text-gray-500 font-normal uppercase ml-2">Pipeline Implementation</span></h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">AIGC 生成的机械与仿生结构极易出现“透视畸变”与“关节逻辑错乱”，导致其通常只能停留在概念草图阶段。本项目展示了如何通过<strong class="text-gray-400">“底层拓扑重构 + 局部节点重绘”</strong>的混合管线，精准修复硬伤，将 AI 废片转化为完全符合下游 3D 建模严格规范的商业级资产。</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">AI 生成的机械与仿生结构常出现透视畸变与关节逻辑错乱，因而多停留在概念草图阶段。本项目以<strong class="text-gray-400">“底层拓扑重构 + 局部节点重绘”</strong>的混合流程修复结构问题，使 AI 原图成为符合下游 3D 建模规范的可用资产。</p>
                         </div>
                     </div>
                 </div>
@@ -2117,7 +2165,7 @@
                                 <div class="space-y-8 pt-4">
                                     <div>
                                         <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>美学逻辑</h5>
-                                        <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-400">Ethereal Aesthetic Calibration (空灵美学标定)：</strong><br>尝试了韩系审美光泽感皮肤后的另一种哑光质感肤质。为了压制 AI 常规的“写实油腻感”，转向一种更偏向当代艺术或实验性摄影的调性，尝试加入更多纹理与粗糙质感。</p>
+                                        <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4"><strong class="text-gray-400">Ethereal Aesthetic Calibration（空灵美学标定）：</strong><br>在韩系光泽感皮肤之外，尝试哑光肤质。为避免 AI 常见的“写实油腻感”，转向更接近当代艺术与实验摄影的调性，并加入更多纹理与粗糙质感。</p>
                                     </div>
                                     <div>
                                         <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>材质表现力</h5>
@@ -2128,7 +2176,7 @@
                                     </div>
                                     <div>
                                         <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>边缘光</h5>
-                                        <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">勾勒人物轮廓线。边缘光有利于增强角色的虚幻感，并将主体与极简背景有效分离。</p>
+                                        <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">以边缘光勾勒人物轮廓，增强角色的虚幻感，并将主体与极简背景分离。</p>
                                     </div>
                                 </div>
                             </div>
@@ -2140,7 +2188,7 @@
                         </div>
                         <div class="proj-desc-split mt-10 lg:mt-12">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>视觉锚点测试</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">在确立 K-Pop 虚拟艺人或数字生命 IP 时，高精度的材质与光影设定直接决定了受众的潮流感。通过系统性的变体推演，验证了该套材质逻辑在不同色彩情绪与打光环境下的极强<strong class="text-gray-400">“鲁棒性（Robustness）”</strong>，为后续的衍生品开发与动态 CG 制作输出了极其稳定、可复制的视觉规范（Style Guide）。</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">确立 K-Pop 虚拟艺人或数字生命 IP 时，材质与光影设定直接影响受众对潮流感的判断。通过系统的变体推演，验证了这套材质逻辑在不同色彩情绪与打光环境下的<strong class="text-gray-400">稳定性（Robustness）</strong>，为后续衍生品开发与动态 CG 制作提供了可复制的视觉规范（Style Guide）。</p>
                         </div>
                     </div>
                 </div>
@@ -2156,7 +2204,7 @@
                                 <span>IP Design</span> <span>/</span> <span>Character Consistency</span> <span>/</span> <span>Commercial Standard</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6 lg:gap-8 mb-10">
+                        <div class="grid grid-cols-1 gap-6 mb-10 wr-ref-pair">
                             <div class="w-full h-[300px] md:h-[400px] lg:h-[450px] overflow-x-auto overflow-y-hidden custom-scrollbar rounded-lg border border-white/10 relative group cursor-ew-resize">
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775995360/boss01_xjcrxc.jpg" loading="lazy" decoding="async" alt="K-Pop Q版手办" class="h-full w-auto max-w-none block" draggable="false">
                                 <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center gap-2 shadow-lg">
@@ -2167,7 +2215,7 @@
                         </div>
                         <div class="proj-desc-split space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目成果 <span class="text-xs text-gray-500 font-normal uppercase ml-2">Project Outcome</span></h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">成功解决了 AIGC 在多角色 IP 设计中的一致性难题，通过精准的 Prompt 管线，实现了商用级别的手办开发标准。(当时并无 NANO BANANA)</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">在角色一致性工具尚未普及的阶段，以 Prompt 流程解决多角色 IP 设计中的一致性问题，产出达到商用手办开发标准。</p>
                         </div>
                     </div>
                 </div>
@@ -2175,27 +2223,26 @@
                 <!-- ================= DIMENSION 3: 底层模型炼制与生成式交互 ================= -->
                 <div class="max-w-[1024px] mx-auto px-6 md:px-12 md:mt-48 mb-32 md:mb-40 text-center relative z-10">
                     <h2 class="text-3xl md:text-[52px] font-black tracking-[0.1em] mb-4 text-white">AI MODEL EXPLORATION</h2>
-                    <p class="portfolio-section-gradient text-purple-400 tracking-widest text-sm md:text-[20px] uppercase font-bold mb-8">Ai 模型探索：LORA 模型训练与底层控制</p>
+                    <p class="portfolio-section-gradient text-purple-400 tracking-widest text-sm md:text-[20px] uppercase font-bold mb-8">Ai 模型探索：LoRA 模型训练与底层控制</p>
                     
                     <div class="max-w-[800px] mx-auto mt-12">
                         <p class="text-sm md:text-base text-gray-400 leading-relaxed text-center">
-                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“不满足于提示词的表面拼接，深入模型底层重塑视觉范式。”</strong>
-                            探索 Stable Diffusion 与 ComfyUI 的深层架构，通过专属 LORA 模型的炼制，实现特定画风、角色或材质的精准克隆与高频复用，将 AI 从“抽卡工具”转化为稳定受控的“工业级生产力引擎”。
+                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“不满足于提示词的表面拼接，深入模型底层重塑视觉范式。”</strong> 研究 Stable Diffusion 与 ComfyUI 的底层机制，通过训练专属 LoRA 模型实现特定画风、角色与材质的稳定复现，使 AI 由“抽卡工具”转变为可控的生产工具。
                         </p>
                     </div>
                 </div>
 
-                <!-- Project 07 (LORA) -->
+                <!-- Project 07 (LoRA) -->
                 <div id="proj-07" class="max-w-[1440px] mx-auto px-6 md:px-12 relative mb-40">
                     <div class="absolute -top-20 md:-top-32 -left-4 md:-left-12 text-[10rem] md:text-[18rem] font-black text-white/5 select-none pointer-events-none z-0 font-sans leading-none">07</div>
                     <div class="relative z-10">
                         <div class="mb-12">
                             <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                                 <div>
-                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">专属 LORA 模型炼制与风格克隆</h3>
+                                    <h3 class="text-xl md:text-2xl font-bold tracking-wide leading-snug">专属 LoRA 模型炼制与风格克隆</h3>
                                     <p class="text-sm text-gray-400 mt-3 tracking-wide">Custom LoRA Model Training &amp; Style Replication</p>
                                     <div class="flex flex-wrap gap-4 mt-4 text-xs tracking-widest text-purple-400 uppercase font-medium">
-                                        <span>LORA Training</span> <span>/</span> <span>Model Generalization</span> <span>/</span> <span>Style Consistency</span>
+                                        <span>LoRA Training</span> <span>/</span> <span>Model Generalization</span> <span>/</span> <span>Style Consistency</span>
                                     </div>
                                 </div>
                                 <a href="https://www.liblib.art/modelinfo/3bb09a67ee1c40bfad7333a3da1b651b?from=personal_page&versionUuid=3089e48dd317433c81f92887d4ace09d" target="_blank" rel="noopener noreferrer" class="inline-flex shrink-0 items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white text-sm font-bold rounded-full transition-all shadow-[0_0_20px_rgba(103,51,234,0.4)] hover:shadow-[0_0_30px_rgba(103,51,234,0.6)] group">
@@ -2236,13 +2283,13 @@
                                 <div>
                                     <strong class="text-gray-200 text-sm block mb-1">✦ 数据精筛与标签工程 (Dataset & Tagging)：</strong>
                                     <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
-                                        基于多光影、多视角特征搜集高质量切片构建训练集。使用 <code>WD14 Tagger</code> 进行底层特征提取，随后在 <code>DTE (Dataset Tag Editor)</code> / <code>BDTM</code> 中进行深度的**人工清洗与干预**。将核心概念有效分离（Concept Decoupling），确保特征与触发词绑定，而非被公共特征污染。
+                                        从多光影、多视角素材中筛选高质量切片构建训练集。以 <code>WD14 Tagger</code> 提取底层特征，再于 <code>DTE (Dataset Tag Editor)</code> / <code>BDTM</code> 中进行<strong class="text-gray-200">人工清洗与干预</strong>，分离核心概念（Concept Decoupling），确保特征与触发词绑定，不被公共特征污染。
                                     </p>
                                 </div>
                                 <div>
                                     <strong class="text-gray-200 text-sm block mb-1">✦ 模型训练与监控调参 (Kohya & Tensorboard)：</strong>
                                     <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
-                                        依托 <code>Kohya_ss</code> 本地或云端环境，结合素材特征规模精准设定 Network Rank (Dim)、Alpha 及 Learning Rate。在预训练过程中，全程接入 <code>Tensorboard</code> 实时监控 Loss 曲线走向，及时定位拐点，输出并比对多组 Epoch 权重，保障最佳泛化性。
+                                        基于 <code>Kohya_ss</code> 本地或云端环境，按素材特征与规模设定 Network Rank (Dim)、Alpha 与 Learning Rate。训练全程接入 <code>Tensorboard</code> 监控 Loss 曲线，定位拐点，并比对多组 Epoch 权重，以取得最佳泛化性。
                                     </p>
                                 </div>
                                 <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
@@ -2251,7 +2298,7 @@
                                         AIGC 炼丹避坑：警惕“标签污染”与“过拟合”
                                     </strong>
                                     <p class="text-xs md:text-sm text-gray-300 leading-relaxed">
-                                        过去纯靠“堆积海量网图、无脑自动打标”的旧思路已无法适应工业级交付。最易导致 LORA 彻底报废的坑在于<strong class="text-purple-400">标签污染（Tag Contamination）</strong>——若不以人工干预清洗掉特征标签，AI 会把角色专有特质当成公共属性，导致死活唤不出指定效果。此外，通过 Tensorboard 规避<strong class="text-purple-400">过拟合（俗称“烤焦”）</strong>更是重中之重，盲目追求极低的 Loss 只会让模型丧失在新底模下的泛化能力。
+                                        依赖“海量网图 + 自动打标”的做法已难以满足商业交付。最常见的失败原因是<strong class="text-purple-400">标签污染（Tag Contamination）</strong>：若不经人工清洗特征标签，模型会将角色专有特质视为公共属性，导致无法稳定触发指定效果。同时需借助 Tensorboard 规避<strong class="text-purple-400">过拟合</strong>，一味追求更低的 Loss 会削弱模型在新底模下的泛化能力。
                                     </p>
                                 </div>
                             </div>
@@ -2284,14 +2331,14 @@
                             <div class="md:col-span-5 space-y-6">
                                 <div class="border-l-2 border-purple-500 pl-6 py-2">
                                     <h4 class="text-lg font-bold text-white mb-2">Technical Insight</h4>
-                                    <p class="text-sm text-gray-400 leading-relaxed">突破传统的纯图像与视频渲染框架，利用大语言模型的自然语言理解能力，将视觉与物理交互创意直接转化为前端代码资产。</p>
+                                    <p class="text-sm text-gray-400 leading-relaxed">在图像与视频渲染之外，利用大语言模型的自然语言理解能力，将视觉与物理交互创意直接转化为前端代码。</p>
                                 </div>
                                 <div class="text-xs text-gray-500"><p class="mb-1">TOOL: Google AI Studio (Gemini LLM)</p><p>FORMAT: Interactive WebGL / JS</p></div>
                             </div>
                             <div class="md:col-span-7 space-y-6 pt-2">
                                 <div>
                                     <h5 class="text-white font-bold text-base md:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>从 Prompt 绘图到 Prompt 编程</h5>
-                                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">本项目展示了生成式 AI 的更高维度运用。通过在 Google AI Studio 中描述动态物理逻辑（如重力、碰撞反馈、发光粒子的生命周期衰减），无需手动编写冗长的底层 Canvas/Three.js 代码，即可构建出这套极具视觉表现力的交互式圣诞树系统。这极大赋能了视觉设计师，使我们能将美学控制力延伸至网页端的交互体验中。</p>
+                                    <p class="text-xs md:text-sm text-gray-400 leading-relaxed border-l border-white/10 pl-4">在 Google AI Studio 中以自然语言描述动态物理逻辑（重力、碰撞反馈、发光粒子的生命周期衰减等），无需手写底层 Canvas / Three.js 代码，即可构建这套交互式圣诞树系统。这使视觉设计师能够将美学控制延伸至网页端的交互体验。</p>
                                 </div>
                             </div>
                         </div>
@@ -2525,8 +2572,7 @@
                     
                     <div class="max-w-[800px] mx-auto mt-12">
                         <p class="text-sm md:text-base text-gray-400 leading-relaxed text-center">
-                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“不被 AI 的随机性盲盒绑架，依靠系统性的审美沉淀进行精准干预。”</strong>
-                            游戏&游戏设计实战所沉淀的系统性审美，与对透视、光影解剖的深刻理解，是我如今驾驭 AIGC 视觉管线的坚实基石。这使我能在面对 AI 泛滥的“同质化”与“塑料感”时，依靠精准的人工美学干预（Human-in-the-loop），将画面重新锚定至顶级商业交付标准。以下是我早年积累的部分传统美术实战案例。
+                            <strong class="text-white text-lg md:text-xl block mb-4 tracking-wide font-medium">“不被 AI 的随机性盲盒绑架，依靠系统性的审美沉淀进行精准干预。”</strong> 游戏与动画项目中积累的系统性审美，以及对透视、光影与结构的理解，是我运用 AIGC 视觉流程的基础。面对 AI 画面常见的同质化与“塑料感”，我能够以人工美学干预（Human-in-the-loop）将画面拉回商业交付标准。以下为早年的部分传统美术案例。
                         </p>
                     </div>
                 </div>
@@ -2554,7 +2600,7 @@
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 图片为无 UI 和角色状态下战斗场景，右图为游戏网络截图</p></div>
                         <div class="space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款主打“暗黑童话”风格的策略放置类卡牌 RPG 手游。作为核心场景原画师，我深度参与了游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制。在设计中，通过对冷暖色调的精准把控与碎片化叙事元素的植入，成功确立了游戏诡谲而不失精致的独特美术调性，助力产品在日韩台等海外市场取得优异的商业表现。</p>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
                         </div>
                     </div>
                 </div>
@@ -2580,11 +2626,11 @@
                             <div class="md:col-span-4 flex flex-col justify-center space-y-6 mt-4 md:mt-0">
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>美学沉淀</h5>
-                                    <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">作为早期的核心二次元项目经历，深度参与了女性向换装与恋爱养成游戏的美术研发。该图展现了经典的奇幻浪漫氛围与精致的二次元细节构图。</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">早期参与的二次元项目，负责女性向换装与恋爱养成游戏的美术研发。图中呈现了奇幻浪漫的氛围与细致的二次元构图。</p>
                                 </div>
                                 <div>
                                     <h5 class="text-white font-bold text-base lg:text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>经验转化</h5>
-                                    <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">在该类项目中，重点打磨了对女性向游戏色彩心理学（如梦幻、唯美、轻表现）的敏锐度，以及高精度 2D 插画的构图张力。这为后期使用 AIGC 驾驭精细唯美画风打下了坚实的手绘基础。</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4">此类项目训练了我对女性向游戏色彩心理（梦幻、唯美、轻盈）的敏感度，以及高精度 2D 插画的构图能力，也为后来以 AIGC 处理精细唯美画风奠定了手绘基础。</p>
                                 </div>
                             </div>
                         </div>
@@ -2602,19 +2648,37 @@
                                 <span>Japanese Anime</span> <span>/</span> <span>Background Art</span> <span>/</span> <span>2D Layout</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-12 mb-10">
-                            <div class="flex flex-col gap-2 md:gap-6">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                            </div>
-                            <div class="flex flex-col gap-2 md:gap-6">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                        <div class="wr-pair">
+                            <figure class="wr-pair__art">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
+                            </figure>
+                            <div class="wr-pair__side">
+                                <div class="wr-pair__text">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
+                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。</p>
+                                </div>
+                                <figure class="wr-pair__shot">
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
+                                </figure>
                             </div>
                         </div>
-                        <div class="space-y-4">
-                            <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本经典动画《物语系列——化物语、伪物语》制作，核心负责场景原画设计相关工作，严格遵循导演分镜脚本及创作意图，精准把控动画场景的风格调性、空间布局与细节呈现，确保场景与角色动作、剧情氛围高度契合。<br>工作过程中，深入研读分镜脚本，拆解导演对场景的光影、色调、透视及氛围要求，绘制符合动画整体暗黑奇幻风格的场景原画，涵盖日常场景、奇幻场景等多种类型，配合团队完成原画审核、修改迭代，保障场景原画按时交付，助力动画画面的流畅呈现与风格统一。<br><br>同时，同步参与公司Q版手办建模项目，结合动画角色的核心特征，协助完成Q版角色的建模设计、细节优化工作，兼顾手办的可爱调性与角色辨识度，配合建模团队完成模型调整、适配等相关事宜，确保手办建模符合项目要求，助力项目顺利推进。</p>
+                        <div class="wr-pair wr-pair--flip">
+                            <figure class="wr-pair__art">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
+                            </figure>
+                            <div class="wr-pair__side">
+                                <div class="wr-pair__text">
+                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>同期项目</h5>
+                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
+                                </div>
+                                <figure class="wr-pair__shot">
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
+                                </figure>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2818,8 +2882,10 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(143,119,233,.16)' : '#6733ea') : '';
-                    link.style.color = active && isDark ? '#8f77e9' : '';
+                    // 当前页的配色交给 CSS（#nav-light / #nav-dark 各自的 [aria-current] 规则）。
+                    // 以前这里写行内颜色，两套导航共用同一批链接，深色的紫字会残留到浅色导航的紫色按钮上。
+                    link.style.backgroundColor = '';
+                    link.style.color = '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
@@ -3578,6 +3644,54 @@
                 }, 0.5);
             }, 0.01);
         })();
+    </script>
+    <!-- 作品区正文：避免段落最后一行只剩几个字。做法是把该段的行宽略微收窄，让上一行的字挪下来。 -->
+    <script>
+    (function () {
+        var root = document.getElementById('view-portfolio');
+        if (!root || !document.createRange) return;
+        var SEL = 'p.leading-relaxed, p.proj-desc';
+        function lastLine(el) {
+            var r = document.createRange(); r.selectNodeContents(el);
+            var rects = r.getClientRects(), rows = {}, keys = [];
+            for (var i = 0; i < rects.length; i++) {
+                var x = rects[i]; if (x.width < 1) continue;
+                var k = Math.round(x.top / 4);
+                if (!rows[k]) { rows[k] = [x.left, x.right]; keys.push(k); }
+                else { rows[k][0] = Math.min(rows[k][0], x.left); rows[k][1] = Math.max(rows[k][1], x.right); }
+            }
+            if (keys.length < 2) return null;
+            keys.sort(function (a, b) { return a - b; });
+            var last = rows[keys[keys.length - 1]];
+            return last[1] - last[0];
+        }
+        function fix(el) {
+            el.style.maxWidth = '';
+            if (!el.offsetParent) return;
+            var fs = parseFloat(getComputedStyle(el).fontSize) || 16;
+            var w = lastLine(el);
+            if (w === null || w >= fs * 7) return;
+            var full = el.getBoundingClientRect().width;
+            for (var step = 1; step <= 10; step++) {
+                el.style.maxWidth = (full - step * fs * 0.6) + 'px';
+                w = lastLine(el);
+                if (w !== null && w >= fs * 7) return;
+            }
+            el.style.maxWidth = '';
+        }
+        function run() { var ps = root.querySelectorAll(SEL); for (var i = 0; i < ps.length; i++) fix(ps[i]); }
+        var timer = 0, lastW = -1;
+        function schedule() { clearTimeout(timer); timer = setTimeout(run, 120); }
+        if (window.ResizeObserver) {
+            new ResizeObserver(function () {
+                var w = root.clientWidth;
+                if (w !== lastW) { lastW = w; schedule(); }
+            }).observe(root);
+        } else { window.addEventListener('resize', schedule); }
+        window.addEventListener('load', schedule);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+        root.addEventListener('click', function () { setTimeout(run, 400); });
+    })();
     </script>
 </body>
 </html>
