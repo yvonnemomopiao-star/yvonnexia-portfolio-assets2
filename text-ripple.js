@@ -62,25 +62,26 @@
     lineHeight: num(ds.rippleLineHeight, 1.2),
     color: ds.rippleColor || '#ffffff',
     crest: ds.rippleCrest || '#ffffff',
-    trough: ds.rippleTrough || '#c9a6ff',
+    trough: ds.rippleTrough || '#ad57ff',
     opacity: num(ds.rippleOpacity, 0.35),
     resolution: 3,
     speed: num(ds.rippleSpeed, 0.7),
-    damping: num(ds.rippleDamping, 0.01),
+    damping: num(ds.rippleDamping, 0.025),   // 越大波浪消得越快
+    edgeAbsorb: 0.6, edgeBand: 0.14,          // 边缘吸收：波浪碰到屏幕边不再弹回来荡很久
     viscosity: num(ds.rippleViscosity, 0.2),
     edges: ds.rippleEdges === 'reflect' ? 'reflect' : 'absorb',
     dropStrength: 1.2, dropRadius: 26,
-    dragStrength: 0.55, dragRadius: 16,
-    dragFloor: 0.35,        // 慢慢划也至少留下这么多力度（× dragStrength）
+    dragStrength: 0.4, dragRadius: 16,
+    dragFloor: 0.25,        // 慢慢划也至少留下这么多力度（× dragStrength）
     rain: num(ds.rippleRain, 0.6), rainStrength: 0.4,
     hoverRain: 0.25,        // 鼠标在首屏内时保留的落雨比例（0 = 完全停）
     mobileRain: 0,          // 手机端落雨比例：0 = 静止时没有水波
     touchDrop: 0.5,         // 手机端手指按下时落一滴的力度（0 = 关）
-    softCrest: 1,           // 1 = 亮起的字透明度随强度渐变；0 = 一亮就是不透明
-    crestBias: 0.04,        // 把一部分浅波谷也算作波峰，白色区域更大
+    softCrest: 0,           // 1 = 亮起的字透明度随强度渐变；0 = 一亮就是不透明
+    crestBias: 0,           // 把一部分浅波谷也算作波峰，白色区域更大
     sensitivity: 2.2, slopeGain: 1,
     refraction: num(ds.rippleRefraction, 2),
-    scramble: 1, scrambleSpeed: 180, dither: 0.5,
+    scramble: 1, scrambleSpeed: 90, dither: 0.5,
     vignette: num(ds.rippleVignette, 0.6),
     hole: num(ds.rippleHole, 0.3),
     feather: num(ds.rippleFeather, 0.3),
@@ -91,7 +92,7 @@
   // 对比用：地址后面加 ?ripple=old 回到调整前的手感
   if (/[?&]ripple=old\b/.test(location.search)) {
     var OLD = { trough: '#ad57ff', dragStrength: 0.3, dragFloor: 0, rain: 1.5, rainStrength: 0.6, hoverRain: 0,
-      mobileRain: 1, touchDrop: 0, softCrest: 0, crestBias: 0, scrambleSpeed: 90 };
+      mobileRain: 1, touchDrop: 0, softCrest: 0, crestBias: 0, scrambleSpeed: 90, damping: 0.01, edgeAbsorb: 0.22, edgeBand: 0.08 };
     for (var ok in OLD) cfg[ok] = OLD[ok];
   }
   var FONT = 'ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace';
@@ -148,12 +149,12 @@
     var w = Math.max(4, Math.ceil(W / cell) + 2), h = Math.max(4, Math.ceil(H / cell) + 2), size = w * h;
     var mask = new Float32Array(size);
     // absorb：靠边的一圈逐渐「吃掉」速度，波纹撞到边缘不会弹回来
-    var band = cfg.edges === 'absorb' ? Math.max(3, Math.round(Math.min(w, h) * 0.08)) : 0;
+    var band = cfg.edges === 'absorb' ? Math.max(3, Math.round(Math.min(w, h) * cfg.edgeBand)) : 0;
     for (var y = 0; y < h; y++) for (var x = 0; x < w; x++) {
       var m = 1;
       if (band > 0) {
         var d = Math.min(x, y, w - 1 - x, h - 1 - y);
-        if (d < band) { var t = d / band; m = 1 - (1 - t) * (1 - t) * 0.22; }
+        if (d < band) { var t = d / band; m = 1 - (1 - t) * (1 - t) * cfg.edgeAbsorb; }
       }
       mask[y * w + x] = m;
     }
