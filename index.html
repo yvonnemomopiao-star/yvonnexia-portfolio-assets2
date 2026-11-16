@@ -952,6 +952,14 @@
         @media (min-width: 1024px) {
             #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
             #view-portfolio p.proj-desc.proj-desc--wide { max-width: 40em; }
+            /* 标题在左、正文在右的分栏里：两条要点并排，提示框横跨右栏 */
+            #view-portfolio .proj-desc-split > .wr-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 48px; max-width: none; margin-top: 0; }
+            #view-portfolio .wr-notes > * { margin-top: 0; }
+            #view-portfolio .wr-notes > .wr-callout { grid-column: 1 / -1; }
+            #view-portfolio .wr-notes > .wr-callout p.leading-relaxed { max-width: none; }
+            /* 参考图在左（4）、成果图在右（8），与下方说明分栏对齐 */
+            #view-portfolio .wr-ref-pair { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; }
+            #view-portfolio .wr-ref-pair > :first-child { order: 2; }
         }
         .chapter-directory__description {
             margin: 0;
@@ -1563,7 +1571,7 @@
                             </div>
                         </a>
                         <a class="chapter-directory__link" href="#proj-07" data-page="portfolio" data-target="proj-07">
-                            <h3 class="chapter-directory__title" lang="en">AI EXPLoRATION</h3>
+                            <h3 class="chapter-directory__title" lang="en">AI EXPLORATION</h3>
                             <div class="chapter-directory__detail">
                                 <p class="chapter-directory__description">AI 模型探索 · 专属 LoRA 模型炼制与互动粒子视觉实验</p>
                                 <span class="chapter-directory__cta" aria-hidden="true">VIEW MORE <span>→</span></span>
@@ -1871,9 +1879,9 @@
                                 <span class="text-xl sm:text-2xl md:text-4xl font-black portfolio-silver-symbol select-none">=</span>
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775988236/aiwokflow03_wzmnfv.png" loading="lazy" decoding="async" alt="最终合成" class="w-[36%] h-[80px] sm:h-[120px] md:h-[250px] lg:h-[350px] object-cover rounded-md md:rounded-lg border border-white/10 shadow-lg cursor-zoom-in" data-lightbox-current>
                             </div>
-                            <div class="space-y-6 mt-8">
+                            <div class="proj-desc-split space-y-6 mt-8">
                                 <h5 class="text-white font-bold text-base md:text-lg mb-4 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流搭建</h5>
-                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%]">
+                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes">
                                     <div>
                                         <strong class="text-gray-200 text-sm block mb-1">✦ AIGC 工业化管线搭建：</strong>
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">独立搭建从概念生成到高保真交付的 AIGC 图像工作流：以 Midjourney 确立场景光影与时尚基调，结合 ComfyUI 节点网络与专属角色 LoRA 模型，解决生成过程中人物特征不稳定的问题。</p>
@@ -1882,7 +1890,7 @@
                                         <strong class="text-gray-200 text-sm block mb-1">✦ 高精度特征融合 (Identity Preservation)：</strong>
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">在保持 Cinematic 视觉调性统一的前提下，完成跨风格图像的特征迁移，使目标人物的面部结构、肤质细节与光影环境自然融合。</p>
                                     </div>
-                                    <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
+                                    <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors wr-callout">
                                         <strong class="text-purple-300 text-sm block mb-2 flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>处理 AIGC 视频的“时间一致性”痛点
                                         </strong>
@@ -2169,7 +2177,7 @@
                                 <span>IP Design</span> <span>/</span> <span>Character Consistency</span> <span>/</span> <span>Commercial Standard</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-[65fr_35fr] gap-6 lg:gap-8 mb-10">
+                        <div class="grid grid-cols-1 gap-6 mb-10 wr-ref-pair">
                             <div class="w-full h-[300px] md:h-[400px] lg:h-[450px] overflow-x-auto overflow-y-hidden custom-scrollbar rounded-lg border border-white/10 relative group cursor-ew-resize">
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775995360/boss01_xjcrxc.jpg" loading="lazy" decoding="async" alt="K-Pop Q版手办" class="h-full w-auto max-w-none block" draggable="false">
                                 <div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-black/70 backdrop-blur-md text-white text-xs px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center gap-2 shadow-lg">
@@ -2187,7 +2195,7 @@
 
                 <!-- ================= DIMENSION 3: 底层模型炼制与生成式交互 ================= -->
                 <div class="max-w-[1024px] mx-auto px-6 md:px-12 md:mt-48 mb-32 md:mb-40 text-center relative z-10">
-                    <h2 class="text-3xl md:text-[52px] font-black tracking-[0.1em] mb-4 text-white">AI MODEL EXPLoRATION</h2>
+                    <h2 class="text-3xl md:text-[52px] font-black tracking-[0.1em] mb-4 text-white">AI MODEL EXPLORATION</h2>
                     <p class="portfolio-section-gradient text-purple-400 tracking-widest text-sm md:text-[20px] uppercase font-bold mb-8">Ai 模型探索：LoRA 模型训练与底层控制</p>
                     
                     <div class="max-w-[800px] mx-auto mt-12">
@@ -2242,9 +2250,9 @@
                             </div>
                         </div>
 
-                        <div class="space-y-6 mt-12">
+                        <div class="proj-desc-split space-y-6 mt-12">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流</h5>
-                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%]">
+                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes">
                                 <div>
                                     <strong class="text-gray-200 text-sm block mb-1">✦ 数据精筛与标签工程 (Dataset & Tagging)：</strong>
                                     <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
@@ -2257,7 +2265,7 @@
                                         基于 <code>Kohya_ss</code> 本地或云端环境，按素材特征与规模设定 Network Rank (Dim)、Alpha 与 Learning Rate。训练全程接入 <code>Tensorboard</code> 监控 Loss 曲线，定位拐点，并比对多组 Epoch 权重，以取得最佳泛化性。
                                     </p>
                                 </div>
-                                <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
+                                <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors wr-callout">
                                     <strong class="text-purple-300 text-sm block mb-2 flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
                                         AIGC 炼丹避坑：警惕“标签污染”与“过拟合”
@@ -2563,7 +2571,7 @@
                             </div>
                         </div>
                         <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 图片为无 UI 和角色状态下战斗场景，右图为游戏网络截图</p></div>
-                        <div class="space-y-4">
+                        <div class="proj-desc-split space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
                             <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
                         </div>
@@ -2623,7 +2631,7 @@
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
                             </div>
                         </div>
-                        <div class="space-y-4">
+                        <div class="proj-desc-split space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
                             <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。<br><br>同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
                         </div>
