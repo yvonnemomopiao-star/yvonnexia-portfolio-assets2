@@ -9,9 +9,10 @@
  * 用法：在 </body> 前加一行  <script src="text-ripple.js" defer></script>，默认挂在 #home 上。
  *
  * 行为：
- *   - 鼠标移动拖出尾迹，点击落下一滴水；鼠标不在首屏时会自动下雨（每秒约 1.5 滴），首屏在动但不吵
+ *   - 鼠标移动拖出尾迹，点击落下一滴水；鼠标不在首屏时轻轻下雨（每秒约 0.6 滴），鼠标在首屏内时只留少量
  *   - 首屏滚出视口时暂停；系统开了「减少动态效果」时只显示静态文字
- *   - 手机端（宽度 < 768px）只有雨滴，不监听触摸
+ *   - 手机端（宽度 < 768px）静止时没有水波，手指按下时落一滴轻的；不拦截触摸
+ *   - 地址后加 ?ripple=old 可以回到调整前的参数，方便对比
  *
  * 层级：画布默认 z-index 32，在首屏薰衣草叠色层(z-30)之上、标题(z-50)和导航(z-100)之下。画布不接收鼠标事件。
  *
@@ -23,7 +24,7 @@
  *   data-ripple-hot-weight="700" 被波纹点亮的字用粗体，浅色底上白色波峰更显眼
  *   data-ripple-outline="0"     可选：给亮起的字描深色边（默认关）
  *   data-ripple-speed="0.7" data-ripple-damping="0.01"  data-ripple-viscosity="0.2"  data-ripple-edges="absorb|reflect"
- *   data-ripple-rain="1.5"  每秒雨滴数（0 = 不下雨）    data-ripple-refraction="2"
+ *   data-ripple-rain="0.6"  每秒雨滴数（0 = 不下雨）    data-ripple-refraction="2"
  *   data-ripple-vignette="0.6"  四边渐隐长度（1 = 短边的一半）
  *   data-ripple-hole="0.3"  data-ripple-feather="0.3"   机器人周围留空半径（× 首屏高度）/ 边缘柔和度
  *   data-ripple-z="32"
@@ -61,7 +62,7 @@
     lineHeight: num(ds.rippleLineHeight, 1.2),
     color: ds.rippleColor || '#ffffff',
     crest: ds.rippleCrest || '#ffffff',
-    trough: ds.rippleTrough || '#ad57ff',
+    trough: ds.rippleTrough || '#c9a6ff',
     opacity: num(ds.rippleOpacity, 0.35),
     resolution: 3,
     speed: num(ds.rippleSpeed, 0.7),
@@ -69,11 +70,17 @@
     viscosity: num(ds.rippleViscosity, 0.2),
     edges: ds.rippleEdges === 'reflect' ? 'reflect' : 'absorb',
     dropStrength: 1.2, dropRadius: 26,
-    dragStrength: 0.3, dragRadius: 16,
-    rain: num(ds.rippleRain, 1.5), rainStrength: 0.6,
+    dragStrength: 0.55, dragRadius: 16,
+    dragFloor: 0.35,        // 慢慢划也至少留下这么多力度（× dragStrength）
+    rain: num(ds.rippleRain, 0.6), rainStrength: 0.4,
+    hoverRain: 0.25,        // 鼠标在首屏内时保留的落雨比例（0 = 完全停）
+    mobileRain: 0,          // 手机端落雨比例：0 = 静止时没有水波
+    touchDrop: 0.5,         // 手机端手指按下时落一滴的力度（0 = 关）
+    softCrest: 1,           // 1 = 亮起的字透明度随强度渐变；0 = 一亮就是不透明
+    crestBias: 0.04,        // 把一部分浅波谷也算作波峰，白色区域更大
     sensitivity: 2.2, slopeGain: 1,
     refraction: num(ds.rippleRefraction, 2),
-    scramble: 1, scrambleSpeed: 90, dither: 0.5,
+    scramble: 1, scrambleSpeed: 180, dither: 0.5,
     vignette: num(ds.rippleVignette, 0.6),
     hole: num(ds.rippleHole, 0.3),
     feather: num(ds.rippleFeather, 0.3),
@@ -81,6 +88,12 @@
     hotWeight: num(ds.rippleHotWeight, 700),
     outlineColor: ds.rippleOutlineColor || '#3c2896'
   };
+  // 对比用：地址后面加 ?ripple=old 回到调整前的手感
+  if (/[?&]ripple=old\b/.test(location.search)) {
+    var OLD = { trough: '#ad57ff', dragStrength: 0.3, dragFloor: 0, rain: 1.5, rainStrength: 0.6, hoverRain: 0,
+      mobileRain: 1, touchDrop: 0, softCrest: 0, crestBias: 0, scrambleSpeed: 90 };
+    for (var ok in OLD) cfg[ok] = OLD[ok];
+  }
   var FONT = 'ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace';
   var Z = ds.rippleZ || '32';
   // 以下常量与参考组件一致
@@ -261,7 +274,7 @@
         line += ' ';
         if (glyph === ' ') continue;
         // 按颜色分桶，画的时候每种颜色只切换一次 fillStyle（逐字切换颜色是最大的开销）
-        buckets[(hgt >= 0 ? 0 : RAMP_STEPS + 1) + Math.round(intensity * RAMP_STEPS)].push(c * cw, cy, glyph);
+        buckets[(hgt >= -cfg.crestBias ? 0 : RAMP_STEPS + 1) + Math.round(intensity * RAMP_STEPS)].push(c * cw, cy, glyph);
         hot++;
       }
       ctx.fillText(line, 0, cy);
@@ -269,7 +282,8 @@
     // 被波纹点亮的字：不透明，颜色按强度从底色过渡到波峰 / 波谷色
     ctx.globalAlpha = 1;
     if (hot) {
-      if (cfg.hotWeight !== 400) ctx.font = font.replace(/^400 /, cfg.hotWeight + ' ');
+      var boldFont = cfg.hotWeight !== 400 ? font.replace(/^400 /, cfg.hotWeight + ' ') : font;
+      if (!cfg.softCrest) ctx.font = boldFont;
       // 浅色底上白色看不出来：先给亮起来的字描一圈淡淡的深色边（越强越深），白色波峰才能「浮」出来
       if (cfg.outline > 0) {
         ctx.lineWidth = cfg.outline * kz; ctx.lineJoin = 'round';
@@ -282,9 +296,16 @@
       for (var bf = 0; bf < buckets.length; bf++) {
         var lf = buckets[bf]; if (!lf.length) continue;
         ctx.fillStyle = bf <= RAMP_STEPS ? up[bf] : down[bf - RAMP_STEPS - 1];
+        if (cfg.softCrest) {
+          // 透明度从底字的不透明度平滑升到 1，粗体只给较强的一半，避免一亮就「跳」出来
+          var lvl = (bf % (RAMP_STEPS + 1)) / RAMP_STEPS;
+          ctx.globalAlpha = cfg.opacity + (1 - cfg.opacity) * lvl;
+          ctx.font = lvl >= 0.5 ? boldFont : font;
+        }
         for (var n = 0; n < lf.length; n += 3) ctx.fillText(lf[n + 2], lf[n], lf[n + 1]);
       }
     }
+    ctx.globalAlpha = 1; ctx.font = font;
     // 四边渐隐（参考的曲线：0 / 30% / 70% / 100% 处擦掉 100% / 60% / 15% / 0%）
     if (cfg.vignette > 0) {
       var band = clamp01(cfg.vignette) * (Math.min(W, H) / 2);
@@ -307,7 +328,13 @@
   // ---------- 循环 ----------
   var ready = false, running = false, visible = true, lastT = 0, acc = 0, rainAcc = 0;
   var ptr = { x: 0, y: 0, lx: 0, ly: 0, inside: false, pending: false };
-  function raining() { return cfg.rain > 0 && !(ptr.inside && interactive()); }
+  // 落雨比例：手机端按 mobileRain，鼠标在首屏内按 hoverRain，其余为 1
+  function rainScale() {
+    if (cfg.rain <= 0) return 0;
+    if (W < MIN_WIDTH) return cfg.mobileRain;
+    return ptr.inside && interactive() ? cfg.hoverRain : 1;
+  }
+  function raining() { return rainScale() > 0; }
 
   function tick(now) {
     if (!ready || !S) { running = false; return; }
@@ -316,14 +343,14 @@
       var dx = ptr.x - ptr.lx, dy = ptr.y - ptr.ly, moved = Math.sqrt(dx * dx + dy * dy);
       if (moved > 0.5) {
         var steps = Math.min(6, Math.max(1, Math.ceil(moved / (cfg.dragRadius * kz))));
-        var amount = cfg.dragStrength * Math.min(1, moved / (cfg.dragRadius * kz * 1.5)) / steps;
+        var amount = cfg.dragStrength * Math.max(cfg.dragFloor, Math.min(1, moved / (cfg.dragRadius * kz * 1.5))) / steps;
         for (var i = 1; i <= steps; i++) disturb(ptr.lx + dx * i / steps, ptr.ly + dy * i / steps, cfg.dragRadius * kz, amount);
       }
       ptr.lx = ptr.x; ptr.ly = ptr.y; ptr.pending = false;
     }
     var rainy = raining();
     if (rainy) {
-      rainAcc += dt * cfg.rain;
+      rainAcc += dt * cfg.rain * rainScale();
       while (rainAcc >= 1) {
         rainAcc -= 1;
         disturb(Math.random() * cols * cw, Math.random() * rows * lh,
@@ -353,7 +380,7 @@
     ready = build();
     if (!ready) return;
     draw(performance.now());
-    if (cfg.rain > 0) wake();
+    if (raining()) wake();
   }
 
   // 把页面坐标换成首屏内部坐标（首屏被 CSS 缩放时也正确）
@@ -372,10 +399,15 @@
   }, { passive: true });
   host.addEventListener('pointerleave', function () {
     ptr.inside = false; ptr.pending = false;
-    if (cfg.rain > 0) wake();
+    if (raining()) wake();
   }, { passive: true });
   host.addEventListener('pointerdown', function (e) {
-    if (!interactive() || e.pointerType === 'touch') return;
+    if (e.pointerType === 'touch') {
+      // 手机端：手指按下时落一滴轻的，波纹散尽后动画自己停；不拦截触摸，滚动不受影响
+      if (ready && !reduced && cfg.touchDrop > 0) { var t = local(e); disturb(t.x, t.y, cfg.dropRadius * kz, cfg.touchDrop); wake(); }
+      return;
+    }
+    if (!interactive()) return;
     var p = local(e);
     disturb(p.x, p.y, cfg.dropRadius * kz, cfg.dropStrength);
     ptr.x = ptr.lx = p.x; ptr.y = ptr.ly = p.y; ptr.inside = true;
@@ -386,7 +418,7 @@
     new IntersectionObserver(function (e) {
       visible = e[e.length - 1].isIntersecting;
       if (visible && !ready) refresh();
-      else if (visible && cfg.rain > 0) wake();
+      else if (visible && raining()) wake();
     }).observe(host);
   }
   if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(host);
@@ -406,7 +438,7 @@
         if ((k === 'hole' || k === 'feather') && ready) applyMask();
       }
       if (rebuild) refresh();
-      else { buildRamps(); if (ready && !running) draw(performance.now()); if (cfg.rain > 0) wake(); }
+      else { buildRamps(); if (ready && !running) draw(performance.now()); if (raining()) wake(); }
     }
   };
   refresh();
