@@ -935,6 +935,24 @@
             .proj-desc-split > h5 { margin: 0; }
             .proj-desc-split.proj-desc-split > p.proj-desc { margin-top: 0; } /* 压过 space-y-4 */
         }
+        /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
+        #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
+        /* 灰色文字整体提亮 */
+        #view-portfolio .text-gray-400 { color: var(--wr-body); }
+        #view-portfolio .text-gray-500 { color: var(--wr-muted); }
+        #view-portfolio .text-gray-600 { color: var(--wr-faint); }
+        #view-portfolio p strong.text-gray-400, #view-portfolio p strong.text-gray-300 { color: #ededf2; }
+        /* 标签类小字：最小 12px */
+        #view-portfolio .text-\[8px\] { font-size: 11px; }
+        #view-portfolio .text-\[10px\], #view-portfolio .text-\[11px\] { font-size: 12px; }
+        /* 正文段落：15px，行宽限制在约 40 个汉字 */
+        #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 15px; line-height: 1.85; max-width: 40em; }
+        #view-portfolio p.leading-relaxed.text-center { font-size: 15px; line-height: 1.85; }
+        #view-portfolio p.text-\[11px\].text-gray-500:not(.uppercase) { font-size: 13px; line-height: 1.7; }
+        @media (min-width: 1024px) {
+            #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
+            #view-portfolio p.proj-desc.proj-desc--wide { max-width: 40em; }
+        }
         .chapter-directory__description {
             margin: 0;
             color: #d9dcff;
