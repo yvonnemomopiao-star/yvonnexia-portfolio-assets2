@@ -935,9 +935,6 @@
             .proj-desc-split > h5 { margin: 0; }
             .proj-desc-split.proj-desc-split > p.proj-desc { margin-top: 0; } /* 压过 space-y-4 */
         }
-        #view-portfolio .wr-pair img { display: block; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
-        #view-portfolio .wr-pair figure { margin: 0 0 16px; }
-        #view-portfolio .wr-pair__text { margin-bottom: 16px; }
         /* ===== 作品区可读性：字号、对比度、行宽（只作用于 #view-portfolio，覆盖 Tailwind 小字号） ===== */
         #view-portfolio { --wr-body: #b9b9c6; --wr-muted: #9a9aa8; --wr-faint: #8a8a98; }
         /* 灰色文字整体提亮 */
@@ -949,43 +946,19 @@
         #view-portfolio .text-\[8px\] { font-size: 11px; }
         #view-portfolio .text-\[10px\], #view-portfolio .text-\[11px\] { font-size: 12px; }
         /* 正文段落：15px，行宽限制在约 40 个汉字 */
-        #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 15px; line-height: 1.7; max-width: 40em; }
+        #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 15px; line-height: 1.7; }
         #view-portfolio p.leading-relaxed.text-center { font-size: 15px; line-height: 1.7; }
         #view-portfolio p.text-\[11px\].text-gray-500:not(.uppercase) { font-size: 13px; line-height: 1.7; }
+        /* 提示框：去掉紫色底和紫色描边，用作品区原有的黑灰卡片色；标题图标保留紫色作点缀 */
+        #view-portfolio .bg-purple-900\/20 { background-color: #111; border-color: rgba(255,255,255,.1); }
+        #view-portfolio .bg-purple-900\/20:hover { background-color: #151515; }
+        /* 06：参考照在左（4）、手办长图在右（8） */
         @media (min-width: 1024px) {
-            #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
-            #view-portfolio p.proj-desc.proj-desc--wide { max-width: 40em; }
-            /* 要点区的两种排法：三栏并排（02），或左要点右提示框（07） */
-            #view-portfolio .wr-notes { display: grid; align-items: start; gap: 32px 48px; max-width: none; border-left: 0; padding-left: 0; }
-            #view-portfolio .wr-notes > * { margin-top: 0; }
-            #view-portfolio .wr-notes > div:not(.wr-callout) { border-left: 1px solid rgba(255,255,255,.1); padding-left: 24px; }
-            #view-portfolio .wr-notes .wr-callout p.leading-relaxed { max-width: none; }
-            #view-portfolio .wr-notes--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 32px; }
-            #view-portfolio .wr-notes--half { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-            #view-portfolio .wr-notes--half > div:not(.wr-callout) { grid-column: 1; }
-            #view-portfolio .wr-notes--half > .wr-callout { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
-            /* 09：左文字 + 小截图，右两张场景原画（同 05 的 4/8 结构） */
-            #view-portfolio .wr-0408 { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; align-items: center; }
-            #view-portfolio .wr-0408 .wr-scenes img { height: auto; aspect-ratio: 2 / 3; }
-            /* 11：原画与成片成对错落，成片压在原画一角，文字填在错开的空位里 */
-            #view-portfolio .wr-pair { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; }
-            #view-portfolio .wr-pair + .wr-pair { margin-top: 112px; }
-            #view-portfolio .wr-pair__art { grid-column: 1 / 9; grid-row: 1; margin: 0 0 88px; }
-            #view-portfolio .wr-pair__side { grid-column: 8 / 13; grid-row: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; z-index: 2; }
-            #view-portfolio .wr-pair__text { padding-left: calc((100% - 96px) / 5 + 56px); padding-bottom: 32px; }
-            #view-portfolio .wr-pair__shot { margin: 0; }
-            #view-portfolio .wr-pair__shot img { box-shadow: 0 0 0 8px #000, 0 24px 60px rgba(0,0,0,.6); }
-            #view-portfolio .wr-pair__shot figcaption { text-align: right; }
-            #view-portfolio .wr-pair--flip .wr-pair__art { grid-column: 5 / 13; }
-            #view-portfolio .wr-pair--flip .wr-pair__art figcaption { text-align: right; }
-            #view-portfolio .wr-pair--flip .wr-pair__side { grid-column: 1 / 6; }
-            #view-portfolio .wr-pair--flip .wr-pair__text { padding-left: 0; padding-right: calc((100% - 96px) / 5 + 56px); }
-            #view-portfolio .wr-pair--flip .wr-pair__shot figcaption { text-align: left; }
-            /* 09：两张场景原画上下错开 */
-            #view-portfolio .wr-0408 .wr-scenes img:nth-child(2) { margin-top: 72px; }
-            /* 参考图在左（4）、成果图在右（8），与下方说明分栏对齐 */
             #view-portfolio .wr-ref-pair { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; }
             #view-portfolio .wr-ref-pair > :first-child { order: 2; }
+        }
+        @media (min-width: 1024px) {
+            #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
         }
         .chapter-directory__description {
             margin: 0;
@@ -1911,7 +1884,7 @@
                             </div>
                             <div class="space-y-6 mt-8">
                                 <h5 class="text-white font-bold text-base md:text-lg mb-4 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流搭建</h5>
-                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes wr-notes--3">
+                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%]">
                                     <div>
                                         <strong class="text-gray-200 text-sm block mb-1">✦ AIGC 工业化管线搭建：</strong>
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">独立搭建从概念生成到高保真交付的 AIGC 图像工作流：以 Midjourney 确立场景光影与时尚基调，结合 ComfyUI 节点网络与专属角色 LoRA 模型，解决生成过程中人物特征不稳定的问题。</p>
@@ -1920,7 +1893,7 @@
                                         <strong class="text-gray-200 text-sm block mb-1">✦ 高精度特征融合 (Identity Preservation)：</strong>
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">在保持 Cinematic 视觉调性统一的前提下，完成跨风格图像的特征迁移，使目标人物的面部结构、肤质细节与光影环境自然融合。</p>
                                     </div>
-                                    <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors wr-callout">
+                                    <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
                                         <strong class="text-purple-300 text-sm block mb-2 flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>处理 AIGC 视频的“时间一致性”痛点
                                         </strong>
@@ -2282,7 +2255,7 @@
 
                         <div class="space-y-6 mt-12">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流</h5>
-                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes wr-notes--half">
+                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%]">
                                 <div>
                                     <strong class="text-gray-200 text-sm block mb-1">✦ 数据精筛与标签工程 (Dataset & Tagging)：</strong>
                                     <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
@@ -2295,7 +2268,7 @@
                                         基于 <code>Kohya_ss</code> 本地或云端环境，按素材特征与规模设定 Network Rank (Dim)、Alpha 与 Learning Rate。训练全程接入 <code>Tensorboard</code> 监控 Loss 曲线，定位拐点，并比对多组 Epoch 权重，以取得最佳泛化性。
                                     </p>
                                 </div>
-                                <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors wr-callout">
+                                <div class="bg-purple-900/20 border border-purple-500/30 p-4 md:p-5 rounded-xl mt-6 hover:bg-purple-900/30 transition-colors">
                                     <strong class="text-purple-300 text-sm block mb-2 flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" /></svg>
                                         AIGC 炼丹避坑：警惕“标签污染”与“过拟合”
@@ -2591,24 +2564,19 @@
                                 <span>Dark Fairy Tale</span> <span>/</span> <span>Mobile Game</span> <span>/</span> <span>Scene Design</span>
                             </div>
                         </div>
-                        <div class="wr-0408 mb-6">
-                            <div class="space-y-6 mb-8 lg:mb-0">
-                                <div class="border-l-2 border-purple-500 pl-6 py-2">
-                                    <h4 class="text-lg font-bold text-white mb-2">项目说明</h4>
-                                    <p class="text-sm text-gray-400 leading-relaxed">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
-                                </div>
-                                <div>
-                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996869/game_aaepi7.jpg" loading="lazy" class="w-full h-auto rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                    <p class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3">游戏网络截图</p>
-                                </div>
+                        <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-6">
+                            <div class="col-span-6 grid grid-cols-2 gap-2 md:gap-4 lg:gap-6">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996870/05_a3cc96.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996871/06_q6r2s3.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
                             </div>
-                            <div>
-                                <div class="grid grid-cols-2 gap-2 md:gap-4 lg:gap-6 wr-scenes">
-                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996870/05_a3cc96.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996871/06_q6r2s3.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                </div>
-                                <p class="text-center text-[10px] md:text-xs text-gray-500 tracking-widest mt-3">* 无 UI 与角色状态下的战斗场景原画</p>
+                            <div class="col-span-6 flex flex-col justify-center">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996869/game_aaepi7.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-contain rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
                             </div>
+                        </div>
+                        <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 图片为无 UI 和角色状态下战斗场景，右图为游戏网络截图</p></div>
+                        <div class="space-y-4">
+                            <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
                         </div>
                     </div>
                 </div>
@@ -2656,37 +2624,19 @@
                                 <span>Japanese Anime</span> <span>/</span> <span>Background Art</span> <span>/</span> <span>2D Layout</span>
                             </div>
                         </div>
-                        <div class="wr-pair">
-                            <figure class="wr-pair__art">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
-                            </figure>
-                            <div class="wr-pair__side">
-                                <div class="wr-pair__text">
-                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。</p>
-                                </div>
-                                <figure class="wr-pair__shot">
-                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
-                                </figure>
+                        <div class="grid grid-cols-2 gap-4 md:gap-6 lg:gap-12 mb-10">
+                            <div class="flex flex-col gap-2 md:gap-6">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996868/01_mszflv.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                            </div>
+                            <div class="flex flex-col gap-2 md:gap-6">
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996866/02_rkmwig.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
                             </div>
                         </div>
-                        <div class="wr-pair wr-pair--flip">
-                            <figure class="wr-pair__art">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/03_zstjvx.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">场景原画 Background Art</figcaption>
-                            </figure>
-                            <div class="wr-pair__side">
-                                <div class="wr-pair__text">
-                                    <h5 class="text-white font-bold text-lg mb-3 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>同期项目</h5>
-                                    <p class="text-xs text-gray-500 leading-relaxed proj-desc">同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
-                                </div>
-                                <figure class="wr-pair__shot">
-                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                    <figcaption class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3 uppercase">成片截图 On Air</figcaption>
-                                </figure>
-                            </div>
+                        <div class="space-y-4">
+                            <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
+                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。<br><br>同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
                         </div>
                     </div>
                 </div>
