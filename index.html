@@ -297,6 +297,13 @@
             color: #fff;
             background-color: #6733ea;   /* 作品集标题渐变的起始紫；白字对比 6.5:1 */
         }
+        #nav-dark nav > a[aria-current],
+        #nav-dark nav > a[aria-current]:hover,
+        #nav-dark .portfolio-nav-trigger[aria-current],
+        #nav-dark .portfolio-nav-group:hover > .portfolio-nav-trigger[aria-current] {
+            color: #8f77e9;
+            background-color: rgba(143, 119, 233, .16);
+        }
         .site-nav::before {
             content: "";
             position: absolute;
@@ -2840,8 +2847,10 @@
                     const active = link.dataset.page === (section.id === 'work-chapters' ? 'portfolio' : section.id);
                     if (active) link.setAttribute('aria-current', 'location');
                     else link.removeAttribute('aria-current');
-                    link.style.backgroundColor = active ? (isDark ? 'rgba(143,119,233,.16)' : '#6733ea') : '';
-                    link.style.color = active && isDark ? '#8f77e9' : '';
+                    // 当前页的配色交给 CSS（#nav-light / #nav-dark 各自的 [aria-current] 规则）。
+                    // 以前这里写行内颜色，两套导航共用同一批链接，深色的紫字会残留到浅色导航的紫色按钮上。
+                    link.style.backgroundColor = '';
+                    link.style.color = '';
                 });
                 if (focused) {
                     const equivalent = [...next.querySelectorAll('a[data-page]')].find(link =>
