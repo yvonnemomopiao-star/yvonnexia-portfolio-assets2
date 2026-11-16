@@ -952,11 +952,21 @@
         @media (min-width: 1024px) {
             #view-portfolio p.leading-relaxed:not(.text-center):not(.tracking-widest) { font-size: 16px; }
             #view-portfolio p.proj-desc.proj-desc--wide { max-width: 40em; }
-            /* 标题在左、正文在右的分栏里：两条要点并排，提示框横跨右栏 */
-            #view-portfolio .proj-desc-split > .wr-notes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 48px; max-width: none; margin-top: 0; }
+            /* 要点区的两种排法：三栏并排（02），或左要点右提示框（07） */
+            #view-portfolio .wr-notes { display: grid; align-items: start; gap: 32px 48px; max-width: none; border-left: 0; padding-left: 0; }
             #view-portfolio .wr-notes > * { margin-top: 0; }
-            #view-portfolio .wr-notes > .wr-callout { grid-column: 1 / -1; }
-            #view-portfolio .wr-notes > .wr-callout p.leading-relaxed { max-width: none; }
+            #view-portfolio .wr-notes > div:not(.wr-callout) { border-left: 1px solid rgba(255,255,255,.1); padding-left: 24px; }
+            #view-portfolio .wr-notes .wr-callout p.leading-relaxed { max-width: none; }
+            #view-portfolio .wr-notes--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: 32px; }
+            #view-portfolio .wr-notes--half { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+            #view-portfolio .wr-notes--half > div:not(.wr-callout) { grid-column: 1; }
+            #view-portfolio .wr-notes--half > .wr-callout { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
+            /* 09：左文字 + 小截图，右两张场景原画（同 05 的 4/8 结构） */
+            #view-portfolio .wr-0408 { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; align-items: center; }
+            #view-portfolio .wr-0408 .wr-scenes img { height: auto; aspect-ratio: 2 / 3; }
+            /* 11：通栏，两段文字各占一半 */
+            #view-portfolio .wr-two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; align-items: start; }
+            #view-portfolio .wr-two-col > p.proj-desc { margin-top: 0; max-width: none; }
             /* 参考图在左（4）、成果图在右（8），与下方说明分栏对齐 */
             #view-portfolio .wr-ref-pair { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: 48px; }
             #view-portfolio .wr-ref-pair > :first-child { order: 2; }
@@ -1879,9 +1889,9 @@
                                 <span class="text-xl sm:text-2xl md:text-4xl font-black portfolio-silver-symbol select-none">=</span>
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775988236/aiwokflow03_wzmnfv.png" loading="lazy" decoding="async" alt="最终合成" class="w-[36%] h-[80px] sm:h-[120px] md:h-[250px] lg:h-[350px] object-cover rounded-md md:rounded-lg border border-white/10 shadow-lg cursor-zoom-in" data-lightbox-current>
                             </div>
-                            <div class="proj-desc-split space-y-6 mt-8">
+                            <div class="space-y-6 mt-8">
                                 <h5 class="text-white font-bold text-base md:text-lg mb-4 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流搭建</h5>
-                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes">
+                                <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes wr-notes--3">
                                     <div>
                                         <strong class="text-gray-200 text-sm block mb-1">✦ AIGC 工业化管线搭建：</strong>
                                         <p class="text-xs md:text-sm text-gray-400 leading-relaxed">独立搭建从概念生成到高保真交付的 AIGC 图像工作流：以 Midjourney 确立场景光影与时尚基调，结合 ComfyUI 节点网络与专属角色 LoRA 模型，解决生成过程中人物特征不稳定的问题。</p>
@@ -2250,9 +2260,9 @@
                             </div>
                         </div>
 
-                        <div class="proj-desc-split space-y-6 mt-12">
+                        <div class="space-y-6 mt-12">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>技术实施与工作流</h5>
-                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes">
+                            <div class="space-y-6 border-l border-white/10 pl-4 md:pl-6 max-w-[90%] wr-notes wr-notes--half">
                                 <div>
                                     <strong class="text-gray-200 text-sm block mb-1">✦ 数据精筛与标签工程 (Dataset & Tagging)：</strong>
                                     <p class="text-xs md:text-sm text-gray-400 leading-relaxed">
@@ -2561,19 +2571,24 @@
                                 <span>Dark Fairy Tale</span> <span>/</span> <span>Mobile Game</span> <span>/</span> <span>Scene Design</span>
                             </div>
                         </div>
-                        <div class="grid grid-cols-12 gap-4 md:gap-6 lg:gap-8 mb-6">
-                            <div class="col-span-6 grid grid-cols-2 gap-2 md:gap-4 lg:gap-6">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996870/05_a3cc96.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996871/06_q6r2s3.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                        <div class="wr-0408 mb-6">
+                            <div class="space-y-6 mb-8 lg:mb-0">
+                                <div class="border-l-2 border-purple-500 pl-6 py-2">
+                                    <h4 class="text-lg font-bold text-white mb-2">项目说明</h4>
+                                    <p class="text-sm text-gray-400 leading-relaxed">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
+                                </div>
+                                <div>
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996869/game_aaepi7.jpg" loading="lazy" class="w-full h-auto rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <p class="text-[10px] md:text-xs text-gray-500 tracking-widest mt-3">游戏网络截图</p>
+                                </div>
                             </div>
-                            <div class="col-span-6 flex flex-col justify-center">
-                                <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996869/game_aaepi7.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-contain rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                            <div>
+                                <div class="grid grid-cols-2 gap-2 md:gap-4 lg:gap-6 wr-scenes">
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996870/05_a3cc96.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                    <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996871/06_q6r2s3.jpg" loading="lazy" class="w-full h-[120px] sm:h-[160px] md:h-[300px] lg:h-[480px] object-cover rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
+                                </div>
+                                <p class="text-center text-[10px] md:text-xs text-gray-500 tracking-widest mt-3">* 无 UI 与角色状态下的战斗场景原画</p>
                             </div>
-                        </div>
-                        <div class="text-center mb-10"><p class="text-[10px] md:text-xs text-gray-500 tracking-widest">* 图片为无 UI 和角色状态下战斗场景，右图为游戏网络截图</p></div>
-                        <div class="proj-desc-split space-y-4">
-                            <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">《才不是童话》是一款“暗黑童话”风格的策略放置类卡牌 RPG 手游。我担任核心场景原画师，参与游戏世界观的视觉构建，主要负责<strong class="text-gray-400">核心关卡地图与无缝大地图</strong>的绘制；通过冷暖色调的控制与碎片化叙事元素的植入，确立了诡谲而精致的美术调性。产品曾在日本、韩国及中国台湾地区上线运营。</p>
                         </div>
                     </div>
                 </div>
@@ -2631,9 +2646,12 @@
                                 <img src="https://res.cloudinary.com/duzkdvaki/image/upload/q_auto/f_auto/v1775996867/04_fb7fs7.jpg" loading="lazy" class="w-full h-[100px] sm:h-[140px] md:h-[220px] lg:h-[280px] object-cover object-center rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors" data-lightbox-current>
                             </div>
                         </div>
-                        <div class="proj-desc-split space-y-4">
+                        <div class="space-y-4">
                             <h5 class="text-white font-bold text-lg mb-2 flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>项目说明</h5>
-                            <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc proj-desc--wide">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。<br><br>同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
+                            <div class="wr-two-col space-y-4">
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">参与日本动画《物语系列》（《化物语》《伪物语》）制作，负责场景原画设计。依据导演分镜与创作意图，把控场景的风格调性、空间布局与细节，确保场景与角色动作、剧情氛围相契合。<br>工作中研读分镜脚本，拆解导演对光影、色调、透视与氛围的要求，绘制日常与奇幻等多类场景原画，并配合团队完成审核与修改，按期交付。</p>
+                                <p class="text-xs text-gray-500 leading-relaxed border-l border-white/10 pl-4 proj-desc">同期参与公司 Q 版手办建模项目，依据动画角色的核心特征协助完成建模设计与细节优化，兼顾可爱调性与角色辨识度。</p>
+                            </div>
                         </div>
                     </div>
                 </div>
