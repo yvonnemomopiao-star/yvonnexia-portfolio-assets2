@@ -9,7 +9,7 @@
  * 用法：在 </body> 前加一行  <script src="text-ripple.js" defer></script>，默认挂在 #home 上。
  *
  * 行为：
- *   - 鼠标移动拖出尾迹，点击落下一滴水；鼠标不在首屏时轻轻下雨（每秒约 0.6 滴），鼠标在首屏内时只留少量
+ *   - 鼠标移动拖出尾迹，点击落下一滴水；默认不下雨，鼠标不动时水面是静的
  *   - 首屏滚出视口时暂停；系统开了「减少动态效果」时只显示静态文字
  *   - 手机端（宽度 < 768px）静止时没有水波，手指按下时落一滴轻的；不拦截触摸
  *   - 地址后加 ?ripple=old 可以回到调整前的参数，方便对比
@@ -24,7 +24,7 @@
  *   data-ripple-hot-weight="700" 被波纹点亮的字用粗体，浅色底上白色波峰更显眼
  *   data-ripple-outline="0"     可选：给亮起的字描深色边（默认关）
  *   data-ripple-speed="0.7" data-ripple-damping="0.01"  data-ripple-viscosity="0.2"  data-ripple-edges="absorb|reflect"
- *   data-ripple-rain="0.6"  每秒雨滴数（0 = 不下雨）    data-ripple-refraction="2"
+ *   data-ripple-rain="0"  每秒雨滴数（0 = 不下雨）    data-ripple-refraction="2"
  *   data-ripple-vignette="0.6"  四边渐隐长度（1 = 短边的一半）
  *   data-ripple-hole="0.3"  data-ripple-feather="0.3"   机器人周围留空半径（× 首屏高度）/ 边缘柔和度
  *   data-ripple-z="32"
@@ -66,14 +66,14 @@
     opacity: num(ds.rippleOpacity, 0.35),
     resolution: 3,
     speed: num(ds.rippleSpeed, 0.7),
-    damping: num(ds.rippleDamping, 0.025),   // 越大波浪消得越快
-    edgeAbsorb: 0.6, edgeBand: 0.14,          // 边缘吸收：波浪碰到屏幕边不再弹回来荡很久
+    damping: num(ds.rippleDamping, 0.01),    // 越大波浪消得越快
+    edgeAbsorb: 0.22, edgeBand: 0.08,         // 边缘吸收：波浪碰到屏幕边不再弹回来荡很久
     viscosity: num(ds.rippleViscosity, 0.2),
     edges: ds.rippleEdges === 'reflect' ? 'reflect' : 'absorb',
     dropStrength: 1.2, dropRadius: 26,
     dragStrength: 0.4, dragRadius: 16,
     dragFloor: 0.25,        // 慢慢划也至少留下这么多力度（× dragStrength）
-    rain: num(ds.rippleRain, 0.6), rainStrength: 0.4,
+    rain: num(ds.rippleRain, 0), rainStrength: 0.4,   // 默认不下雨：鼠标不动时水面是静的
     hoverRain: 0.25,        // 鼠标在首屏内时保留的落雨比例（0 = 完全停）
     mobileRain: 0,          // 手机端落雨比例：0 = 静止时没有水波
     touchDrop: 0.5,         // 手机端手指按下时落一滴的力度（0 = 关）
